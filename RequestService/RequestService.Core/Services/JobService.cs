@@ -1,4 +1,4 @@
-﻿using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Dto;
@@ -104,6 +104,10 @@ namespace RequestService.Core.Services
                 if (jobPostcodeCoordinates != null)
                 {
                     jobHeader.DistanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
+                }
+                else
+                {
+                    jobHeader.DistanceInMiles = double.MaxValue;
                 }
             }
             return jobHeaders;
