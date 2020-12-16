@@ -8,6 +8,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using System.Collections.Generic;
 
 namespace RequestService.Handlers
 {
@@ -29,14 +30,15 @@ namespace RequestService.Handlers
             {
                 Outcome = UpdateJobStatusOutcome.Unauthorized
             };
-            if (_repository.JobHasSameStatusAsProposedStatus(request.JobID, JobStatuses.Open))
+            if (_repository.JobHasStatus(request.JobID, JobStatuses.Open))
             {
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
             }
             else
             {
+                bool newToOpen = _repository.JobHasStatus(request.JobID, JobStatuses.New);
 
-                bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, !newToOpen, cancellationToken);
 
                 if (hasPermission)
                 {
@@ -49,9 +51,30 @@ namespace RequestService.Handlers
                         new RequestCommunicationRequest()
                         {
                             CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                            JobID = request.JobID
+                            JobID = request.JobID,
+                            AdditionalParameters = new Dictionary<string, string>()
+                            {
+                                { "FieldUpdated","Status" }
+                            }
                         },
                         cancellationToken);
+
+                        if (newToOpen)
+                        {
+                            //TODO: Potentially, call Group Service here, to make following actions configurable (to mirror call to GetNewRequestActions in PostNewRequestForHelp)
+                            
+                            var jobSummary = _repository.GetJobSummary(request.JobID);
+
+                            foreach (int groupId in jobSummary.JobSummary.Groups)
+                            {
+                                await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                                {
+                                    GroupID = groupId,
+                                    CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
+                                    JobID = request.JobID
+                                }, cancellationToken);
+                            }
+                        }
                     }
                 }
             }

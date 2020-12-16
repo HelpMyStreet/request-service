@@ -195,7 +195,7 @@ namespace RequestService.Repo
                             SupportActivityId = (byte)job.SupportActivity,
                             DueDate = DateTime.Now.AddDays(job.DueDays),
                             DueDateTypeId = (byte) job.DueDateType,
-                            JobStatusId = (byte) JobStatuses.Open,
+                            JobStatusId = (byte) JobStatuses.New,
                             Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
@@ -215,7 +215,7 @@ namespace RequestService.Repo
                         _context.RequestJobStatus.Add(new RequestJobStatus()
                         {
                             DateCreated = DateTime.Now,
-                            JobStatusId = (byte)JobStatuses.Open,
+                            JobStatusId = (byte)JobStatuses.New,
                             Job = EFcoreJob,
                             CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
                         });
@@ -338,6 +338,35 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = doneJobStatus;
                     AddJobStatus(jobID, createdByUserID, null, doneJobStatus);
+                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                    else
+                    {
+                        response = UpdateJobStatusOutcome.BadRequest;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                }
+            }
+            return response;
+        }
+
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte newJobStatus = (byte)JobStatuses.New;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+            if (job != null)
+            {
+                if (job.JobStatusId != newJobStatus)
+                {
+                    job.JobStatusId = newJobStatus;
+                    AddJobStatus(jobID, createdByUserID, null, newJobStatus);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -765,10 +794,10 @@ namespace RequestService.Repo
             return response;
         }
 
-        public bool JobHasSameStatusAsProposedStatus(int jobID, JobStatuses newJobStatus)
+        public bool JobHasStatus(int jobID, JobStatuses status)
         {
             var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
-            if (job.JobStatusId == (byte)newJobStatus)
+            if (job.JobStatusId == (byte)status)
             {
                 return true;
             }
@@ -808,6 +837,33 @@ namespace RequestService.Repo
             {
                 return false;
             }
+        }
+
+        public async Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken)
+        {
+            UpdateJobOutcome response = UpdateJobOutcome.BadRequest;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+            if (job != null)
+            {
+                if (job.DueDate != dueDate)
+                {
+                    job.DueDate = dueDate;
+                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    if (result == 1)
+                    {
+                        response = UpdateJobOutcome.Success;
+                    }
+                    else
+                    {
+                        response = UpdateJobOutcome.BadRequest;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobOutcome.AlreadyInThisState;
+                }
+            }
+            return response;
         }
     }
 }

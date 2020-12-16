@@ -7,6 +7,7 @@ using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
+using System.Collections.Generic;
 
 namespace RequestService.Handlers
 {
@@ -29,13 +30,13 @@ namespace RequestService.Handlers
                 Outcome = UpdateJobStatusOutcome.Unauthorized
             };
 
-            if (_repository.JobHasSameStatusAsProposedStatus(request.JobID, JobStatuses.Done))
+            if (_repository.JobHasStatus(request.JobID, JobStatuses.Done))
             {
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
             }
             else
             {
-                bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, true, cancellationToken);
 
                 if (hasPermission)
                 {
@@ -49,7 +50,11 @@ namespace RequestService.Handlers
                         new RequestCommunicationRequest()
                         {
                             CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                            JobID = request.JobID
+                            JobID = request.JobID,
+                            AdditionalParameters = new Dictionary<string, string>()
+                            {
+                                { "FieldUpdated","Status" }
+                            }
                         },
                         cancellationToken);
                     }

@@ -4,6 +4,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusOpenAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
+        Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
+        Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);
@@ -37,7 +40,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<JobSummary> GetJobsByStatusesSummaries(List<JobStatuses> jobStatuses);
         List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request);
         void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged);        
-        bool JobHasSameStatusAsProposedStatus(int jobID, JobStatuses newJobStatus);
+        bool JobHasStatus(int jobID, JobStatuses status);
         bool JobIsInProgressWithSameVolunteerUserId(int jobID, int? volunteerUserID);
         Task<List<Question>> GetQuestionsForActivity(SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken);
     }
