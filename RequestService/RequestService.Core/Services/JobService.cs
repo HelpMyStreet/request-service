@@ -118,7 +118,7 @@ namespace RequestService.Core.Services
             return jobHeaders;
         }
 
-        public async Task<bool> HasPermissionToChangeStatusAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<bool> HasPermissionToChangeJobAsync(int jobID, int authorisedByUserID, CancellationToken cancellationToken)
         {
             var jobDetails = _repository.GetJobDetails(jobID);
 
@@ -127,7 +127,30 @@ namespace RequestService.Core.Services
                 throw new Exception($"Unable to retrieve job details for jobID:{jobID}");
             }
 
-            if (createdByUserID == jobDetails.JobSummary.VolunteerUserID)
+            int referringGroupId = await _repository.GetReferringGroupIDForJobAsync(jobID, cancellationToken);
+
+            var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
+
+            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> HasPermissionToChangeStatusAsync(int jobID, int createdByUserID, bool allowVolunteerUserId, CancellationToken cancellationToken)
+        {
+            var jobDetails = _repository.GetJobDetails(jobID);
+
+            if (jobDetails == null)
+            {
+                throw new Exception($"Unable to retrieve job details for jobID:{jobID}");
+            }
+
+            if (allowVolunteerUserId && createdByUserID == jobDetails.JobSummary.VolunteerUserID)
             {
                 return true;
             }
