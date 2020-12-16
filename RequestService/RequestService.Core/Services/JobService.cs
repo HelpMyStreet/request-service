@@ -1,4 +1,4 @@
-using HelpMyStreet.Utils.Enums;
+﻿using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Dto;
@@ -78,7 +78,12 @@ namespace RequestService.Core.Services
               
             volunteerPostCode = PostcodeFormatter.FormatPostcode(volunteerPostCode);
 
-            List<string> distinctPostCodes = jobHeaders.Select(d => d.PostCode).Distinct().Select(x => PostcodeFormatter.FormatPostcode(x)).ToList();
+            foreach (JobHeader jobHeader in jobHeaders)
+            {
+                jobHeader.PostCode = PostcodeFormatter.FormatPostcode(jobHeader.PostCode);
+            }
+
+            List<string> distinctPostCodes = jobHeaders.Select(d => d.PostCode).Distinct().ToList();
 
             if (!distinctPostCodes.Contains(volunteerPostCode))
             {
