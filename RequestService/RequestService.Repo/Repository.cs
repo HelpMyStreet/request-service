@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SupportActivities = RequestService.Repo.EntityFramework.Entities.SupportActivities;
 using Microsoft.Data.SqlClient;
+using HelpMyStreet.Utils.Utils;
 
 namespace RequestService.Repo
 {
@@ -138,8 +139,8 @@ namespace RequestService.Repo
                 AddressLine1 = requestPersonalDetails.Address.AddressLine1,
                 AddressLine2 = requestPersonalDetails.Address.AddressLine2,
                 AddressLine3 = requestPersonalDetails.Address.AddressLine3,
-                Locality = requestPersonalDetails.Address.Locality,
-                Postcode = requestPersonalDetails.Address.Postcode,
+                Locality = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Locality),
+                Postcode = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Postcode),
                 MobilePhone = requestPersonalDetails.MobileNumber,
                 OtherPhone = requestPersonalDetails.OtherNumber,
             };
@@ -173,7 +174,7 @@ namespace RequestService.Repo
                         AcceptedTerms = postNewRequestForHelpRequest.HelpRequest.AcceptedTerms,
                         OtherDetails = postNewRequestForHelpRequest.HelpRequest.OtherDetails,
                         OrganisationName = postNewRequestForHelpRequest.HelpRequest.OrganisationName,
-                        PostCode = postNewRequestForHelpRequest.HelpRequest.Recipient.Address.Postcode,
+                        PostCode = PostcodeFormatter.FormatPostcode(postNewRequestForHelpRequest.HelpRequest.Recipient.Address.Postcode),
                         PersonIdRecipientNavigation = recipient,
                         PersonIdRequesterNavigation = requester,
                         RequestorType = (byte)postNewRequestForHelpRequest.HelpRequest.RequestorType,
