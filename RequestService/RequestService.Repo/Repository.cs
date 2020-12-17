@@ -139,7 +139,7 @@ namespace RequestService.Repo
                 AddressLine1 = requestPersonalDetails.Address.AddressLine1,
                 AddressLine2 = requestPersonalDetails.Address.AddressLine2,
                 AddressLine3 = requestPersonalDetails.Address.AddressLine3,
-                Locality = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Locality),
+                Locality = requestPersonalDetails.Address.Locality,
                 Postcode = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Postcode),
                 MobilePhone = requestPersonalDetails.MobileNumber,
                 OtherPhone = requestPersonalDetails.OtherNumber,
