@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201221124648_AddEnumLookup")]
+    partial class AddEnumLookup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5974,9 +5976,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<int>("ReferringGroupId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("RequestType")
-                        .HasColumnType("tinyint");
-
                     b.Property<bool>("RequestorDefinedByGroup")
                         .HasColumnType("bit");
 
@@ -6025,22 +6024,6 @@ namespace RequestService.Repo.Migrations
                     b.HasKey("JobId", "DateCreated", "JobStatusId");
 
                     b.ToTable("RequestJobStatus","Request");
-                });
-
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.Shift", b =>
-                {
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShiftLength")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime");
-
-                    b.HasKey("RequestId");
-
-                    b.ToTable("Shift","Request");
                 });
 
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.SupportActivities", b =>
@@ -6125,15 +6108,6 @@ namespace RequestService.Repo.Migrations
                         .WithMany("RequestJobStatus")
                         .HasForeignKey("JobId")
                         .HasConstraintName("FK_Job_JobID")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.Shift", b =>
-                {
-                    b.HasOne("RequestService.Repo.EntityFramework.Entities.Request", "Request")
-                        .WithOne("Shift")
-                        .HasForeignKey("RequestService.Repo.EntityFramework.Entities.Shift", "RequestId")
-                        .HasConstraintName("FK_Shift_RequestID")
                         .IsRequired();
                 });
 

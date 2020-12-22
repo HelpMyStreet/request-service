@@ -17,6 +17,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
         Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
+        GetRequestDetailsResponse GetRequestDetails(int requestID);
         GetJobSummaryResponse GetJobSummary(int jobID);
         List<StatusHistory> GetJobStatusHistory(int jobID);
         List<JobSummary> GetOpenJobsSummaries();
@@ -29,6 +30,8 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+        Task<int> NewHelpShiftRequestAsync(PostNewRequestForHelpShiftRequest postNewRequestForHelpShiftRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);
         Task UpdateFulfillmentAsync(int requestId, Fulfillable fulfillable, CancellationToken cancellationToken);
