@@ -138,6 +138,7 @@ namespace RequestService.UnitTests
         [Test]
         public async Task WhenIPostDiyRequest_FullfiableStatusGetSetToDiy()
         {
+            requestId = 1;
             _validPostcode = true;
             _emailSent = true;
             var request = new PostNewRequestForHelpRequest
@@ -383,6 +384,7 @@ namespace RequestService.UnitTests
         [TestCase(0, GroupRoles.Member, Fulfillable.Rejected_Unauthorised, 0)]
         public async Task WhenAccessRestrictedByRole_ReturnsCorrectResponse(int createdByUserId, GroupRoles role, Fulfillable fulfillable, int timesGroupMemberCalled)
         {
+            requestId = 1;
             _validPostcode = true;
             _emailSent = true;
             var request = new PostNewRequestForHelpRequest
