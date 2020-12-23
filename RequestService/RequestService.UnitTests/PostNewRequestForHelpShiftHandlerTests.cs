@@ -26,8 +26,8 @@ namespace RequestService.UnitTests
     {
         private Mock<IRepository> _repository;
         private Mock<IGroupService> _groupService;
-        private PostNewRequestForHelpShiftHandler _classUnderTest;
-        private PostNewRequestForHelpShiftRequest _request;
+        private PostNewShiftsHandler _classUnderTest;
+        private PostNewShiftsRequest _request;
         private int _requestId;
         private GetRequestHelpFormVariantResponse _formVariantResponse;
         
@@ -37,14 +37,14 @@ namespace RequestService.UnitTests
         {
             SetupRepository();
             SetupGroupService();
-            _classUnderTest = new PostNewRequestForHelpShiftHandler(_repository.Object, _groupService.Object);
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
         }
 
         private void SetupRepository()
         {
             _repository = new Mock<IRepository>();
-            _repository.Setup(x => x.NewHelpShiftRequestAsync(
-                It.IsAny<PostNewRequestForHelpShiftRequest>(),
+            _repository.Setup(x => x.NewShiftsRequestAsync(
+                It.IsAny<PostNewShiftsRequest>(),
                 It.IsAny<Fulfillable>(),
                 It.IsAny<bool>()))
                 .ReturnsAsync(() => _requestId);
@@ -70,7 +70,7 @@ namespace RequestService.UnitTests
         public async Task WhenSuccesfullyReturnsRequestId()
         {
             _requestId = 1;
-            _request = new PostNewRequestForHelpShiftRequest()
+            _request = new PostNewShiftsRequest()
             {
                 CreatedByUserId = 1,
                 LocationRef = "LOCATION_REF",
@@ -95,7 +95,7 @@ namespace RequestService.UnitTests
             };
             var response = await _classUnderTest.Handle(_request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-            _classUnderTest = new PostNewRequestForHelpShiftHandler(_repository.Object, _groupService.Object);
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
             Assert.AreEqual(_requestId, response.RequestID);
         }
     }

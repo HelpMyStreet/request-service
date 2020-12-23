@@ -14,6 +14,7 @@ namespace RequestService.Core.Interfaces.Repositories
     public interface IRepository
     {
         Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken);
+        Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
         Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
@@ -30,7 +31,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
-        Task<int> NewHelpShiftRequestAsync(PostNewRequestForHelpShiftRequest postNewRequestForHelpShiftRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+        Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
 
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);

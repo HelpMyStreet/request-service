@@ -233,7 +233,7 @@ namespace RequestService.Repo
             throw new Exception("Unable to save request");
         }
 
-        public async Task<int> NewHelpShiftRequestAsync(PostNewRequestForHelpShiftRequest postNewRequestForHelpShiftRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -241,24 +241,24 @@ namespace RequestService.Repo
                 {
                     Request request = new Request()
                     {
-                        OtherDetails = postNewRequestForHelpShiftRequest.OtherDetails,                        
+                        OtherDetails = postNewShiftsRequest.OtherDetails,                        
                         PostCode = "POSTCODE",                        
                         RequestorType = (byte) RequestorType.Organisation,
                         FulfillableStatus = (byte)fulfillable,
-                        CreatedByUserId = postNewRequestForHelpShiftRequest.CreatedByUserId,
-                        ReferringGroupId = postNewRequestForHelpShiftRequest.ReferringGroupId,
-                        Source = postNewRequestForHelpShiftRequest.Source,
+                        CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
+                        ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
+                        Source = postNewShiftsRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup
                     };
 
                     _context.Shift.Add(new EntityFramework.Entities.Shift()
                     {
                         Request = request,
-                        StartDate = postNewRequestForHelpShiftRequest.StartDate,
-                        ShiftLength = postNewRequestForHelpShiftRequest.ShiftLength
+                        StartDate = postNewShiftsRequest.StartDate,
+                        ShiftLength = postNewShiftsRequest.ShiftLength
                     });
 
-                    foreach (var item in postNewRequestForHelpShiftRequest.SupportActivitiesCount)
+                    foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
                     {
                         for (int i = 0; i < item.Count; i++)
                         {
@@ -267,7 +267,7 @@ namespace RequestService.Repo
                                 NewRequest = request,
                                 IsHealthCritical = false,
                                 SupportActivityId = (byte)item.SupportActivity,
-                                DueDate = DateTime.Now,
+                                DueDate = DateTime.MinValue,
                                 DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
@@ -277,7 +277,7 @@ namespace RequestService.Repo
                                 DateCreated = DateTime.Now,
                                 JobStatusId = (byte)JobStatuses.Open,
                                 Job = EFcoreJob,
-                                CreatedByUserId = postNewRequestForHelpShiftRequest.CreatedByUserId,
+                                CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
                             });
                         }
                     }
@@ -799,6 +799,21 @@ namespace RequestService.Repo
             else
             {
                 throw new Exception($"Unable to get Referring GroupID for Job {jobID}");
+            }
+        }
+
+        public async Task<int> GetReferringGroupIDForRequestAsync(int requestId, CancellationToken cancellationToken)
+        {
+            var request = await _context.Request
+                .FirstAsync(x => x.Id == requestId);
+
+            if (request != null)
+            {
+                return request.ReferringGroupId;
+            }
+            else
+            {
+                throw new Exception($"Unable to get Referring GroupID for Request {requestId}");
             }
         }
 

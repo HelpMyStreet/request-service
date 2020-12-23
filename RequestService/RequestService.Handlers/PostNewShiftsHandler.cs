@@ -15,11 +15,11 @@ using System;
 
 namespace RequestService.Handlers
 {
-    public class PostNewRequestForHelpShiftHandler : IRequestHandler<PostNewRequestForHelpShiftRequest, PostNewRequestForHelpShiftResponse>
+    public class PostNewShiftsHandler : IRequestHandler<PostNewShiftsRequest, PostNewShiftsResponse>
     {
         private readonly IRepository _repository;
         private readonly IGroupService _groupService;
-        public PostNewRequestForHelpShiftHandler(
+        public PostNewShiftsHandler(
             IRepository repository,          
             IGroupService groupService)
         {
@@ -27,15 +27,15 @@ namespace RequestService.Handlers
             _groupService = groupService;
         }
 
-        public async Task<PostNewRequestForHelpShiftResponse> Handle(PostNewRequestForHelpShiftRequest request, CancellationToken cancellationToken)
+        public async Task<PostNewShiftsResponse> Handle(PostNewShiftsRequest request, CancellationToken cancellationToken)
         {
-            PostNewRequestForHelpShiftResponse response = new PostNewRequestForHelpShiftResponse();
+            PostNewShiftsResponse response = new PostNewShiftsResponse();
 
             var formVariant = await _groupService.GetRequestHelpFormVariant(request.ReferringGroupId, request.Source, cancellationToken);
 
             if (formVariant == null)
             {
-                return new PostNewRequestForHelpShiftResponse
+                return new PostNewShiftsResponse
                 {
                     RequestID = -1,
                     Fulfillable = Fulfillable.Rejected_ConfigurationError
@@ -60,7 +60,7 @@ namespace RequestService.Handlers
 
                 if (failedChecks)
                 {
-                    return new PostNewRequestForHelpShiftResponse
+                    return new PostNewShiftsResponse
                     {
                         RequestID = -1,
                         Fulfillable = Fulfillable.Rejected_Unauthorised
@@ -72,7 +72,7 @@ namespace RequestService.Handlers
             // Currently indicates standard "passed to volunteers" result
             response.Fulfillable = Fulfillable.Accepted_ManualReferral;
 
-            var result = await _repository.NewHelpShiftRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+            var result = await _repository.NewShiftsRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
             response.RequestID = result;
             return response;
         }

@@ -14,7 +14,6 @@ namespace RequestService.Handlers
     {
         private readonly IRepository _repository;
         private readonly IJobService _jobService;
-        private const int ADMIN_USERID = -1;
         public GetRequestDetailsHandler(IRepository repository, IJobService jobService)
         {
             _repository = repository;
@@ -23,14 +22,9 @@ namespace RequestService.Handlers
 
         public async Task<GetRequestDetailsResponse> Handle(GetRequestDetailsRequest request, CancellationToken cancellationToken)
         {
-            bool hasPermission = true;
+            bool hasPermission = await _jobService.HasPermissionToViewRequestAsync(request.RequestID, request.AuthorisedByUserID, cancellationToken);
             GetRequestDetailsResponse response = null;
-
-            //if (request.AuthorisedByUserID != ADMIN_USERID)
-            //{
-            //    hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.UserID, true, cancellationToken);
-            //}
-
+            
             if (hasPermission)
             {
                 response = _repository.GetRequestDetails(request.RequestID);
