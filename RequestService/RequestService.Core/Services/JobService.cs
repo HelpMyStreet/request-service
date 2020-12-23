@@ -159,5 +159,28 @@ namespace RequestService.Core.Services
                 return false;
             }
         }
+
+        public async Task<bool> HasPermissionToViewRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
+        {
+            var requestDetails = _repository.GetRequestDetails(requestID);
+
+            if (requestDetails == null)
+            {
+                throw new Exception($"Unable to retrieve request details for requestID:{requestID}");
+            }
+
+            int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
+
+            var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
+
+            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

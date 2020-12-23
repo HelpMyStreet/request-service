@@ -233,6 +233,67 @@ namespace RequestService.Repo
             throw new Exception("Unable to save request");
         }
 
+        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    Request request = new Request()
+                    {
+                        OtherDetails = postNewShiftsRequest.OtherDetails,                        
+                        PostCode = "POSTCODE",                        
+                        RequestorType = (byte) RequestorType.Organisation,
+                        FulfillableStatus = (byte)fulfillable,
+                        CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
+                        ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
+                        Source = postNewShiftsRequest.Source,
+                        RequestorDefinedByGroup = requestorDefinedByGroup
+                    };
+
+                    _context.Shift.Add(new EntityFramework.Entities.Shift()
+                    {
+                        Request = request,
+                        StartDate = postNewShiftsRequest.StartDate,
+                        ShiftLength = postNewShiftsRequest.ShiftLength
+                    });
+
+                    foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
+                    {
+                        for (int i = 0; i < item.Count; i++)
+                        {
+                            EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
+                            {
+                                NewRequest = request,
+                                IsHealthCritical = false,
+                                SupportActivityId = (byte)item.SupportActivity,
+                                DueDate = DateTime.MinValue,
+                                DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
+                                JobStatusId = (byte)JobStatuses.Open,
+                            };
+                            _context.Job.Add(EFcoreJob);
+                            _context.RequestJobStatus.Add(new RequestJobStatus()
+                            {
+                                DateCreated = DateTime.Now,
+                                JobStatusId = (byte)JobStatuses.Open,
+                                Job = EFcoreJob,
+                                CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
+                            });
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    return request.Id;                    
+                }
+                catch (Exception exc)
+                {
+                    transaction.Rollback();
+                }
+            }
+            throw new Exception("Unable to save shift request");
+        }
+
         private void AddJobStatus(int jobID, int? createdByUserID, int? volunteerUserID, byte jobStatus)
         {
             _context.RequestJobStatus.Add(new RequestJobStatus()
@@ -741,6 +802,21 @@ namespace RequestService.Repo
             }
         }
 
+        public async Task<int> GetReferringGroupIDForRequestAsync(int requestId, CancellationToken cancellationToken)
+        {
+            var request = await _context.Request
+                .FirstAsync(x => x.Id == requestId);
+
+            if (request != null)
+            {
+                return request.ReferringGroupId;
+            }
+            else
+            {
+                throw new Exception($"Unable to get Referring GroupID for Request {requestId}");
+            }
+        }
+
         public void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged)
         {
             DateTime dtExpire = DateTime.Now.AddDays(-daysSinceJobRequested);
@@ -865,5 +941,35 @@ namespace RequestService.Repo
             }
             return response;
         }
+
+        public GetRequestDetailsResponse GetRequestDetails(int requestID)
+        {
+            GetRequestDetailsResponse response = new GetRequestDetailsResponse();
+
+            var requests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .Where(x => x.Id == requestID)
+                .First();
+
+            if(requests != null)
+            {
+                response.Shift = new HelpMyStreet.Utils.Models.Shift()
+                {
+                    StartDate = requests.Shift.StartDate,
+                    ShiftLength = requests.Shift.ShiftLength
+                };
+                response.ShiftJobSummaries = new List<ShiftJobSummary>();
+
+                response.ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
+                {
+                    ID = d.Id,
+                    Activity = (HelpMyStreet.Utils.Enums.SupportActivities) d.SupportActivityId,
+                    JobStatuses = (JobStatuses) d.JobStatusId
+                }).ToList();
+            }
+
+            return response;
+        }        
     }
 }
