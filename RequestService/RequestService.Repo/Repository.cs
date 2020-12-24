@@ -181,7 +181,8 @@ namespace RequestService.Repo
                         CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
                         ReferringGroupId = postNewRequestForHelpRequest.HelpRequest.ReferringGroupId,
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup
+                        RequestorDefinedByGroup = requestorDefinedByGroup,
+                        RequestType = (byte) RequestType.Task
                     };
 
                     foreach (HelpMyStreet.Utils.Models.Job job in postNewRequestForHelpRequest.NewJobsRequest.Jobs)
@@ -248,7 +249,8 @@ namespace RequestService.Repo
                         CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
                         ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
                         Source = postNewShiftsRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup
+                        RequestorDefinedByGroup = requestorDefinedByGroup,
+                        RequestType = (byte) RequestType.Shift
                     };
 
                     _context.Shift.Add(new EntityFramework.Entities.Shift()
@@ -449,6 +451,7 @@ namespace RequestService.Repo
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
+            byte requestType_task = (byte)RequestType.Task;
 
             List<EntityFramework.Entities.Job> jobSummaries = _context.Job
                                     .Include(i => i.RequestJobStatus)
@@ -457,6 +460,7 @@ namespace RequestService.Repo
                                     .ThenInclude(rq => rq.Question)
                                     .Where(w => w.VolunteerUserId == volunteerUserID 
                                                 && w.JobStatusId == jobStatusID_InProgress
+                                                && w.NewRequest.RequestType == requestType_task
                                             ).ToList();
 
             return GetJobSummaries(jobSummaries);
@@ -700,6 +704,7 @@ namespace RequestService.Repo
         public GetJobDetailsResponse GetJobDetails(int jobID)
         {
             GetJobDetailsResponse response = new GetJobDetailsResponse();
+            byte requestType_task = (byte)RequestType.Task;
             var efJob = _context.Job
                         .Include(i=> i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
@@ -708,7 +713,7 @@ namespace RequestService.Repo
                         .ThenInclude(i => i.PersonIdRecipientNavigation)
                         .Include(i => i.NewRequest)
                         .ThenInclude(i=> i.PersonIdRequesterNavigation)
-                        .Where(w => w.Id == jobID).FirstOrDefault();
+                        .Where(w => w.Id == jobID && w.NewRequest.RequestType == requestType_task).FirstOrDefault();
 
             if(efJob == null)
             {
@@ -855,12 +860,14 @@ namespace RequestService.Repo
         public GetJobSummaryResponse GetJobSummary(int jobID)
         {
             GetJobSummaryResponse response = new GetJobSummaryResponse();
+            var requestType_task = (byte)RequestType.Task;
+
             var efJob = _context.Job
                         .Include(i => i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
                         .ThenInclude(rq => rq.Question)
                         .Include(i => i.NewRequest)
-                        .Where(w => w.Id == jobID).FirstOrDefault();
+                        .Where(w => w.Id == jobID && w.NewRequest.RequestType == requestType_task ).FirstOrDefault();
 
             response = new GetJobSummaryResponse()
             {
@@ -970,6 +977,58 @@ namespace RequestService.Repo
             }
 
             return response;
-        }        
+        }
+
+        public int UpdateShiftStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusOpen = (byte)JobStatuses.Open;
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var job = _context.Job
+                .Include(i=> i.NewRequest)
+                .FirstOrDefault(x=> x.SupportActivityId == supportActivity
+                && x.RequestId == requestID
+                && x.JobStatusId == jobStatusOpen
+                && x.NewRequest.RequestType == requestTypeShift);
+
+            if(job != null)
+            {
+                job.JobStatusId = (byte)JobStatuses.Accepted;
+                job.VolunteerUserId = volunteerUserID;
+                AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
+                _context.SaveChanges();
+                return job.Id;
+            }
+            else
+            {
+                throw new Exception($"Unable to UpdateShiftStatus for RequestID { requestID}");
+            }
+
+        }
+
+        public async Task<int> VolunteerAlreadyAcceptedShift(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var job = _context.Job
+                .Include(i => i.NewRequest)
+                .FirstOrDefault(x => x.VolunteerUserId == volunteerUserID
+                && x.SupportActivityId == supportActivity
+                && x.RequestId == requestID
+                && x.JobStatusId == jobStatusAccepted
+                && x.NewRequest.RequestType == requestTypeShift);
+
+            if(job!=null)
+            {
+                return job.Id;
+            }
+            else
+            {
+                return -1;
+            }
+        }
     }
 }
