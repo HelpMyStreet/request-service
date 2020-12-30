@@ -332,7 +332,8 @@ namespace RequestService.Repo.Helpers
             IEnumerable<SupportActivities> activites;
             IEnumerable<SupportActivities> genericSupportActivities = Enum.GetValues(typeof(SupportActivities)).Cast<SupportActivities>()
                 .Where(sa => sa != SupportActivities.WellbeingPackage && sa != SupportActivities.CommunityConnector
-                 && sa != SupportActivities.ColdWeatherArmy && sa != SupportActivities.Transport);
+                 && sa != SupportActivities.ColdWeatherArmy && sa != SupportActivities.Transport
+                 && sa != SupportActivities.Steward && sa != SupportActivities.FrontOfHouseAdmin && sa!= SupportActivities.HealthcareAssistant && sa != SupportActivities.BackOfficeAdmin);
 
             switch (form)
             {
