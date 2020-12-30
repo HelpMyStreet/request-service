@@ -220,7 +220,7 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants)
+            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public) && !x.Equals(RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter) && !x.Equals(RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter)))
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
@@ -293,6 +293,10 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
+                    //else if (activity == SupportActivities.MealsOnWheels)
+                    //{
+                    //    entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please be aware that information in this section is visible to prospective volunteers" });
+                    //}
                     else
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
@@ -311,7 +315,7 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.AgeUKReference, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
                     }
 
-                    if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask)
+                    if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask && form !=RequestHelpFormVariant.AgeUKSouthKentCoast_Public)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -333,7 +337,8 @@ namespace RequestService.Repo.Helpers
             IEnumerable<SupportActivities> genericSupportActivities = Enum.GetValues(typeof(SupportActivities)).Cast<SupportActivities>()
                 .Where(sa => sa != SupportActivities.WellbeingPackage && sa != SupportActivities.CommunityConnector
                  && sa != SupportActivities.ColdWeatherArmy && sa != SupportActivities.Transport
-                 && sa != SupportActivities.Steward && sa != SupportActivities.FrontOfHouseAdmin && sa!= SupportActivities.HealthcareAssistant && sa != SupportActivities.BackOfficeAdmin);
+                 && sa != SupportActivities.Steward && sa != SupportActivities.FrontOfHouseAdmin && sa!= SupportActivities.HealthcareAssistant && sa != SupportActivities.BackOfficeAdmin
+                 && sa != SupportActivities.MealsOnWheels && sa != SupportActivities.VolunteerSupport && sa != SupportActivities.MealtimeCompanion);
 
             switch (form)
             {
@@ -367,6 +372,18 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Shopping,
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKSouthKentCoast_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsOnWheels,
                         SupportActivities.Other
                     };
                     break;
