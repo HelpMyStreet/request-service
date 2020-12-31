@@ -220,7 +220,7 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public) && !x.Equals(RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter) ))
+            foreach (var form in requestFormVariants)
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
@@ -315,7 +315,9 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.AgeUKReference, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
                     }
 
-                    if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask && form !=RequestHelpFormVariant.AgeUKSouthKentCoast_Public && form != RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter)
+                    if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask 
+                        && form !=RequestHelpFormVariant.AgeUKSouthKentCoast_Public && form != RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter 
+                        && form != RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public && form !=RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -396,6 +398,29 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
                         SupportActivities.MealsOnWheels,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsOnWheels,
+                        SupportActivities.Transport,                        
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsOnWheels,
+                        SupportActivities.Transport,
                         SupportActivities.VolunteerSupport,
                         SupportActivities.Other
                     };
