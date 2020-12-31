@@ -317,7 +317,8 @@ namespace RequestService.Repo.Helpers
 
                     if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask 
                         && form !=RequestHelpFormVariant.AgeUKSouthKentCoast_Public && form != RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter 
-                        && form != RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public && form !=RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter)
+                        && form != RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public && form !=RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter
+                        && form != RequestHelpFormVariant.AgeUKNorthWestKent_Public && form != RequestHelpFormVariant.AgeUKNorthWestKent_RequestSubmitter)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -425,7 +426,27 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
-
+                case RequestHelpFormVariant.AgeUKNorthWestKent_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.MealsOnWheels,
+                        SupportActivities.Transport,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.AgeUKNorthWestKent_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.MealsOnWheels,
+                        SupportActivities.Transport,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
                 default: 
                     activites = genericSupportActivities; 
                     break;
