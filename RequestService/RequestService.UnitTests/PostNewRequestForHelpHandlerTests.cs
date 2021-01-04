@@ -14,6 +14,7 @@ using RequestService.Core.Dto;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -97,8 +98,8 @@ namespace RequestService.UnitTests
         private void SetupGroupService()
         {
             _groupService = new Mock<IGroupService>();
-            Dictionary<int, TaskAction> actions = new Dictionary<int, TaskAction>();
-            actions.Add(1, new TaskAction()
+            Dictionary<Guid, TaskAction> actions = new Dictionary<Guid, TaskAction>();
+            actions.Add(Guid.NewGuid(), new TaskAction()
             {
                 TaskActions = new Dictionary<NewTaskAction, List<int>>()
             });
@@ -169,9 +170,10 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            Guid guid = Guid.NewGuid();
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             Assert.AreEqual(Fulfillable.Accepted_DiyRequest, response.Fulfillable);
@@ -183,7 +185,10 @@ namespace RequestService.UnitTests
         {
             _validPostcode = true;
             _emailSent = true;
-       
+
+            Guid guid = Guid.NewGuid();
+
+
             var request = new PostNewRequestForHelpRequest
             {
                 HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
@@ -212,9 +217,9 @@ namespace RequestService.UnitTests
                     }
                 }
             };
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             await _classUnderTest.Handle(request, new CancellationToken());
             _communicationService.Verify(x => x.SendEmailToUsersAsync(It.IsAny<SendEmailToUsersRequest>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -267,6 +272,8 @@ namespace RequestService.UnitTests
             _validPostcode = true;
             _championCount = 0;
             _emailSent = true;
+
+            Guid guid = Guid.NewGuid();
             _getVolunteersByPostcodeAndActivityResponse = new GetVolunteersByPostcodeAndActivityResponse
             {
                 Volunteers = new List<VolunteerSummary>
@@ -305,10 +312,10 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.NotifyMatchingVolunteers, new List<int>() { 1 });
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.NotifyMatchingVolunteers, new List<int>() { 1 });
 
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
@@ -364,9 +371,11 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            Guid guid = Guid.NewGuid();
+
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -442,9 +451,11 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            Guid guid = Guid.NewGuid();
+
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);

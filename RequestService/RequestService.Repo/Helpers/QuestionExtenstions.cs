@@ -220,7 +220,8 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants)
+            foreach (var form in requestFormVariants.Where(r => r != RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public && r != RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter 
+                        && r != RequestHelpFormVariant.AgeUKSouthKentCoast_Public && r!= RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter ))
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
@@ -333,8 +334,8 @@ namespace RequestService.Repo.Helpers
             IEnumerable<SupportActivities> genericSupportActivities = Enum.GetValues(typeof(SupportActivities)).Cast<SupportActivities>()
                 .Where(sa => sa != SupportActivities.WellbeingPackage && sa != SupportActivities.CommunityConnector
                  && sa != SupportActivities.ColdWeatherArmy && sa != SupportActivities.Transport
-                 && sa != SupportActivities.FrontOfHouseAdmin && sa != SupportActivities.HealthcareAssistant && sa != SupportActivities.Steward && sa != SupportActivities.BackOfficeAdmin);
-
+                 && sa != SupportActivities.FrontOfHouseAdmin && sa != SupportActivities.HealthcareAssistant && sa != SupportActivities.Steward && sa != SupportActivities.BackOfficeAdmin
+                 && sa != SupportActivities.MealsOnWheels && sa != SupportActivities.VolunteerSupport && sa != SupportActivities.MealtimeCompanion);
             switch (form)
             {
                 case RequestHelpFormVariant.FtLOS:

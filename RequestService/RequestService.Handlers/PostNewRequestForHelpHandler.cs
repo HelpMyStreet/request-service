@@ -72,6 +72,12 @@ namespace RequestService.Handlers
                 };
             }
 
+            //add a guid for each job
+            foreach (Job j in request.NewJobsRequest.Jobs)
+            {
+                j.Guid = Guid.NewGuid();
+            };
+
             var formVariant = await _groupService.GetRequestHelpFormVariant(request.HelpRequest.ReferringGroupId, request.HelpRequest.Source, cancellationToken);
 
             if (formVariant == null)
@@ -155,11 +161,12 @@ namespace RequestService.Handlers
                     throw new Exception("Error in saving request");
                 }
 
-                foreach (int jobID in actions.Actions.Keys)
+                foreach (Guid guid in actions.Actions.Keys)
                 {
-                    foreach (NewTaskAction newTaskAction in actions.Actions[jobID].TaskActions.Keys)
+                    int jobID = GetJobIDFromGuid(request,guid);
+                    foreach (NewTaskAction newTaskAction in actions.Actions[guid].TaskActions.Keys)
                     {
-                        List<int> actionAppliesToIds = actions.Actions[jobID].TaskActions[newTaskAction];
+                        List<int> actionAppliesToIds = actions.Actions[guid].TaskActions[newTaskAction];
                         if (actionAppliesToIds == null) { continue; }
 
                         switch (newTaskAction)
@@ -210,7 +217,8 @@ namespace RequestService.Handlers
                             case NewTaskAction.SendRequestorConfirmation:
                                 Dictionary<string, string> additionalParameters = new Dictionary<string, string>
                             {
-                                { "PendingApproval", (!actions.Actions.Keys.Contains((int)NewTaskAction.SetStatusToOpen)).ToString() }
+                                //{ "PendingApproval", (!actions.Actions.Keys.Contains((int)NewTaskAction.SetStatusToOpen)).ToString() }
+                                { "PendingApproval", (!actions.Actions[guid].TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
                             };
                                 await _communicationService.RequestCommunication(new RequestCommunicationRequest()
                                 {
@@ -241,6 +249,19 @@ namespace RequestService.Handlers
                 throw exc;
             }
             return response;
+        }
+
+        private int GetJobIDFromGuid(PostNewRequestForHelpRequest request, Guid guid)
+        {
+            var job = request.NewJobsRequest.Jobs.FirstOrDefault(x => x.Guid == guid);
+            if(job != null)
+            {
+                return job.JobID;
+            }
+            else
+            {
+                throw new Exception($"Unable to Get Job ID From Guid {guid}");
+            }
         }
     }
 }
