@@ -220,7 +220,6 @@ namespace RequestService.Handlers
                             case NewTaskAction.SendRequestorConfirmation:
                                 Dictionary<string, string> additionalParameters = new Dictionary<string, string>
                             {
-                                //{ "PendingApproval", (!actions.Actions.Keys.Contains((int)NewTaskAction.SetStatusToOpen)).ToString() }
                                 { "PendingApproval", (!actions.Actions[guid].TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
                             };
                                 await _communicationService.RequestCommunication(new RequestCommunicationRequest()
