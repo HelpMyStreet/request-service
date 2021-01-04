@@ -10,13 +10,11 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using RequestService.Core.Config;
-using RequestService.Core.Dto;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +28,6 @@ namespace RequestService.UnitTests
         private Mock<IAddressService> _adddressService;
         private Mock<IGroupService> _groupService;
         private PostNewRequestForHelpHandler _classUnderTest;
-        private PostNewRequestForHelpRequest _request;
         private Mock<IOptionsSnapshot<ApplicationConfig>> _applicationConfig;
         private int requestId;
         private bool _validPostcode;
@@ -142,14 +139,15 @@ namespace RequestService.UnitTests
             requestId = 1;
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -158,10 +156,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -170,7 +169,7 @@ namespace RequestService.UnitTests
                 }
             };
 
-            Guid guid = Guid.NewGuid();
+           
             _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
             _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
             _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
@@ -191,13 +190,13 @@ namespace RequestService.UnitTests
 
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
                         EmailAddress = "test",
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -206,10 +205,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -236,12 +236,12 @@ namespace RequestService.UnitTests
 
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -249,9 +249,9 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
                             HealthCritical = true,
                             DueDays = 5,
@@ -287,12 +287,12 @@ namespace RequestService.UnitTests
             };
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -300,10 +300,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -327,6 +328,7 @@ namespace RequestService.UnitTests
         {
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
                 HelpRequest = new HelpRequest
@@ -347,6 +349,7 @@ namespace RequestService.UnitTests
                     {
                         new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -371,7 +374,7 @@ namespace RequestService.UnitTests
                 }
             };
 
-            Guid guid = Guid.NewGuid();
+           
 
             _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
             _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
@@ -396,6 +399,7 @@ namespace RequestService.UnitTests
             requestId = 1;
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
                 HelpRequest = new HelpRequest
@@ -417,6 +421,7 @@ namespace RequestService.UnitTests
                     {
                         new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -451,7 +456,7 @@ namespace RequestService.UnitTests
                 }
             };
 
-            Guid guid = Guid.NewGuid();
+            
 
             _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
             _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });

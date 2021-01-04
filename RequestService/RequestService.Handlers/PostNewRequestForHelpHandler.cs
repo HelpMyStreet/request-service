@@ -75,7 +75,10 @@ namespace RequestService.Handlers
             //add a guid for each job
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
-                j.Guid = Guid.NewGuid();
+                if (j.Guid == Guid.Empty)
+                {
+                    j.Guid = Guid.NewGuid();
+                }
             };
 
             var formVariant = await _groupService.GetRequestHelpFormVariant(request.HelpRequest.ReferringGroupId, request.HelpRequest.Source, cancellationToken);
