@@ -245,6 +245,10 @@ namespace RequestService.Handlers
                         Fulfillable = Fulfillable.Accepted_ManualReferral
                     };
                 }
+                else
+                {
+                    throw exc;
+                }
             }
             catch(Exception exc)
             {
