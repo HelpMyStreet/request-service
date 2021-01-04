@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201223130121_AddGuidToRequestTable")]
+    partial class AddGuidToRequestTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,7 +207,9 @@ namespace RequestService.Repo.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Order")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("PlaceholderText")
                         .HasColumnName("PlaceholderText")
@@ -5504,26 +5508,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 16,
                             Name = "Transport"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "FrontOfHouseAdmin"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "BackOfficeAdmin"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "HealthcareAssistant"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Steward"
                         });
                 });
 
@@ -5543,7 +5527,9 @@ namespace RequestService.Repo.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<byte>("DueDateTypeId")
-                        .HasColumnType("tinyint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)1);
 
                     b.Property<bool>("IsHealthCritical")
                         .HasColumnType("bit");

@@ -125,8 +125,8 @@ namespace RequestService.Repo
                 entity.Property(e => e.VolunteerUserId).HasColumnName("VolunteerUserID");
 
                 entity.Property(e => e.JobStatusId).HasColumnName("JobStatusID");
-
-                entity.Property(e => e.DueDateTypeId).HasDefaultValue(1);
+                
+                entity.Property(e => e.DueDateTypeId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.NewRequest)
                     .WithMany(p => p.Job)
@@ -229,6 +229,10 @@ namespace RequestService.Repo
             {
                 entity.ToTable("Request", "Request");
 
+                entity.HasIndex(e => e.Guid)
+                    .HasName("UC_Guid")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
@@ -236,6 +240,8 @@ namespace RequestService.Repo
                 entity.Property(e => e.DateRequested)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Guid).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.OtherDetails).IsUnicode(false);
                 entity.Property(e => e.OrganisationName).HasMaxLength(255).IsUnicode(false);
@@ -326,7 +332,7 @@ namespace RequestService.Repo
 
                 entity.Property(e => e.Order)
                 .IsRequired()
-                .HasDefaultValue(1);             
+                .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.ActivityQuestions)

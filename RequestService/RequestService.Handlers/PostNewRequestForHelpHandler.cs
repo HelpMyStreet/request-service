@@ -15,6 +15,7 @@ using RequestService.Core.Dto;
 using Newtonsoft.Json;
 using System;
 using HelpMyStreet.Utils.Models;
+using RequestService.Core.Exceptions;
 
 namespace RequestService.Handlers
 {
@@ -60,6 +61,26 @@ namespace RequestService.Handlers
         {
             PostNewRequestForHelpResponse response = new PostNewRequestForHelpResponse();
 
+            var requestId = await _repository.GetRequestIDFromGuid(request.HelpRequest.Guid);
+
+            if (requestId > 0)
+            {
+                return new PostNewRequestForHelpResponse()
+                {
+                    RequestID = requestId,
+                    Fulfillable = Fulfillable.Accepted_ManualReferral
+                };
+            }
+
+            //add a guid for each job
+            foreach (Job j in request.NewJobsRequest.Jobs)
+            {
+                if (j.Guid == Guid.Empty)
+                {
+                    j.Guid = Guid.NewGuid();
+                }
+            };
+
             var formVariant = await _groupService.GetRequestHelpFormVariant(request.HelpRequest.ReferringGroupId, request.HelpRequest.Source, cancellationToken);
 
             if (formVariant == null)
@@ -71,11 +92,11 @@ namespace RequestService.Handlers
                 };
             }
 
-            if(formVariant.AccessRestrictedByRole)
+            if (formVariant.AccessRestrictedByRole)
             {
                 bool failedChecks = request.HelpRequest.CreatedByUserId == 0;
 
-                if(!failedChecks)
+                if (!failedChecks)
                 {
                     var groupMember = await _groupService.GetGroupMember(new HelpMyStreet.Contracts.GroupService.Request.GetGroupMemberRequest()
                     {
@@ -107,7 +128,7 @@ namespace RequestService.Handlers
                 CopyRequestorAsRecipient(request);
             }
             string postcode = request.HelpRequest.Recipient.Address.Postcode;
-     
+
             var postcodeValid = await _addressService.IsValidPostcode(postcode, cancellationToken);
 
             if (!postcodeValid || postcode.Length > 10)
@@ -118,12 +139,9 @@ namespace RequestService.Handlers
                     Fulfillable = Fulfillable.Rejected_InvalidPostcode
                 };
             }
-            
+
             // Currently indicates standard "passed to volunteers" result
             response.Fulfillable = Fulfillable.Accepted_ManualReferral;
-
-            var result = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
-            response.RequestID = result;
 
             var actions = _groupService.GetNewRequestActions(new HelpMyStreet.Contracts.GroupService.Request.GetNewRequestActionsRequest()
             {
@@ -131,80 +149,125 @@ namespace RequestService.Handlers
                 NewJobsRequest = request.NewJobsRequest
             }, cancellationToken).Result;
 
-            if(actions==null)
+            if (actions == null)
             {
                 throw new Exception("No new request actions returned");
             }
 
-            foreach(int jobID in actions.Actions.Keys)
+            try
             {
-                foreach (NewTaskAction newTaskAction in actions.Actions[jobID].TaskActions.Keys)
+                var result = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+                response.RequestID = result;
+
+                if (response.RequestID == 0)
                 {
-                    List<int> actionAppliesToIds = actions.Actions[jobID].TaskActions[newTaskAction];
-                    if (actionAppliesToIds == null) { continue; }
+                    throw new Exception("Error in saving request");
+                }
 
-                    switch (newTaskAction)
+                foreach (Guid guid in actions.Actions.Keys)
+                {
+                    int jobID = GetJobIDFromGuid(request,guid);
+                    foreach (NewTaskAction newTaskAction in actions.Actions[guid].TaskActions.Keys)
                     {
-                        case NewTaskAction.MakeAvailableToGroups:
-                            foreach (int i in actionAppliesToIds)
-                            {
-                                await _repository.AddJobAvailableToGroupAsync(jobID, i, cancellationToken);
-                            }
-                            break;
+                        List<int> actionAppliesToIds = actions.Actions[guid].TaskActions[newTaskAction];
+                        if (actionAppliesToIds == null) { continue; }
 
-                        case NewTaskAction.NotifyMatchingVolunteers:
-                            foreach (int groupId in actionAppliesToIds)
-                            {
-                                bool commsSent = await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                        switch (newTaskAction)
+                        {
+                            case NewTaskAction.MakeAvailableToGroups:
+                                foreach (int i in actionAppliesToIds)
                                 {
-                                    GroupID = groupId,
-                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
-                                    JobID = jobID
-                                }, cancellationToken);
-                                await _repository.UpdateCommunicationSentAsync(response.RequestID, commsSent, cancellationToken);
-                            }
-                            break;
+                                    await _repository.AddJobAvailableToGroupAsync(jobID, i, cancellationToken);
+                                }
+                                break;
 
-                        case NewTaskAction.AssignToVolunteer:
-                            foreach (int userId in actionAppliesToIds)
-                            {
-                                await _repository.UpdateJobStatusInProgressAsync(jobID, request.HelpRequest.CreatedByUserId, userId, cancellationToken);
-                            }
+                            case NewTaskAction.NotifyMatchingVolunteers:
+                                foreach (int groupId in actionAppliesToIds)
+                                {
+                                    bool commsSent = await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                                    {
+                                        GroupID = groupId,
+                                        CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
+                                        JobID = jobID
+                                    }, cancellationToken);
+                                    await _repository.UpdateCommunicationSentAsync(response.RequestID, commsSent, cancellationToken);
+                                }
+                                break;
 
-                            // For now, this only happens with a DIY request
-                            response.Fulfillable = Fulfillable.Accepted_DiyRequest;
-                            break;
-                        case NewTaskAction.SetStatusToOpen:
-                            await _repository.UpdateJobStatusOpenAsync(jobID, -1, cancellationToken);
-                            break;
-                        case NewTaskAction.NotifyGroupAdmins:
-                            foreach (int groupId in actionAppliesToIds)
+                            case NewTaskAction.AssignToVolunteer:
+                                foreach (int userId in actionAppliesToIds)
+                                {
+                                    await _repository.UpdateJobStatusInProgressAsync(jobID, request.HelpRequest.CreatedByUserId, userId, cancellationToken);
+                                }
+
+                                // For now, this only happens with a DIY request
+                                response.Fulfillable = Fulfillable.Accepted_DiyRequest;
+                                break;
+                            case NewTaskAction.SetStatusToOpen:
+                                await _repository.UpdateJobStatusOpenAsync(jobID, -1, cancellationToken);
+                                break;
+                            case NewTaskAction.NotifyGroupAdmins:
+                                foreach (int groupId in actionAppliesToIds)
+                                {
+                                    await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                                    {
+                                        GroupID = groupId,
+                                        CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.NewTaskPendingApprovalNotification },
+                                        JobID = jobID
+                                    }, cancellationToken);
+                                }
+                                break;
+                            case NewTaskAction.SendRequestorConfirmation:
+                                Dictionary<string, string> additionalParameters = new Dictionary<string, string>
                             {
+                                { "PendingApproval", (!actions.Actions[guid].TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
+                            };
                                 await _communicationService.RequestCommunication(new RequestCommunicationRequest()
                                 {
-                                    GroupID = groupId,
-                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.NewTaskPendingApprovalNotification },
-                                    JobID = jobID
+                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
+                                    JobID = jobID,
+                                    AdditionalParameters = additionalParameters,
                                 }, cancellationToken);
-                            }
-                            break;
-                        case NewTaskAction.SendRequestorConfirmation:
-                            Dictionary<string, string> additionalParameters = new Dictionary<string, string>
-                            {
-                                { "PendingApproval", (!actions.Actions.Keys.Contains((int)NewTaskAction.SetStatusToOpen)).ToString() }
-                            };
-                            await _communicationService.RequestCommunication(new RequestCommunicationRequest()
-                            {
-                                CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
-                                JobID = jobID,
-                                AdditionalParameters = additionalParameters,
-                            }, cancellationToken);
-                            break;
+                                break;
+                        }
                     }
                 }
             }
-            
+            catch(DuplicateException exc)
+            {
+                requestId = await _repository.GetRequestIDFromGuid(request.HelpRequest.Guid);
+
+                if (requestId > 0)
+                {
+                    return new PostNewRequestForHelpResponse()
+                    {
+                        RequestID = requestId,
+                        Fulfillable = Fulfillable.Accepted_ManualReferral
+                    };
+                }
+                else
+                {
+                    throw exc;
+                }
+            }
+            catch(Exception exc)
+            {
+                throw exc;
+            }
             return response;
+        }
+
+        private int GetJobIDFromGuid(PostNewRequestForHelpRequest request, Guid guid)
+        {
+            var job = request.NewJobsRequest.Jobs.FirstOrDefault(x => x.Guid == guid);
+            if(job != null)
+            {
+                return job.JobID;
+            }
+            else
+            {
+                throw new Exception($"Unable to Get Job ID From Guid {guid}");
+            }
         }
     }
 }

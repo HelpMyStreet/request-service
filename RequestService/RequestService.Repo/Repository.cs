@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using SupportActivities = RequestService.Repo.EntityFramework.Entities.SupportActivities;
 using Microsoft.Data.SqlClient;
 using HelpMyStreet.Utils.Utils;
+using RequestService.Core.Domains;
+using RequestService.Core.Exceptions;
 
 namespace RequestService.Repo
 {
@@ -148,6 +150,7 @@ namespace RequestService.Repo
 
         public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
         {
+           
             Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
             Person recipient;
             
@@ -167,8 +170,9 @@ namespace RequestService.Repo
                     _context.Person.Add(requester);
                     _context.Person.Add(recipient);
 
-                    Request request = new Request()
+                    Request newRequest = new Request()
                     {
+                        Guid = postNewRequestForHelpRequest.HelpRequest.Guid,
                         ReadPrivacyNotice = postNewRequestForHelpRequest.HelpRequest.ReadPrivacyNotice,
                         SpecialCommunicationNeeds = postNewRequestForHelpRequest.HelpRequest.SpecialCommunicationNeeds,
                         AcceptedTerms = postNewRequestForHelpRequest.HelpRequest.AcceptedTerms,
@@ -190,7 +194,7 @@ namespace RequestService.Repo
 
                         EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
                         {
-                            NewRequest = request,
+                            NewRequest = newRequest,
                             Details = job.Details,
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
@@ -224,11 +228,17 @@ namespace RequestService.Repo
 
                     await _context.SaveChangesAsync();
                     transaction.Commit();
-                    return request.Id;
+
+                    return newRequest.Id;
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
-                    transaction.Rollback();
+                    if(exc.InnerException.Message.StartsWith("Cannot insert duplicate key row in object 'Request.Request' with unique index 'UC_Guid'"))
+                    {
+                        transaction.Rollback();
+                        throw new DuplicateException();
+                    }
+                    
                 }
             }
             throw new Exception("Unable to save request");
@@ -865,6 +875,21 @@ namespace RequestService.Repo
                 }
             }
             return response;
+        }
+
+        public async Task<int> GetRequestIDFromGuid(Guid guid)
+        {
+            //check if guid already exists
+            var request = _context.Request.FirstOrDefault(x => x.Guid == guid);
+
+            if (request != null)
+            {
+                return request.Id;
+            }
+            else
+            {
+                return -1;
+            }
         }
     }
 }
