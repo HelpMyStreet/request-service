@@ -133,15 +133,6 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
             });
-
-            entity.HasData(new Question
-            {
-                Id = (int) Questions.SpecialDietaryRequirements,
-                Name = "Are there any special dietary requirements?",
-                QuestionType = (int) QuestionType.MultiLineText,
-                AdditionalData = string.Empty,
-                AnswerContainsSensitiveData = false
-            });
         }
         private static string GetAdditionalData(Questions question)
         {
