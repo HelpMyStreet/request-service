@@ -110,9 +110,9 @@ namespace RequestService.Repo.Helpers
             });
             entity.HasData(new Question
             {
-                Id = (int) Questions.Shopping_List,
+                Id = (int)Questions.Shopping_List,
                 Name = "Please tell us what you need from the shop",
-                QuestionType = (int) QuestionType.MultiLineText,
+                QuestionType = (int)QuestionType.MultiLineText,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
             });
@@ -128,10 +128,19 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SensitiveInformation,
-                Name = "Is there any other personal or sensitive information the volunteer needs to know to complete the request?",                
+                Name = "Is there any other personal or sensitive information the volunteer needs to know to complete the request?",
                 QuestionType = (int)QuestionType.MultiLineText,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int) Questions.SpecialDietaryRequirements,
+                Name = "Are there any special dietary requirements?",
+                QuestionType = (int) QuestionType.MultiLineText,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
             });
         }
         private static string GetAdditionalData(Questions question)
