@@ -45,13 +45,7 @@ namespace RequestService.Repo.Migrations
                     { 1, "Before" },
                     { 3, "SpecificStartTime" }
                 });
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
-                table: "RequestFormVariant",
-                columns: new[] { "ID", "Name" },
-                values: new object[] { 12, "AgeUKNottsNorthMuskham" });
-
+           
             migrationBuilder.InsertData(
                 schema: "Lookup",
                 table: "RequestType",
@@ -3141,63 +3135,6 @@ namespace RequestService.Repo.Migrations
                 keyValues: new object[] { 16, 14, 8 },
                 column: "Order",
                 value: 3);
-
-            migrationBuilder.InsertData(
-                schema: "QuestionSet",
-                table: "ActivityQuestions",
-                columns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID", "Location", "Order", "PlaceholderText", "RequestFormStageID", "Required", "Subtext" },
-                values: new object[,]
-                {
-                    { 4, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 6, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 6, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 5, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 5, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 5, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 5, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 4, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 4, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 4, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 2, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 3, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 3, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 3, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 2, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 6, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 2, 10, 12, "details2", 2, "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 2, 13, 12, "pos1", 1, "Please give the name and address of the pharmacy, e.g. Boots Pharmacy, Victoria Centre, Nottingham.", 1, true, null },
-                    { 1, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 1, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 1, 10, 12, "details2", 2, "For example, any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 3, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 6, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 8, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 7, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 12, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 12, 5, 12, "pos3", 4, null, 1, false, "Volunteers are providing their time and skills free of charge." },
-                    { 12, 4, 12, "pos3", 3, null, 1, false, null },
-                    { 12, 3, 12, "pos3", 1, null, 1, true, "Remember they’re washable and reusable, so only request what you need between washes." },
-                    { 12, 2, 12, "pos2", 2, "Don’t forget to tell us how many of each size you need. If you have very specific style requirements it may take longer to find a volunteer to help with your request. Please don’t include personal information such as name or address in this box, we’ll ask for that later.", 1, false, "Size guide:<br />&nbsp;- Men’s (Small / Medium / Large)<br />&nbsp;- Ladies’ (Small / Medium / Large)<br />&nbsp;- Children’s (One Size - under 12)" },
-                    { 11, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 11, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 11, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 11, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 10, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 7, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 10, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 10, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 9, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 9, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 9, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 9, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 8, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 8, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 8, 1, 12, "pos1", 1, "Please don’t include any sensitive details that aren’t needed in order for us to help you", 1, false, null },
-                    { 7, 14, 12, "details2", 3, "For example, a door entry code, or contact details for a friend / relative / caregiver.", 2, false, "We will only share this information with a volunteer after they have accepted your request" },
-                    { 7, 6, 12, "pos3", 2, null, 1, true, null },
-                    { 10, 10, 12, "details2", 2, "For example, any special instructions for the volunteer.", 2, false, "This information will be visible to volunteers deciding whether to accept the request" },
-                    { 1, 12, 12, "pos1", 1, "For example, Hovis wholemeal bread, 2 pints semi-skimmed milk, 6 large eggs.", 1, true, "Make sure to include the size, brand, and any other important details" }
-                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
