@@ -2,10 +2,39 @@
 
 namespace RequestService.Repo.Migrations
 {
-    public partial class FixExcessiveMigrations : Migration
+    public partial class test : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<byte>(
+                name: "DueDateTypeId",
+                schema: "Request",
+                table: "Job",
+                nullable: false,
+                oldClrType: typeof(byte),
+                oldType: "tinyint",
+                oldDefaultValue: (byte)1);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Order",
+                schema: "QuestionSet",
+                table: "ActivityQuestions",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int",
+                oldDefaultValue: 1);
+
+            migrationBuilder.InsertData(
+                schema: "Lookup",
+                table: "SupportActivity",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 17, "FrontOfHouseAdmin" },
+                    { 18, "BackOfficeAdmin" },
+                    { 19, "HealthcareAssistant" },
+                    { 20, "Steward" }
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

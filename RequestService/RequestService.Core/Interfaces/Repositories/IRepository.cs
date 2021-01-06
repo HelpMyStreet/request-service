@@ -3,6 +3,7 @@ using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using RequestService.Core.Domains;
 using RequestService.Core.Dto;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+        Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
 
         List<ReportItem> GetDailyReport();
