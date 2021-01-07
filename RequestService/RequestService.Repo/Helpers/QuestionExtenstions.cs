@@ -133,6 +133,15 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
             });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.SpecialDietaryRequirements,
+                Name = "Are there any special dietary requirements?",
+                QuestionType = (int)QuestionType.MultiLineText,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
         }
         private static string GetAdditionalData(Questions question)
         {
@@ -291,6 +300,34 @@ namespace RequestService.Repo.Helpers
                             Required = false, 
                             PlaceholderText = "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
                             Subtext = subText_anythingElse
+                        });
+                    }
+                    else if (activity == SupportActivities.MealsOnWheels || activity == SupportActivities.MealtimeCompanion)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.SpecialDietaryRequirements,
+                            Location = "pos2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "e.g. vegetarian, vegan, food intolerances, smaller portion size etc.",
+                            Subtext = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions 
+                        { 
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
+                            QuestionId = (int)Questions.AnythingElseToTellUs, 
+                            Location = "details2", 
+                            Order = 2, 
+                            RequestFormVariantId = (int)form, 
+                            Required = false, 
+                            PlaceholderText = "For example, any special instructions for the volunteer.", 
+                            Subtext = subText_anythingElse 
                         });
                     }
                     else
