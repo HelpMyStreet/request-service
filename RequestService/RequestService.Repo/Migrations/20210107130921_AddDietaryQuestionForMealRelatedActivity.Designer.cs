@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210107130921_AddDietaryQuestionForMealRelatedActivity")]
+    partial class AddDietaryQuestionForMealRelatedActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3371,18 +3373,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 10,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 21,
                             QuestionId = 14,
                             RequestFormVariantId = 10,
                             Location = "details2",
@@ -3543,18 +3533,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 1,
                             Required = false,
                             Subtext = ""
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 11,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
@@ -4416,18 +4394,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 10,
-                            RequestFormVariantId = 13,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 13,
                             Location = "details2",
@@ -4448,18 +4414,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 1,
                             Required = false,
                             Subtext = ""
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 13,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
@@ -4629,18 +4583,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 10,
-                            RequestFormVariantId = 14,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4661,18 +4603,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 1,
                             Required = false,
                             Subtext = ""
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 14,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
@@ -4806,18 +4736,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 10,
-                            RequestFormVariantId = 15,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 15,
                             Location = "details2",
@@ -4838,18 +4756,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 1,
                             Required = false,
                             Subtext = ""
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 15,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
@@ -4983,18 +4889,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 10,
-                            RequestFormVariantId = 16,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5015,18 +4909,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 1,
                             Required = false,
                             Subtext = ""
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 10,
-                            RequestFormVariantId = 16,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
