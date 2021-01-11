@@ -10,12 +10,11 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using RequestService.Core.Config;
-using RequestService.Core.Dto;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +28,6 @@ namespace RequestService.UnitTests
         private Mock<IAddressService> _adddressService;
         private Mock<IGroupService> _groupService;
         private PostNewRequestForHelpHandler _classUnderTest;
-        private PostNewRequestForHelpRequest _request;
         private Mock<IOptionsSnapshot<ApplicationConfig>> _applicationConfig;
         private int requestId;
         private bool _validPostcode;
@@ -97,8 +95,8 @@ namespace RequestService.UnitTests
         private void SetupGroupService()
         {
             _groupService = new Mock<IGroupService>();
-            Dictionary<int, TaskAction> actions = new Dictionary<int, TaskAction>();
-            actions.Add(1, new TaskAction()
+            Dictionary<Guid, TaskAction> actions = new Dictionary<Guid, TaskAction>();
+            actions.Add(Guid.NewGuid(), new TaskAction()
             {
                 TaskActions = new Dictionary<NewTaskAction, List<int>>()
             });
@@ -138,16 +136,18 @@ namespace RequestService.UnitTests
         [Test]
         public async Task WhenIPostDiyRequest_FullfiableStatusGetSetToDiy()
         {
+            requestId = 1;
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -156,10 +156,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -168,9 +169,10 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+           
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             Assert.AreEqual(Fulfillable.Accepted_DiyRequest, response.Fulfillable);
@@ -182,16 +184,19 @@ namespace RequestService.UnitTests
         {
             _validPostcode = true;
             _emailSent = true;
-       
+
+            Guid guid = Guid.NewGuid();
+
+
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
                         EmailAddress = "test",
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -200,10 +205,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -211,9 +217,9 @@ namespace RequestService.UnitTests
                     }
                 }
             };
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             await _classUnderTest.Handle(request, new CancellationToken());
             _communicationService.Verify(x => x.SendEmailToUsersAsync(It.IsAny<SendEmailToUsersRequest>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -230,12 +236,12 @@ namespace RequestService.UnitTests
 
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -243,9 +249,9 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
                             HealthCritical = true,
                             DueDays = 5,
@@ -266,6 +272,8 @@ namespace RequestService.UnitTests
             _validPostcode = true;
             _championCount = 0;
             _emailSent = true;
+
+            Guid guid = Guid.NewGuid();
             _getVolunteersByPostcodeAndActivityResponse = new GetVolunteersByPostcodeAndActivityResponse
             {
                 Volunteers = new List<VolunteerSummary>
@@ -279,12 +287,12 @@ namespace RequestService.UnitTests
             };
             var request = new PostNewRequestForHelpRequest
             {
-                HelpRequest = new HelpMyStreet.Utils.Models.HelpRequest
+                HelpRequest = new HelpRequest
                 {
                     RequestorType = RequestorType.Myself,
-                    Requestor = new HelpMyStreet.Utils.Models.RequestPersonalDetails
+                    Requestor = new RequestPersonalDetails
                     {
-                        Address = new HelpMyStreet.Utils.Models.Address
+                        Address = new Address
                         {
                             Postcode = "test",
                         }
@@ -292,10 +300,11 @@ namespace RequestService.UnitTests
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
-                    Jobs = new List<HelpMyStreet.Utils.Models.Job>
+                    Jobs = new List<Job>
                     {
-                        new HelpMyStreet.Utils.Models.Job
+                        new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -304,10 +313,10 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.NotifyMatchingVolunteers, new List<int>() { 1 });
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.NotifyMatchingVolunteers, new List<int>() { 1 });
 
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
@@ -319,6 +328,7 @@ namespace RequestService.UnitTests
         {
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
                 HelpRequest = new HelpRequest
@@ -339,6 +349,7 @@ namespace RequestService.UnitTests
                     {
                         new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -363,9 +374,11 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+           
+
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -383,8 +396,10 @@ namespace RequestService.UnitTests
         [TestCase(0, GroupRoles.Member, Fulfillable.Rejected_Unauthorised, 0)]
         public async Task WhenAccessRestrictedByRole_ReturnsCorrectResponse(int createdByUserId, GroupRoles role, Fulfillable fulfillable, int timesGroupMemberCalled)
         {
+            requestId = 1;
             _validPostcode = true;
             _emailSent = true;
+            Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
                 HelpRequest = new HelpRequest
@@ -406,6 +421,7 @@ namespace RequestService.UnitTests
                     {
                         new Job
                         {
+                            Guid = guid,
                             HealthCritical = true,
                             DueDays = 5,
                             SupportActivity = SupportActivities.Shopping
@@ -440,9 +456,11 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<int, TaskAction>() };
-            _getNewRequestActionsResponse.Actions.Add(0, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[0].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            
+
+            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>() };
+            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);

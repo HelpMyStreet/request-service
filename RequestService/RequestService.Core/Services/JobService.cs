@@ -78,7 +78,12 @@ namespace RequestService.Core.Services
               
             volunteerPostCode = PostcodeFormatter.FormatPostcode(volunteerPostCode);
 
-            List<string> distinctPostCodes = jobHeaders.Select(d => d.PostCode).Distinct().Select(x => PostcodeFormatter.FormatPostcode(x)).ToList();
+            foreach (JobHeader jobHeader in jobHeaders)
+            {
+                jobHeader.PostCode = PostcodeFormatter.FormatPostcode(jobHeader.PostCode);
+            }
+
+            List<string> distinctPostCodes = jobHeaders.Select(d => d.PostCode).Distinct().ToList();
 
             if (!distinctPostCodes.Contains(volunteerPostCode))
             {
@@ -104,6 +109,10 @@ namespace RequestService.Core.Services
                 if (jobPostcodeCoordinates != null)
                 {
                     jobHeader.DistanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
+                }
+                else
+                {
+                    jobHeader.DistanceInMiles = double.MaxValue;
                 }
             }
             return jobHeaders;

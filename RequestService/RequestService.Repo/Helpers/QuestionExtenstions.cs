@@ -110,9 +110,9 @@ namespace RequestService.Repo.Helpers
             });
             entity.HasData(new Question
             {
-                Id = (int) Questions.Shopping_List,
+                Id = (int)Questions.Shopping_List,
                 Name = "Please tell us what you need from the shop",
-                QuestionType = (int) QuestionType.MultiLineText,
+                QuestionType = (int)QuestionType.MultiLineText,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
             });
@@ -128,10 +128,19 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SensitiveInformation,
-                Name = "Is there any other personal or sensitive information the volunteer needs to know to complete the request?",                
+                Name = "Is there any other personal or sensitive information the volunteer needs to know to complete the request?",
                 QuestionType = (int)QuestionType.MultiLineText,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.SpecialDietaryRequirements,
+                Name = "Are there any special dietary requirements?",
+                QuestionType = (int)QuestionType.MultiLineText,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
             });
         }
         private static string GetAdditionalData(Questions question)
@@ -293,6 +302,34 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
+                    else if (activity == SupportActivities.MealsToYourDoor || activity == SupportActivities.MealtimeCompanion)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.SpecialDietaryRequirements,
+                            Location = "pos2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "e.g. vegetarian, vegan, food intolerances, smaller portion size etc.",
+                            Subtext = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions 
+                        { 
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
+                            QuestionId = (int)Questions.AnythingElseToTellUs, 
+                            Location = "details2", 
+                            Order = 2, 
+                            RequestFormVariantId = (int)form, 
+                            Required = false, 
+                            PlaceholderText = "For example, any special instructions for the volunteer.", 
+                            Subtext = subText_anythingElse 
+                        });
+                    }
                     else
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
@@ -311,7 +348,8 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.AgeUKReference, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
                     }
 
-                    if (form != RequestHelpFormVariant.HLP_CommunityConnector && form != RequestHelpFormVariant.Ruddington && form != RequestHelpFormVariant.AgeUKWirral && form != RequestHelpFormVariant.VitalsForVeterans && activity != SupportActivities.FaceMask)
+                    if ((form  == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks 
+                        || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -327,12 +365,30 @@ namespace RequestService.Repo.Helpers
             }
         }
 
+        private static IEnumerable<SupportActivities> GetGenericSupportActivities()
+        {
+            IEnumerable<SupportActivities> activites = new List<SupportActivities>()
+            {
+                SupportActivities.CheckingIn,
+                SupportActivities.CollectingPrescriptions,
+                SupportActivities.DogWalking,
+                SupportActivities.Errands,
+                SupportActivities.FaceMask,
+                SupportActivities.HomeworkSupport,
+                SupportActivities.MealPreparation,
+                SupportActivities.MedicalAppointmentTransport,
+                SupportActivities.Other,
+                SupportActivities.PhoneCalls_Anxious,
+                SupportActivities.PhoneCalls_Friendly,
+                SupportActivities.Shopping
+            };
+            return activites;
+        }
+
         private static IEnumerable<SupportActivities> GetSupportActivitiesForRequestFormVariant(RequestHelpFormVariant form)
         {
             IEnumerable<SupportActivities> activites;
-            IEnumerable<SupportActivities> genericSupportActivities = Enum.GetValues(typeof(SupportActivities)).Cast<SupportActivities>()
-                .Where(sa => sa != SupportActivities.WellbeingPackage && sa != SupportActivities.CommunityConnector
-                 && sa != SupportActivities.ColdWeatherArmy && sa != SupportActivities.Transport);
+            IEnumerable<SupportActivities> genericSupportActivities = GetGenericSupportActivities();
 
             switch (form)
             {
@@ -370,6 +426,70 @@ namespace RequestService.Repo.Helpers
                     };
                     break;
 
+                case RequestHelpFormVariant.AgeUKSouthKentCoast_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsToYourDoor,
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKSouthKentCoast_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsToYourDoor,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsToYourDoor,                        
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeUKFavershamAndSittingbourne_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.MealtimeCompanion,
+                        SupportActivities.MealsToYourDoor,                        
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.AgeUKNorthWestKent_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.MealsToYourDoor,                        
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.AgeUKNorthWestKent_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.MealsToYourDoor,                        
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
                 default: 
                     activites = genericSupportActivities; 
                     break;
