@@ -456,8 +456,7 @@ namespace RequestService.Repo.Helpers
                     {
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,
-                        SupportActivities.Transport,                        
+                        SupportActivities.MealsOnWheels,                        
                         SupportActivities.Other
                     };
                     break;
@@ -467,8 +466,7 @@ namespace RequestService.Repo.Helpers
                     {
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,
-                        SupportActivities.Transport,
+                        SupportActivities.MealsOnWheels,                        
                         SupportActivities.VolunteerSupport,
                         SupportActivities.Other
                     };
@@ -476,8 +474,7 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.AgeUKNorthWestKent_Public:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.MealsOnWheels,
-                        SupportActivities.Transport,
+                        SupportActivities.MealsOnWheels,                        
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.Other
@@ -486,8 +483,7 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.AgeUKNorthWestKent_RequestSubmitter:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.MealsOnWheels,
-                        SupportActivities.Transport,
+                        SupportActivities.MealsOnWheels,                        
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.VolunteerSupport,
