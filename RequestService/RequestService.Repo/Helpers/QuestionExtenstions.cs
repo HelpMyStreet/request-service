@@ -302,7 +302,7 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
-                    else if (activity == SupportActivities.MealsOnWheels || activity == SupportActivities.MealtimeCompanion)
+                    else if (activity == SupportActivities.MealsToYourDoor || activity == SupportActivities.MealtimeCompanion)
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -433,7 +433,7 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,
+                        SupportActivities.MealsToYourDoor,
                         SupportActivities.Other
                     };
                     break;
@@ -445,7 +445,7 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,
+                        SupportActivities.MealsToYourDoor,
                         SupportActivities.VolunteerSupport,
                         SupportActivities.Other
                     };
@@ -456,7 +456,7 @@ namespace RequestService.Repo.Helpers
                     {
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,                        
+                        SupportActivities.MealsToYourDoor,                        
                         SupportActivities.Other
                     };
                     break;
@@ -466,7 +466,7 @@ namespace RequestService.Repo.Helpers
                     {
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.MealtimeCompanion,
-                        SupportActivities.MealsOnWheels,                        
+                        SupportActivities.MealsToYourDoor,                        
                         SupportActivities.VolunteerSupport,
                         SupportActivities.Other
                     };
@@ -474,7 +474,7 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.AgeUKNorthWestKent_Public:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.MealsOnWheels,                        
+                        SupportActivities.MealsToYourDoor,                        
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.Other
@@ -483,7 +483,7 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.AgeUKNorthWestKent_RequestSubmitter:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.MealsOnWheels,                        
+                        SupportActivities.MealsToYourDoor,                        
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
                         SupportActivities.VolunteerSupport,
