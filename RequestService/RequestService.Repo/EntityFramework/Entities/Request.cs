@@ -35,11 +35,14 @@ namespace RequestService.Repo.EntityFramework.Entities
         public string Source { get; set; }
         public bool? Archive { get; set; }
 
+        public byte RequestType { get; set; }
+
         public bool RequestorDefinedByGroup { get; set; }
         public Guid Guid { get; set; }
         public virtual Person PersonIdRecipientNavigation { get; set; }
         public virtual Person PersonIdRequesterNavigation { get; set; }
 
+        public virtual Shift Shift { get; set; }
         public virtual PersonalDetails PersonalDetails { get; set; }
         public virtual ICollection<SupportActivities> SupportActivities { get; set; }
         public virtual ICollection<Job> Job { get; set; }

@@ -42,7 +42,9 @@ namespace RequestService.Repo
         public virtual DbSet<EnumQuestionTypes> EnumQuestionTypes { get; set; }
         public virtual DbSet<EnumRequestFormStages> EnumRequestFormStages { get; set; }
         public virtual DbSet<EnumQuestions> EnumQuestions { get; set; }
-
+        public virtual DbSet<EnumRequestTypes> EnumRequestTypes { get; set; }
+        public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
+        public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<QueryJobHeader> JobHeader { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -55,6 +57,23 @@ namespace RequestService.Repo
 
             modelBuilder.Entity<DailyReport>().HasNoKey().ToQuery(() => DailyReport.FromSqlRaw("TwoHourlyReport"));
 
+            modelBuilder.Entity<Shift>(entity =>
+            {
+                entity.HasKey(e => e.RequestId);
+
+                entity.ToTable("Shift", "Request");
+
+                entity.Property(e => e.RequestId).ValueGeneratedNever();
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Request)
+                    .WithOne(p => p.Shift)
+                    .HasForeignKey<Shift>(d => d.RequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Shift_RequestID");
+            });
+
             modelBuilder.Entity<EnumSupportActivities>(entity =>
             {
                 entity.ToTable("SupportActivity", "Lookup");
@@ -62,6 +81,24 @@ namespace RequestService.Repo
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.SetEnumSupportActivityData();
+            });
+
+            modelBuilder.Entity<EnumDueDateTypes>(entity =>
+            {
+                entity.ToTable("DueDateType", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumDueDateTypeData();
+            });
+
+            modelBuilder.Entity<EnumRequestTypes>(entity =>
+            {
+                entity.ToTable("RequestType", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumRequestTypeData();
             });
 
             modelBuilder.Entity<EnumJobStatuses>(entity =>
