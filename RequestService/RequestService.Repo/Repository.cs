@@ -982,6 +982,7 @@ namespace RequestService.Repo
                 response.ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
                 {
                     ID = d.Id,
+                    VolunteerUserID = d.VolunteerUserId,
                     Activity = (HelpMyStreet.Utils.Enums.SupportActivities) d.SupportActivityId,
                     JobStatuses = (JobStatuses) d.JobStatusId
                 }).ToList();
@@ -1075,7 +1076,6 @@ namespace RequestService.Repo
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength
             }).ToList();
-        }
         }
 
         public async Task<int> GetRequestIDFromGuid(Guid guid)

@@ -31,7 +31,7 @@ namespace RequestService.AzureFunction
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetRequestDetailsResponse))]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
-            [RequestBodyType(typeof(GetJobDetailsRequest), "Get request details request")] GetRequestDetailsRequest req,
+            [RequestBodyType(typeof(GetRequestDetailsRequest), "Get request details request")] GetRequestDetailsRequest req,
             CancellationToken cancellationToken)
         {
             try
