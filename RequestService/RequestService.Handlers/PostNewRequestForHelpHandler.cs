@@ -169,8 +169,7 @@ namespace RequestService.Handlers
                     int jobID = GetJobIDFromGuid(request,guid);
                     foreach (NewTaskAction newTaskAction in actions.Actions[guid].TaskActions.Keys)
                     {
-                        List<int> actionAppliesToIds = actions.Actions[guid].TaskActions[newTaskAction];
-                        if (actionAppliesToIds == null) { continue; }
+                        List<int> actionAppliesToIds = actions.Actions[guid].TaskActions[newTaskAction];                        
 
                         switch (newTaskAction)
                         {
