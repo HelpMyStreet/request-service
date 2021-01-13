@@ -34,8 +34,7 @@ namespace RequestService.Handlers
                         Location = HelpMyStreet.Utils.Enums.Location.Location1,
                         JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.Open,
                         StartDate = new System.DateTime(2021,1,20),
-                        ShiftLength = 240,
-                        EndDate = new System.DateTime(2021,1,20).AddMinutes(240)
+                        ShiftLength = 240                       
                     },
                     new ShiftJob()
                     {
@@ -46,8 +45,7 @@ namespace RequestService.Handlers
                         Location = HelpMyStreet.Utils.Enums.Location.Location1,
                         JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.Open,
                         StartDate = new System.DateTime(2021,1,20),
-                        ShiftLength = 240,
-                        EndDate = new System.DateTime(2021,1,20).AddMinutes(240)
+                        ShiftLength = 240
                     }
                 }
             };
@@ -55,29 +53,19 @@ namespace RequestService.Handlers
 
         public async Task<GetUserShiftJobsByFilterResponse> Handle(GetUserShiftJobsByFilterRequest request, CancellationToken cancellationToken)
         {
-            return DummyResponse();
-            //GetUserShiftJobsByFilterResponse response = null;
+            //return DummyResponse();
+            GetUserShiftJobsByFilterResponse response = null;
 
-            //var shifts = _repository.GetUserShifts(request);
+            var shiftjobs = _repository.GetUserShiftJobsByFilter(request);
 
-            //if(shifts != null)
-            //{
-            //    response = new GetUserShiftsResponse()
-            //    {
-            //        Shifts = shifts
-            //    };
-            //}
-
-            //if (request.UserID != ADMIN_USERID)
-            //{
-            //    hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.UserID, true, cancellationToken);
-            //}
-
-            //if (hasPermission)
-            //{
-            //    response = _repository.GetJobDetails(request.JobID);
-            //}
-            //return response;
+            if (shiftjobs != null)
+            {
+                response = new GetUserShiftJobsByFilterResponse()
+                {
+                    ShiftJobs = shiftjobs
+                };
+            }
+            return response;
         }
     }
 }

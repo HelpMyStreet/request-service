@@ -1043,41 +1043,6 @@ namespace RequestService.Repo
             }
         }
 
-        //public List<HelpMyStreet.Utils.Models.Shift> GetUserShifts(GetUserShiftsRequest request)
-        //{
-
-        //    var jobs = _context.Job
-        //        .Include(i => i.NewRequest)
-        //        .ThenInclude(i => i.Shift)
-        //        .Where(x => x.VolunteerUserId == request.VolunteerUserId).ToList();
-
-        //    if(jobs==null || jobs.Count==0)
-        //    {
-        //        return null;
-        //    }
-
-        //    if(request.JobStatusRequest.JobStatuses.Count>0)
-        //    {
-        //        jobs = jobs.Where(x => request.JobStatusRequest.JobStatuses.Contains((JobStatuses)x.JobStatusId)).ToList();
-        //    };
-            
-        //    if(request.DateFrom.HasValue)
-        //    {
-        //        jobs = jobs.Where(x => x.NewRequest.Shift.StartDate == request.DateFrom.Value).ToList();
-        //    }
-
-        //    if (request.DateTo.HasValue)
-        //    {
-        //        jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) == request.DateTo.Value).ToList();
-        //    }
-
-        //    return jobs.Select(x=> new HelpMyStreet.Utils.Models.Shift()
-        //    {
-        //        StartDate = x.NewRequest.Shift.StartDate,
-        //        ShiftLength = x.NewRequest.Shift.ShiftLength
-        //    }).ToList();
-        //}
-
         public async Task<int> GetRequestIDFromGuid(Guid guid)
         {
             //check if guid already exists
@@ -1091,6 +1056,46 @@ namespace RequestService.Repo
             {
                 return -1;
             }
+        }
+
+        public List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request)
+        {
+            byte requestTypeShift = (byte)RequestType.Shift;
+            var jobs = _context.Job
+                .Include(i => i.NewRequest)
+                .ThenInclude(i => i.Shift)
+                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift).ToList();
+
+            if (jobs == null || jobs.Count == 0)
+            {
+                return null;
+            }
+
+            if (request.JobStatusRequest.JobStatuses.Count > 0)
+            {
+                jobs = jobs.Where(x => request.JobStatusRequest.JobStatuses.Contains((JobStatuses)x.JobStatusId)).ToList();
+            };
+
+            if (request.DateFrom.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate >= request.DateFrom.Value).ToList();
+            }
+
+            if (request.DateTo.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) <= request.DateTo.Value).ToList();
+            }
+
+            return jobs.Select(x => new ShiftJob()
+            {
+                JobID = x.Id,
+                RequestID = x.NewRequest.Id,
+                Activity = (HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId,
+                JobStatuses = (JobStatuses) x.JobStatusId,
+                StartDate = x.NewRequest.Shift.StartDate,
+                ShiftLength = x.NewRequest.Shift.ShiftLength,
+                VolunteerUserID = x.VolunteerUserId                
+            }).ToList();
         }
     }
 }
