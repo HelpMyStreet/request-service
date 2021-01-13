@@ -14,6 +14,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateShiftStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
