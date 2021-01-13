@@ -39,13 +39,13 @@ namespace RequestService.UnitTests
                 {
                     new HelpMyStreet.Utils.Models.ShiftJobSummary()
                     {
-                        ID = 1,
+                        JobID = 1,
                         Activity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
                         JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
                     },
                     new HelpMyStreet.Utils.Models.ShiftJobSummary()
                     {
-                        ID = 1,
+                        JobID = 1,
                         Activity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
                         JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
                     }
