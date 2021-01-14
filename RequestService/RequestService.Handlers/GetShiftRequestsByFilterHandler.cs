@@ -23,15 +23,15 @@ namespace RequestService.Handlers
         {
             GetShiftRequestsByFilterResponse response = null;
 
-            //var shiftjobs = _repository.GetOpenShiftJobsByFilter(request);
+            var shiftRequests = _repository.GetShiftRequestsByFilter(request);
 
-            //if (shiftjobs != null)
-            //{
-            //    response = new GetShiftRequestsByFilterResponse()
-            //    {
-            //        ShiftJobs = shiftjobs
-            //    };
-            //}
+            if (shiftRequests != null)
+            {
+                response = new GetShiftRequestsByFilterResponse()
+                {
+                    ShiftRequests = shiftRequests
+                };
+            }
             return response;
         }
     }
