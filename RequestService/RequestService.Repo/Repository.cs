@@ -1100,12 +1100,12 @@ namespace RequestService.Repo
 
             if (request.DateFrom.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate >= request.DateFrom.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value).ToList();
             }
 
             if (request.DateTo.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) <= request.DateTo.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value).ToList();
             }
 
             return jobs.Select(x => new ShiftJob()
@@ -1133,7 +1133,7 @@ namespace RequestService.Repo
 
             if (jobs == null || jobs.Count == 0)
             {
-                return null;
+                return new List<ShiftJob>();
             }
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
