@@ -111,7 +111,6 @@ namespace RequestService.Handlers
                 foreach (NewTaskAction newTaskAction in actions.TaskActions.Keys)
                 {
                     List<int> actionAppliesToIds = actions.TaskActions[newTaskAction];
-                    if (actionAppliesToIds == null) { continue; }
 
                     switch (newTaskAction)
                     {
