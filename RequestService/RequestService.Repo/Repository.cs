@@ -972,20 +972,21 @@ namespace RequestService.Repo
 
             if(requests != null)
             {
-                response.Shift = new HelpMyStreet.Utils.Models.Shift()
+                response.ShiftRequest = new ShiftRequest()
                 {
-                    StartDate = requests.Shift.StartDate,
-                    ShiftLength = requests.Shift.ShiftLength
+                    Shift = new HelpMyStreet.Utils.Models.Shift()
+                    {
+                        StartDate = requests.Shift.StartDate,
+                        ShiftLength = requests.Shift.ShiftLength
+                    },
+                    ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
+                    {
+                        JobID = d.Id,
+                        VolunteerUserID = d.VolunteerUserId,
+                        Activity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
+                        JobStatuses = (JobStatuses)d.JobStatusId
+                    }).ToList()
                 };
-                response.ShiftJobSummaries = new List<ShiftJobSummary>();
-
-                response.ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
-                {
-                    JobID = d.Id,
-                    VolunteerUserID = d.VolunteerUserId,
-                    Activity = (HelpMyStreet.Utils.Enums.SupportActivities) d.SupportActivityId,
-                    JobStatuses = (JobStatuses) d.JobStatusId
-                }).ToList();
             }
 
             return response;
@@ -1014,7 +1015,7 @@ namespace RequestService.Repo
             }
             else
             {
-                throw new Exception($"Unable to UpdateShiftStatus for RequestID { requestID}");
+                throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID { requestID}");
             }
 
         }
@@ -1066,9 +1067,14 @@ namespace RequestService.Repo
                 .ThenInclude(i => i.Shift)
                 .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift).ToList();
 
-            if (jobs == null || jobs.Count == 0)
+            if (jobs == null)
             {
-                return null;
+                throw new Exception($"GetUserShiftJobsByFilter returned null for user id {request.VolunteerUserId}");
+            }
+
+            if (jobs.Count == 0)
+            {
+                return new List<ShiftJob>();
             }
 
             if (request.JobStatusRequest.JobStatuses.Count > 0)
@@ -1078,12 +1084,12 @@ namespace RequestService.Repo
 
             if (request.DateFrom.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate >= request.DateFrom.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value).ToList();
             }
 
             if (request.DateTo.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) <= request.DateTo.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value).ToList();
             }
 
             return jobs.Select(x => new ShiftJob()

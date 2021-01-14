@@ -30,25 +30,28 @@ namespace RequestService.UnitTests
             _classUnderTest = new GetRequestDetailsHandler(_repository.Object,_jobService.Object);
             _response = new GetRequestDetailsResponse()
             {
-                Shift = new HelpMyStreet.Utils.Models.Shift()
+                ShiftRequest = new HelpMyStreet.Utils.Models.ShiftRequest()
                 {
-                    StartDate = DateTime.Now,
-                    ShiftLength = 10
-                },
-                ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.ShiftJobSummary>()
-                {
-                    new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                    Shift = new HelpMyStreet.Utils.Models.Shift()
                     {
-                        JobID = 1,
-                        Activity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
-                        JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                        StartDate = DateTime.Now,
+                        ShiftLength = 10
                     },
-                    new HelpMyStreet.Utils.Models.ShiftJobSummary()
-                    {
-                        JobID = 1,
-                        Activity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
-                        JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
-                    }
+                    ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.ShiftJobSummary>()
+                     {
+                         new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                        {
+                            JobID = 1,
+                            Activity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
+                            JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                         },
+                        new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                        {
+                            JobID = 1,
+                            Activity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
+                            JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                        }
+                     }
                 }
             };
         }
