@@ -14,6 +14,10 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
+        int UpdateShiftStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
+        Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
+        
         Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken);
         Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
