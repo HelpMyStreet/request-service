@@ -37,19 +37,19 @@ namespace RequestService.UnitTests
                         StartDate = DateTime.Now,
                         ShiftLength = 10
                     },
-                    ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.ShiftJobSummary>()
+                    ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobBasic>()
                      {
-                         new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                         new HelpMyStreet.Utils.Models.JobBasic()
                         {
                             JobID = 1,
-                            Activity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
-                            JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                            SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
+                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
                          },
-                        new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                        new HelpMyStreet.Utils.Models.JobBasic()
                         {
                             JobID = 1,
-                            Activity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
-                            JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                            SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
+                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
                         }
                      }
                 }

@@ -995,12 +995,13 @@ namespace RequestService.Repo
                         StartDate = requests.Shift.StartDate,
                         ShiftLength = requests.Shift.ShiftLength
                     },
-                    ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
+                    ShiftJobSummaries = requests.Job.Select(d => new JobBasic()
                     {
+                        ReferringGroupID = requests.ReferringGroupId,
                         JobID = d.Id,
                         VolunteerUserID = d.VolunteerUserId,
-                        Activity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
-                        JobStatuses = (JobStatuses)d.JobStatusId
+                        SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
+                        JobStatus = (JobStatuses)d.JobStatusId
                     }).ToList()
                 };
             }
@@ -1110,10 +1111,11 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
-                Activity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
-                JobStatuses = (JobStatuses)x.JobStatusId,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
                 VolunteerUserID = x.VolunteerUserId
@@ -1173,10 +1175,11 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
-                Activity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
-                JobStatuses = (JobStatuses)x.JobStatusId,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
                 VolunteerUserID = x.VolunteerUserId
