@@ -10,6 +10,7 @@ using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
 using System.Collections.Generic;
 using System.Linq;
+using RequestService.Core.Exceptions;
 
 namespace RequestService.Handlers
 {
@@ -33,9 +34,9 @@ namespace RequestService.Handlers
                 JobID = -1
             };
 
-            int existingJobId = await _repository.VolunteerAlreadyAcceptedShift(request.RequestID, request.SupportActivity.SupportActivities.First(), request.VolunteerUserID, cancellationToken);
+            int existingJobId = await _repository.VolunteerAlreadyAcceptedShift(request.RequestID, request.SupportActivity.SupportActivity, request.VolunteerUserID, cancellationToken);
 
-            if (existingJobId>0)
+            if (existingJobId > 0)
             {
                 response = new PutUpdateShiftStatusToAcceptedResponse()
                 {
@@ -45,15 +46,26 @@ namespace RequestService.Handlers
                 return response;
             }
             else
-            {
-                var jobId = _repository.UpdateShiftStatusToAccepted(request.RequestID, request.SupportActivity.SupportActivities.First(), request.CreatedByUserID,  request.VolunteerUserID, cancellationToken);
+            {                
+                try
+                {
+                    var jobId = _repository.UpdateShiftStatusToAccepted(request.RequestID, request.SupportActivity.SupportActivity, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
 
-                if (jobId > 0)
+                    if (jobId > 0)
+                    {
+                        return new PutUpdateShiftStatusToAcceptedResponse()
+                        {
+                            JobID = jobId,
+                            Outcome = UpdateJobStatusOutcome.Success
+                        };
+                    }
+                }
+                catch (UnableToUpdateShiftException)
                 {
                     return new PutUpdateShiftStatusToAcceptedResponse()
                     {
-                        JobID = jobId,
-                        Outcome = UpdateJobStatusOutcome.Success
+                        Outcome = UpdateJobStatusOutcome.NoLongerAvailable,
+                        JobID = -1
                     };
                 }
             }
