@@ -14,6 +14,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateShiftStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
@@ -22,6 +23,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
         Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken);
+        Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
         GetRequestDetailsResponse GetRequestDetails(int requestID);
         GetJobSummaryResponse GetJobSummary(int jobID);
