@@ -118,7 +118,7 @@ namespace RequestService.Handlers
                         case NewTaskAction.MakeAvailableToGroups:
                             foreach (int i in actionAppliesToIds)
                             {
-                                await _repository.AddShiftAvailableToGroupAsync(requestID, i, cancellationToken);                                
+                                await _repository.AddRequestAvailableToGroupAsync(requestID, i, cancellationToken);                                
                             }
                             break;
 

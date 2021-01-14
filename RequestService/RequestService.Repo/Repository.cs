@@ -772,7 +772,7 @@ namespace RequestService.Repo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AddShiftAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
+        public async Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
         {
             _context.Job.Where(x=> x.RequestId == requestID)
                 .ToList()                
