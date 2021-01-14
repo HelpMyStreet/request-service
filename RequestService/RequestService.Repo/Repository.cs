@@ -1081,31 +1081,31 @@ namespace RequestService.Repo
             var jobs = _context.Job
                 .Include(i => i.NewRequest)
                 .ThenInclude(i => i.Shift)
-                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift).ToList();
+                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift);//.ToList();
 
             if (jobs == null)
             {
                 throw new Exception($"GetUserShiftJobsByFilter returned null for user id {request.VolunteerUserId}");
             }
 
-            if (jobs.Count == 0)
+            if (jobs.Count() == 0)
             {
                 return new List<ShiftJob>();
             }
 
             if (request.JobStatusRequest.JobStatuses.Count > 0)
             {
-                jobs = jobs.Where(x => request.JobStatusRequest.JobStatuses.Contains((JobStatuses)x.JobStatusId)).ToList();
+                jobs = jobs.Where(x => request.JobStatusRequest.JobStatuses.Contains((JobStatuses)x.JobStatusId));
             };
 
             if (request.DateFrom.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value);
             }
 
             if (request.DateTo.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value);
             }
 
             return jobs.Select(x => new ShiftJob()
@@ -1128,10 +1128,10 @@ namespace RequestService.Repo
                 .Include(i => i.NewRequest)
                 .ThenInclude(i => i.Shift)
                 .Include(i => i.JobAvailableToGroup)
-                .Where(x => x.NewRequest.RequestType == requestTypeShift 
-                && x.JobStatusId == jobstatusOpen).ToList();
+                .Where(x => x.NewRequest.RequestType == requestTypeShift
+                && x.JobStatusId == jobstatusOpen);
 
-            if (jobs == null || jobs.Count == 0)
+            if (jobs == null || jobs.Count() == 0)
             {
                 return new List<ShiftJob>();
             }
@@ -1143,17 +1143,17 @@ namespace RequestService.Repo
 
             if (request.SupportActivities.SupportActivities.Count > 0)
             {
-                jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId)).ToList();
+                jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId));
             };
 
             if (request.ReferringGroupID.HasValue)
             {
-                jobs = jobs.Where(x => request.ReferringGroupID.Value == x.NewRequest.ReferringGroupId).ToList();
+                jobs = jobs.Where(x => request.ReferringGroupID.Value == x.NewRequest.ReferringGroupId);
             }
 
             if (request.Groups.Groups.Count > 0)
             {
-                jobs = jobs.Where(x => x.JobAvailableToGroup.Any(a=> request.Groups.Groups.Contains(a.GroupId))).ToList();
+                jobs = jobs.Where(x => x.JobAvailableToGroup.Any(a=> request.Groups.Groups.Contains(a.GroupId)));
             }
 
             if(request.Locations.Locations.Count >0)
@@ -1163,12 +1163,12 @@ namespace RequestService.Repo
 
             if (request.DateFrom.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value);
             }
 
             if (request.DateTo.HasValue)
             {
-                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value).ToList();
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value);
             }
 
             return jobs.Select(x => new ShiftJob()
