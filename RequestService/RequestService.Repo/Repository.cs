@@ -1082,7 +1082,7 @@ namespace RequestService.Repo
             var jobs = _context.Job
                 .Include(i => i.NewRequest)
                 .ThenInclude(i => i.Shift)
-                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift);//.ToList();
+                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift);
 
             if (jobs == null)
             {
@@ -1188,8 +1188,61 @@ namespace RequestService.Repo
 
         public List<ShiftRequest> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request)
         {
-            List<ShiftRequest> response = new List<ShiftRequest>();
-            return response;
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var requests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.JobAvailableToGroup)
+                .Where(x => x.RequestType == requestTypeShift);
+
+            if (requests == null || requests.Count() == 0)
+            {
+                return new List<ShiftRequest>();
+            }
+
+            if (request.ReferringGroupID.HasValue)
+            {
+                requests = requests.Where(x => request.ReferringGroupID.Value == x.ReferringGroupId);
+            }
+
+            if (request.Groups.Groups.Count > 0)
+            {
+                requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
+            }
+
+            if (request.Locations.Locations.Count > 0)
+            {
+                //TODO
+            }
+
+            if (request.DateFrom.HasValue)
+            {
+                requests = requests.Where(x => x.Shift.StartDate.AddMinutes(x.Shift.ShiftLength) >= request.DateFrom.Value);
+            }
+
+            if (request.DateTo.HasValue)
+            {
+                requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
+            }
+
+            return requests.Select(x => new ShiftRequest()
+            {
+                Shift = new HelpMyStreet.Utils.Models.Shift()
+                {
+                    RequestID = x.Id,
+                    ShiftLength = x.Shift.ShiftLength,
+                    StartDate = x.Shift.StartDate
+                },
+                ShiftJobSummaries = x.Job.Select(x => new JobBasic()
+                {
+                    JobID = x.Id,
+                    ReferringGroupID = x.NewRequest.ReferringGroupId,
+                    JobStatus = (JobStatuses)x.JobStatusId,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                    VolunteerUserID = x.VolunteerUserId
+                }).ToList()
+            }).ToList();
         }
     }
 }
