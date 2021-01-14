@@ -1182,5 +1182,11 @@ namespace RequestService.Repo
                 VolunteerUserID = x.VolunteerUserId
             }).ToList();
         }
+
+        public List<ShiftRequest> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request)
+        {
+            List<ShiftRequest> response = new List<ShiftRequest>();
+            return response;
+        }
     }
 }
