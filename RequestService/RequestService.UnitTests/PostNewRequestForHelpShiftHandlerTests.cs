@@ -26,18 +26,21 @@ namespace RequestService.UnitTests
     {
         private Mock<IRepository> _repository;
         private Mock<IGroupService> _groupService;
+        private Mock<ICommunicationService> _communicationService;
         private PostNewShiftsHandler _classUnderTest;
         private PostNewShiftsRequest _request;
         private int _requestId;
         private GetRequestHelpFormVariantResponse _formVariantResponse;
-        
+        private GetNewShiftActionsResponse _getNewShiftActionsResponse;
+
 
         [SetUp]
         public void Setup()
         {
             SetupRepository();
             SetupGroupService();
-            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
+            SetupCommunicationService();
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object, _communicationService.Object);
         }
 
         private void SetupRepository()
@@ -64,6 +67,14 @@ namespace RequestService.UnitTests
 
             _groupService.Setup(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _formVariantResponse);
+
+            _groupService.Setup(x => x.GetNewShiftActions(It.IsAny<GetNewShiftActionsRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => _getNewShiftActionsResponse);
+        }
+
+        private void SetupCommunicationService()
+        {
+            _communicationService = new Mock<ICommunicationService>();
         }
 
         [Test]
@@ -93,9 +104,18 @@ namespace RequestService.UnitTests
                     }
                 }
             };
+            _getNewShiftActionsResponse = new GetNewShiftActionsResponse()
+            {
+                TaskActions = new Dictionary<NewTaskAction, List<int>>()
+                {
+
+                    { NewTaskAction.MakeAvailableToGroups, new List<int>() }
+                }
+            };
+          
             var response = await _classUnderTest.Handle(_request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object, _communicationService.Object);
             Assert.AreEqual(_requestId, response.RequestID);
         }
     }

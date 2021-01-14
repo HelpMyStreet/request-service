@@ -772,6 +772,22 @@ namespace RequestService.Repo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task AddShiftAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
+        {
+            _context.Job.Where(x=> x.RequestId == requestID)
+                .ToList()                
+                .ForEach(v =>
+                {
+                    _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
+                    {
+                        GroupId = groupID,
+                        JobId = v.Id
+                    });
+                });
+            
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         public List<StatusHistory> GetJobStatusHistory(int jobID)
         {
             return _context.RequestJobStatus.Where(x => x.JobId == jobID)

@@ -104,6 +104,23 @@ namespace RequestService.Core.Services
             throw new Exception("Unable to get new request actions");
         }
 
+        public async Task<GetNewShiftActionsResponse> GetNewShiftActions(GetNewShiftActionsRequest request, CancellationToken cancellationToken)
+        {
+            string path = $"api/GetNewShiftActions";
+
+            using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, path, request, cancellationToken).ConfigureAwait(false))
+            {
+                response.EnsureSuccessStatusCode();
+                string content = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetNewShiftActionsResponse, GroupServiceErrorCode>>(content);
+                if (jsonResponse.IsSuccessful)
+                {
+                    return jsonResponse.Content;
+                }
+            }
+            throw new Exception("Unable to get new request actions");
+        }
+
         public async Task<GetRequestHelpFormVariantResponse> GetRequestHelpFormVariant(int groupId, string source, CancellationToken cancellationToken)
         {
             string path = $"api/GetRequestHelpFormVariant?GroupID={groupId}&Source={source}";
