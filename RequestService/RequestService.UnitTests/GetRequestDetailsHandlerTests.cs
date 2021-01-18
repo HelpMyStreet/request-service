@@ -30,14 +30,14 @@ namespace RequestService.UnitTests
             _classUnderTest = new GetRequestDetailsHandler(_repository.Object,_jobService.Object);
             _response = new GetRequestDetailsResponse()
             {
-                ShiftRequest = new HelpMyStreet.Utils.Models.ShiftRequest()
+                RequestSummary = new HelpMyStreet.Utils.Models.RequestSummary()
                 {
                     Shift = new HelpMyStreet.Utils.Models.Shift()
                     {
                         StartDate = DateTime.Now,
                         ShiftLength = 10
                     },
-                    ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobBasic>()
+                    JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobBasic>()
                      {
                          new HelpMyStreet.Utils.Models.JobBasic()
                         {
