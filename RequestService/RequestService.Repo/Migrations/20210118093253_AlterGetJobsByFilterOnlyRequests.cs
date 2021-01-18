@@ -44,6 +44,7 @@ BEGIN
 				and (j.JobStatusID in (SELECT value FROM STRING_SPLIT( @JobStatuses, ',')) or @JobStatuses='')
 				and (ja.GroupID in (SELECT value FROM STRING_SPLIT(@Groups, ',')) or @Groups='')
 				and r.RequestType = 1
+END
 			");
 		}
 
@@ -86,7 +87,7 @@ BEGIN
 				and (r.ReferringGroupId = @RefferingGroupID or @RefferingGroupID=0)
 				and (j.JobStatusID in (SELECT value FROM STRING_SPLIT( @JobStatuses, ',')) or @JobStatuses='')
 				and (ja.GroupID in (SELECT value FROM STRING_SPLIT(@Groups, ',')) or @Groups='')
-			
+END			
 			");
 		}
     }
