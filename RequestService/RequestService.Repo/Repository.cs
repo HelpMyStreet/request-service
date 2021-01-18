@@ -665,7 +665,9 @@ namespace RequestService.Repo
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive,
                 DueDateType = (DueDateType)job.DueDateTypeId,
-                RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup
+                RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
+                RequestID = job.NewRequest.Id,
+                RequestType = (RequestType) job.NewRequest.RequestType
             };
         }
 
@@ -886,21 +888,21 @@ namespace RequestService.Repo
 
         public GetJobSummaryResponse GetJobSummary(int jobID)
         {
-            GetJobSummaryResponse response = new GetJobSummaryResponse();
-            var requestType_task = (byte)RequestType.Task;
-
+            GetJobSummaryResponse response = new GetJobSummaryResponse();            
             var efJob = _context.Job
                         .Include(i => i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
                         .ThenInclude(rq => rq.Question)
                         .Include(i => i.NewRequest)
-                        .Where(w => w.Id == jobID && w.NewRequest.RequestType == requestType_task).FirstOrDefault();
+                        .Where(w => w.Id == jobID).FirstOrDefault();
 
-            response = new GetJobSummaryResponse()
+            if (efJob != null)
             {
-                JobSummary = MapEFJobToSummary(efJob)
-            };
-
+                response = new GetJobSummaryResponse()
+                {
+                    JobSummary = MapEFJobToSummary(efJob)
+                };
+            }
             return response;
         }
 
