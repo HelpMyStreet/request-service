@@ -178,6 +178,11 @@ namespace RequestService.Core.Services
                 throw new Exception($"Unable to retrieve request details for requestID:{requestID}");
             }
 
+            if(authorisedByUserID == -1)
+            {
+                return true;
+            }
+
             int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
 
             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);

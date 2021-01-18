@@ -27,6 +27,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
         GetRequestDetailsResponse GetRequestDetails(int requestID);
+        GetRequestSummaryResponse GetRequestSummary(int requestID);
         GetJobSummaryResponse GetJobSummary(int jobID);
         List<StatusHistory> GetJobStatusHistory(int jobID);
         List<JobSummary> GetOpenJobsSummaries();

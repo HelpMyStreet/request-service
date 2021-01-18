@@ -674,6 +674,45 @@ namespace RequestService.Repo
             };
         }
 
+        private RequestSummary MapEFRequestToSummary(Request request)
+        {
+            RequestSummary result = null;
+            if (request != null)
+            {
+                HelpMyStreet.Utils.Models.Shift shift = null;
+                if (request.Shift != null)
+                {
+                    shift = new HelpMyStreet.Utils.Models.Shift()
+                    {
+                        StartDate = request.Shift.StartDate,
+                        ShiftLength = request.Shift.ShiftLength
+                    };
+                }
+                result = new RequestSummary()
+                {
+                    Shift = shift,
+                    ReferringGroupID = request.ReferringGroupId,
+                    RequestType = (RequestType)request.RequestType,
+                    RequestID = request.Id,
+                    JobSummaries = request.Job.Select(d => new JobBasic()
+                    {
+                        ReferringGroupID = request.ReferringGroupId,
+                        JobID = d.Id,
+                        VolunteerUserID = d.VolunteerUserId,
+                        SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
+                        JobStatus = (JobStatuses)d.JobStatusId,
+                        RequestType = (RequestType)request.RequestType,
+                        RequestID = request.Id
+                    }).ToList()
+                };
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Error  mapping EFReqest to Summary");
+            }
+        }
+
         public List<JobSummary> GetJobSummaries(List<EntityFramework.Entities.Job> jobs)
         {
             List<JobSummary> response = new List<JobSummary>();
@@ -985,40 +1024,52 @@ namespace RequestService.Repo
         {
             GetRequestDetailsResponse response = new GetRequestDetailsResponse();
 
-            var requests = _context.Request
+            var request = _context.Request
+                .Include(i => i.PersonIdRecipientNavigation)
+                .Include(i => i.PersonIdRequesterNavigation)
                 .Include(i => i.Shift)
                 .Include(i => i.Job)
                 .Where(x => x.Id == requestID)
                 .First();
 
-            if (requests != null)
+            if (request == null)
             {
-                HelpMyStreet.Utils.Models.Shift shift = null;
-                if(requests.Shift!=null)
-                {
-                    shift = new HelpMyStreet.Utils.Models.Shift()
-                    {
-                        StartDate = requests.Shift.StartDate,
-                        ShiftLength = requests.Shift.ShiftLength
-                    };
-                }
-                response.RequestSummary = new RequestSummary()
-                {
-                    Shift = shift,
-                    ReferringGroupID = requests.ReferringGroupId,
-                    RequestType = (RequestType) requests.RequestType,
-                    RequestID = requests.Id,
-                    JobSummaries = requests.Job.Select(d => new JobBasic()
-                    {
-                        ReferringGroupID = requests.ReferringGroupId,
-                        JobID = d.Id,
-                        VolunteerUserID = d.VolunteerUserId,
-                        SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
-                        JobStatus = (JobStatuses)d.JobStatusId,
-                        RequestType = (RequestType)requests.RequestType,
-                        RequestID = requests.Id
-                    }).ToList()
-                };
+                return response;
+            }
+
+            bool isArchived = false;
+            if (request.Archive.HasValue)
+            {
+                isArchived = request.Archive.Value;
+            }
+
+            response.RequestSummary = MapEFRequestToSummary(request);
+
+
+            if (request.PersonIdRecipient.HasValue)
+            {
+                response.Recipient = isArchived ? null : GetPerson(request.PersonIdRecipientNavigation);
+            }
+
+            if (request.PersonIdRequester.HasValue)
+            {
+                response.Requestor = isArchived ? null : GetPerson(request.PersonIdRequesterNavigation);
+            }
+            return response;
+        }
+        public GetRequestSummaryResponse GetRequestSummary(int requestID)
+        {
+            GetRequestSummaryResponse response = new GetRequestSummaryResponse();
+
+            var request = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .Where(x => x.Id == requestID)
+                .First();
+
+            if (request != null)
+            {
+                response.RequestSummary = MapEFRequestToSummary(request);
             }
 
             return response;
