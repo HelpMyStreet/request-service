@@ -49,7 +49,7 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.NewShiftsRequestAsync(
                 It.IsAny<PostNewShiftsRequest>(),
                 It.IsAny<Fulfillable>(),
-                It.IsAny<bool>()))
+                It.IsAny<RequestPersonalDetails>()))
                 .ReturnsAsync(() => _requestId);
         }
        

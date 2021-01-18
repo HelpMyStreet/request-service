@@ -246,8 +246,9 @@ namespace RequestService.Repo
             throw new Exception("Unable to save request");
         }
 
-        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails)
         {
+            Person requester = GetPersonFromPersonalDetails(requestorPersonalDetails);
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -261,7 +262,8 @@ namespace RequestService.Repo
                         CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
                         ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
                         Source = postNewShiftsRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup,
+                        RequestorDefinedByGroup = true,
+                        PersonIdRequesterNavigation = requester,
                         RequestType = (byte)RequestType.Shift
                     };
 
@@ -281,7 +283,7 @@ namespace RequestService.Repo
                                 NewRequest = request,
                                 IsHealthCritical = false,
                                 SupportActivityId = (byte)item.SupportActivity,
-                                DueDate = DateTime.MinValue,
+                                DueDate = new DateTime(1900,1,1),
                                 DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
                                 JobStatusId = (byte)JobStatuses.Open,
                             };

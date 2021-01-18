@@ -40,7 +40,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
         Task<int> GetRequestIDFromGuid(Guid guid);
-        Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+        Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
 
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);
