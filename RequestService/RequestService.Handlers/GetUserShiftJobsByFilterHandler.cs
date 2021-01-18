@@ -8,6 +8,7 @@ using RequestService.Core.Config;
 using HelpMyStreet.Contracts.RequestService.Response;
 using RequestService.Core.Services;
 using HelpMyStreet.Utils.Models;
+using System;
 
 namespace RequestService.Handlers
 {
@@ -31,6 +32,10 @@ namespace RequestService.Handlers
                 {
                     ShiftJobs = shiftjobs
                 };
+            }
+            else
+            {
+                throw new Exception("Get User shift should never return a null. In the case where no shifts are relevant to the filter, an empty list should be returned");
             }
             return response;
         }
