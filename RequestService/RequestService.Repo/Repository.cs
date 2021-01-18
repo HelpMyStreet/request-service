@@ -1143,7 +1143,7 @@ namespace RequestService.Repo
                 //TODO
             }
 
-            if (request.SupportActivities.SupportActivities.Count > 0)
+            if (request.SupportActivities?.SupportActivities.Count > 0)
             {
                 jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId));
             };
@@ -1153,12 +1153,12 @@ namespace RequestService.Repo
                 jobs = jobs.Where(x => request.ReferringGroupID.Value == x.NewRequest.ReferringGroupId);
             }
 
-            if (request.Groups.Groups.Count > 0)
+            if (request.Groups?.Groups.Count > 0)
             {
                 jobs = jobs.Where(x => x.JobAvailableToGroup.Any(a=> request.Groups.Groups.Contains(a.GroupId)));
             }
 
-            if(request.Locations.Locations.Count >0)
+            if(request.Locations?.Locations.Count >0)
             {
                 //TODO
             }
@@ -1206,12 +1206,12 @@ namespace RequestService.Repo
                 requests = requests.Where(x => request.ReferringGroupID.Value == x.ReferringGroupId);
             }
 
-            if (request.Groups.Groups.Count > 0)
+            if (request.Groups?.Groups.Count > 0)
             {
                 requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
-            if (request.Locations.Locations.Count > 0)
+            if (request.Locations?.Locations.Count > 0)
             {
                 //TODO
             }
