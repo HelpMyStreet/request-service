@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace RequestService.UnitTests
 {
-    public class PostNewRequestForHelpShiftHandlerTests
+    public class PostNewShiftsHandlerTests
     {
         private Mock<IRepository> _repository;
         private Mock<IGroupService> _groupService;
@@ -60,7 +60,7 @@ namespace RequestService.UnitTests
             _formVariantResponse = new GetRequestHelpFormVariantResponse()
             {
                 AccessRestrictedByRole = false,
-                RequestorDefinedByGroup = false,
+                RequestorDefinedByGroup = true,
                 RequestHelpFormVariant = RequestHelpFormVariant.Default,
                 TargetGroups = TargetGroups.GenericGroup
             };
