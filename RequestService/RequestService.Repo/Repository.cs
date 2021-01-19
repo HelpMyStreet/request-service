@@ -1321,19 +1321,8 @@ namespace RequestService.Repo
 
         public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
         {
-            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte openJobStatus = (byte)JobStatuses.Open;
-
-            var countOpenJobs = _context.Job
-                .Count(w => w.RequestId == requestId && w.JobStatusId == openJobStatus);
-
-            if(countOpenJobs>0)
-            {
-                //don't update any jobs in this request as at least one other job is in the open state
-                return false;
-            }
-
-            var jobs = _context.Job.Where(w => w.RequestId == requestId);
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != openJobStatus);
 
             if(jobs == null)
             {
