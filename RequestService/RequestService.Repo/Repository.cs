@@ -686,7 +686,8 @@ namespace RequestService.Repo
                     shift = new HelpMyStreet.Utils.Models.Shift()
                     {
                         StartDate = request.Shift.StartDate,
-                        ShiftLength = request.Shift.ShiftLength
+                        ShiftLength = request.Shift.ShiftLength,
+                        RequestID = request.Id
                     };
                 }
                 result = new RequestSummary()
@@ -776,6 +777,8 @@ namespace RequestService.Repo
                         .ThenInclude(i => i.PersonIdRecipientNavigation)
                         .Include(i => i.NewRequest)
                         .ThenInclude(i => i.PersonIdRequesterNavigation)
+                        .Include(i => i.NewRequest)
+                        .ThenInclude(i => i.Shift)
                         .Where(w => w.Id == jobID).FirstOrDefault();
 
             if (efJob == null)
@@ -794,7 +797,8 @@ namespace RequestService.Repo
                 JobSummary = MapEFJobToSummary(efJob),
                 Recipient = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
                 Requestor = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRequesterNavigation),
-                History = GetJobStatusHistory(efJob.RequestJobStatus.ToList())
+                History = GetJobStatusHistory(efJob.RequestJobStatus.ToList()),
+                RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
             };
 
             return response;
@@ -944,6 +948,7 @@ namespace RequestService.Repo
                         .Include(i => i.JobQuestions)
                         .ThenInclude(rq => rq.Question)
                         .Include(i => i.NewRequest)
+                        .ThenInclude(i => i.Shift)
                         .Where(w => w.Id == jobID).FirstOrDefault();
 
             if (efJob != null)
@@ -952,7 +957,8 @@ namespace RequestService.Repo
                 {
                     JobSummary = MapEFJobToSummary(efJob),
                     RequestID = efJob.NewRequest.Id,
-                    RequestType = (RequestType) efJob.NewRequest.RequestType
+                    RequestType = (RequestType) efJob.NewRequest.RequestType,
+                    RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
                 };
             }
             return response;
