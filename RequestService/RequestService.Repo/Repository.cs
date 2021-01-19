@@ -1326,7 +1326,7 @@ namespace RequestService.Repo
 
             if(jobs == null)
             {
-                //Not throwing an error as requestid might not exist
+                //Not throwing an error as requestid might not exist or no not open jobs exist for request id
                 return false;
             }
 
