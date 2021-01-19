@@ -14,7 +14,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        List<ShiftRequest> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
+        List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
         List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateShiftStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
@@ -40,7 +40,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
         Task<int> GetRequestIDFromGuid(Guid guid);
-        Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
+        Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
 
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);

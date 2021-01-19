@@ -19,6 +19,7 @@ using Microsoft.Data.SqlClient;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RequestService.Repo
 {
@@ -245,8 +246,9 @@ namespace RequestService.Repo
             throw new Exception("Unable to save request");
         }
 
-        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails)
         {
+            Person requester = GetPersonFromPersonalDetails(requestorPersonalDetails);
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -260,7 +262,8 @@ namespace RequestService.Repo
                         CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
                         ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
                         Source = postNewShiftsRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup,
+                        RequestorDefinedByGroup = true,
+                        PersonIdRequesterNavigation = requester,
                         RequestType = (byte)RequestType.Shift
                     };
 
@@ -280,7 +283,7 @@ namespace RequestService.Repo
                                 NewRequest = request,
                                 IsHealthCritical = false,
                                 SupportActivityId = (byte)item.SupportActivity,
-                                DueDate = DateTime.MinValue,
+                                DueDate = new DateTime(1900,1,1),
                                 DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
@@ -990,20 +993,30 @@ namespace RequestService.Repo
 
             if (requests != null)
             {
-                response.ShiftRequest = new ShiftRequest()
+                HelpMyStreet.Utils.Models.Shift shift = null;
+                if(requests.Shift!=null)
                 {
-                    Shift = new HelpMyStreet.Utils.Models.Shift()
+                    shift = new HelpMyStreet.Utils.Models.Shift()
                     {
                         StartDate = requests.Shift.StartDate,
                         ShiftLength = requests.Shift.ShiftLength
-                    },
-                    ShiftJobSummaries = requests.Job.Select(d => new JobBasic()
+                    };
+                }
+                response.RequestSummary = new RequestSummary()
+                {
+                    Shift = shift,
+                    ReferringGroupID = requests.ReferringGroupId,
+                    RequestType = (RequestType) requests.RequestType,
+                    RequestID = requests.Id,
+                    JobSummaries = requests.Job.Select(d => new JobBasic()
                     {
                         ReferringGroupID = requests.ReferringGroupId,
                         JobID = d.Id,
                         VolunteerUserID = d.VolunteerUserId,
                         SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
-                        JobStatus = (JobStatuses)d.JobStatusId
+                        JobStatus = (JobStatuses)d.JobStatusId,
+                        RequestType = (RequestType)requests.RequestType,
+                        RequestID = requests.Id
                     }).ToList()
                 };
             }
@@ -1188,7 +1201,7 @@ namespace RequestService.Repo
             }).ToList();
         }
 
-        public List<ShiftRequest> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request)
+        public List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request)
         {
             byte requestTypeShift = (byte)RequestType.Shift;
 
@@ -1200,7 +1213,7 @@ namespace RequestService.Repo
 
             if (requests == null || requests.Count() == 0)
             {
-                return new List<ShiftRequest>();
+                return new List<RequestSummary>();
             }
 
             if (request.ReferringGroupID.HasValue)
@@ -1228,7 +1241,7 @@ namespace RequestService.Repo
                 requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
             }
 
-            return requests.Select(x => new ShiftRequest()
+            return requests.Select(x => new RequestSummary()
             {
                 Shift = new HelpMyStreet.Utils.Models.Shift()
                 {
@@ -1236,13 +1249,18 @@ namespace RequestService.Repo
                     ShiftLength = x.Shift.ShiftLength,
                     StartDate = x.Shift.StartDate
                 },
-                ShiftJobSummaries = x.Job.Select(x => new JobBasic()
+                ReferringGroupID = x.ReferringGroupId,
+                RequestID = x.Id,
+                RequestType = (RequestType) x.RequestType,
+                JobSummaries = x.Job.Select(x => new JobBasic()
                 {
                     JobID = x.Id,
                     ReferringGroupID = x.NewRequest.ReferringGroupId,
                     JobStatus = (JobStatuses)x.JobStatusId,
                     SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
-                    VolunteerUserID = x.VolunteerUserId
+                    VolunteerUserID = x.VolunteerUserId,
+                    RequestID = x.NewRequest.Id,
+                    RequestType = (RequestType) x.NewRequest.RequestType
                 }).ToList()
             }).ToList();
         }

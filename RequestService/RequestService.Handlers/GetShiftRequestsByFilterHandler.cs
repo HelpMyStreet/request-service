@@ -24,13 +24,13 @@ namespace RequestService.Handlers
         {
             GetShiftRequestsByFilterResponse response = null;
 
-            var shiftRequests = _repository.GetShiftRequestsByFilter(request);
+            var requestSummaries = _repository.GetShiftRequestsByFilter(request);
 
-            if (shiftRequests != null)
+            if (requestSummaries != null)
             {
                 response = new GetShiftRequestsByFilterResponse()
                 {
-                    ShiftRequests = shiftRequests
+                    RequestSummaries = requestSummaries
                 };
             }
             else

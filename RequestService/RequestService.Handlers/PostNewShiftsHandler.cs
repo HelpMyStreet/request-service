@@ -57,6 +57,11 @@ namespace RequestService.Handlers
                 };
             }
 
+            if (!formVariant.RequestorDefinedByGroup)
+            {
+                throw new Exception($"Expected GroupID { request.ReferringGroupId} to have RequestorDefinedByGroup");
+            }
+
             if (formVariant.AccessRestrictedByRole)
             {
                 bool failedChecks = request.CreatedByUserId == 0;
@@ -100,7 +105,7 @@ namespace RequestService.Handlers
 
             try
             {
-                var requestID = await _repository.NewShiftsRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+                var requestID = await _repository.NewShiftsRequestAsync(request, response.Fulfillable, formVariant.RequestorPersonalDetails);
                 response.RequestID = requestID;
 
                 if (response.RequestID == 0)
