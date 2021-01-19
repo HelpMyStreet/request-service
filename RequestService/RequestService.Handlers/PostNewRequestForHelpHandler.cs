@@ -156,12 +156,50 @@ namespace RequestService.Handlers
 
             try
             {
-                var result = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
-                response.RequestID = result;
+                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+                response.RequestID = requestId;
 
                 if (response.RequestID == 0)
                 {
                     throw new Exception("Error in saving request");
+                }
+
+                foreach (NewTaskAction newTaskAction in actions.RequestTaskActions.Keys)
+                {
+                    List<int> actionAppliesToIds = actions.RequestTaskActions[newTaskAction];
+
+                    switch (newTaskAction)
+                    {
+                        case NewTaskAction.NotifyGroupAdmins:
+                            foreach (int groupId in actionAppliesToIds)
+                            {
+                                await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                                {
+                                    GroupID = groupId,
+                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.NewTaskPendingApprovalNotification },
+                                    JobID = null,
+                                    RequestID = requestId
+                                }, cancellationToken);
+                            }
+                            break;
+                        case NewTaskAction.SendRequestorConfirmation:
+                            Dictionary<string, string> additionalParameters = new Dictionary<string, string>
+                                {
+                                    { "PendingApproval", (!actions.RequestTaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
+                                };
+                            await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                            {
+                                CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
+                                JobID = null,
+                                AdditionalParameters = additionalParameters,
+                                RequestID = requestId
+                            }, cancellationToken);
+                            break;
+                        case NewTaskAction.SetStatusToOpen:
+                            await _repository.UpdateAllJobStatusToOpenForRequestAsync(requestId, -1, cancellationToken);
+                            break;
+                    }                            
+                    
                 }
 
                 foreach (Guid guid in actions.Actions.Keys)
@@ -201,33 +239,7 @@ namespace RequestService.Handlers
 
                                 // For now, this only happens with a DIY request
                                 response.Fulfillable = Fulfillable.Accepted_DiyRequest;
-                                break;
-                            case NewTaskAction.SetStatusToOpen:
-                                await _repository.UpdateJobStatusOpenAsync(jobID, -1, cancellationToken);
-                                break;
-                            case NewTaskAction.NotifyGroupAdmins:
-                                foreach (int groupId in actionAppliesToIds)
-                                {
-                                    await _communicationService.RequestCommunication(new RequestCommunicationRequest()
-                                    {
-                                        GroupID = groupId,
-                                        CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.NewTaskPendingApprovalNotification },
-                                        JobID = jobID
-                                    }, cancellationToken);
-                                }
-                                break;
-                            case NewTaskAction.SendRequestorConfirmation:
-                                Dictionary<string, string> additionalParameters = new Dictionary<string, string>
-                            {
-                                { "PendingApproval", (!actions.Actions[guid].TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
-                            };
-                                await _communicationService.RequestCommunication(new RequestCommunicationRequest()
-                                {
-                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
-                                    JobID = jobID,
-                                    AdditionalParameters = additionalParameters,
-                                }, cancellationToken);
-                                break;
+                                break;                            
                         }
                     }
                 }

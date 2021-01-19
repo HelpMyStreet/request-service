@@ -1318,5 +1318,45 @@ namespace RequestService.Repo
                 }).ToList()
             }).ToList();
         }
+
+        public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte openJobStatus = (byte)JobStatuses.Open;
+
+            var countOpenJobs = _context.Job
+                .Count(w => w.RequestId == requestId && w.JobStatusId == openJobStatus);
+
+            if(countOpenJobs>0)
+            {
+                //don't update any jobs in this request as at least one other job is in the open state
+                return false;
+            }
+
+            var jobs = _context.Job.Where(w => w.RequestId == requestId);
+
+            if(jobs == null)
+            {
+                //Not throwing an error as requestid might not exist
+                return false;
+            }
+
+            foreach(EntityFramework.Entities.Job job in jobs)
+            {
+                job.JobStatusId = openJobStatus;
+                job.VolunteerUserId = null;
+                AddJobStatus(job.Id, createdByUserID, null, openJobStatus);
+            }
+            int result = await _context.SaveChangesAsync(cancellationToken);
+            
+            if(result == (jobs.Count() *2))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
