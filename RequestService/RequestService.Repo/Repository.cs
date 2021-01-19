@@ -21,6 +21,7 @@ using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
 using System.Security.Cryptography.X509Certificates;
 
+
 namespace RequestService.Repo
 {
     public class Repository : IRepository
@@ -942,7 +943,9 @@ namespace RequestService.Repo
             {
                 response = new GetJobSummaryResponse()
                 {
-                    JobSummary = MapEFJobToSummary(efJob)
+                    JobSummary = MapEFJobToSummary(efJob),
+                    RequestID = efJob.NewRequest.Id,
+                    RequestType = (RequestType) efJob.NewRequest.RequestType
                 };
             }
             return response;
