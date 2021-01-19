@@ -162,18 +162,23 @@ namespace RequestService.Handlers
                         //        }, cancellationToken);
                         //    }
                         //    break;
-                        //case NewTaskAction.SendRequestorConfirmation:
-                        //    Dictionary<string, string> additionalParameters = new Dictionary<string, string>
-                        //    {
-                        //        { "PendingApproval", (!actions.Actions[guid].TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
-                        //    };
-                        //    await _communicationService.RequestCommunication(new RequestCommunicationRequest()
-                        //    {
-                        //        CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
-                        //        JobID = jobID,
-                        //        AdditionalParameters = additionalParameters,
-                        //    }, cancellationToken);
-                        //    break;
+
+                        case NewTaskAction.SendRequestorConfirmation:
+                            Dictionary<string, string> additionalParameters = new Dictionary<string, string>
+                                {
+                                    { "PendingApproval", (!actions.TaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
+                                };
+                            await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                            {
+                                CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
+                                JobID = null,
+                                AdditionalParameters = additionalParameters,
+                                RequestID = requestID
+                            }, cancellationToken);
+                            break;
+                        case NewTaskAction.SetStatusToOpen:
+                            await _repository.UpdateAllJobStatusToOpenForRequestAsync(requestId, -1, cancellationToken);
+                            break;
                     }
                 }
             }

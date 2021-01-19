@@ -739,28 +739,35 @@ namespace RequestService.Repo
 
         private RequestPersonalDetails GetPerson(Person person)
         {
-            return new RequestPersonalDetails()
+            if (person != null)
             {
-                FirstName = person.FirstName,
-                LastName = person.LastName,
-                EmailAddress = person.EmailAddress,
-                MobileNumber = person.MobilePhone,
-                OtherNumber = person.OtherPhone,
-                Address = new Address()
+                return new RequestPersonalDetails()
                 {
-                    AddressLine1 = person.AddressLine1,
-                    AddressLine2 = person.AddressLine2,
-                    AddressLine3 = person.AddressLine3,
-                    Locality = person.Locality,
-                    Postcode = person.Postcode
-                }
-            };
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    EmailAddress = person.EmailAddress,
+                    MobileNumber = person.MobilePhone,
+                    OtherNumber = person.OtherPhone,
+                    Address = new Address()
+                    {
+                        AddressLine1 = person.AddressLine1,
+                        AddressLine2 = person.AddressLine2,
+                        AddressLine3 = person.AddressLine3,
+                        Locality = person.Locality,
+                        Postcode = person.Postcode
+                    }
+                };
+            }
+            else
+            {
+                //for shifts the recipient will be null
+                return null;
+            }
         }
 
         public GetJobDetailsResponse GetJobDetails(int jobID)
         {
             GetJobDetailsResponse response = new GetJobDetailsResponse();
-            byte requestType_task = (byte)RequestType.Task;
             var efJob = _context.Job
                         .Include(i => i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
@@ -769,7 +776,7 @@ namespace RequestService.Repo
                         .ThenInclude(i => i.PersonIdRecipientNavigation)
                         .Include(i => i.NewRequest)
                         .ThenInclude(i => i.PersonIdRequesterNavigation)
-                        .Where(w => w.Id == jobID && w.NewRequest.RequestType == requestType_task).FirstOrDefault();
+                        .Where(w => w.Id == jobID).FirstOrDefault();
 
             if (efJob == null)
             {
@@ -1317,6 +1324,35 @@ namespace RequestService.Repo
                     RequestType = (RequestType) x.NewRequest.RequestType
                 }).ToList()
             }).ToList();
+        }
+
+        public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            byte openJobStatus = (byte)JobStatuses.Open;
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != openJobStatus);
+
+            if(jobs == null)
+            {
+                //Not throwing an error as requestid might not exist or no not open jobs exist for request id
+                return false;
+            }
+
+            foreach(EntityFramework.Entities.Job job in jobs)
+            {
+                job.JobStatusId = openJobStatus;
+                job.VolunteerUserId = null;
+                AddJobStatus(job.Id, createdByUserID, null, openJobStatus);
+            }
+            int result = await _context.SaveChangesAsync(cancellationToken);
+            
+            if(result == (jobs.Count() *2))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
