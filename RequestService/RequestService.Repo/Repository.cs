@@ -272,7 +272,8 @@ namespace RequestService.Repo
                     {
                         Request = request,
                         StartDate = postNewShiftsRequest.StartDate,
-                        ShiftLength = postNewShiftsRequest.ShiftLength
+                        ShiftLength = postNewShiftsRequest.ShiftLength,
+                        LocationId = (int) postNewShiftsRequest.Location.Location
                     });
 
                     foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
@@ -687,7 +688,8 @@ namespace RequestService.Repo
                     {
                         StartDate = request.Shift.StartDate,
                         ShiftLength = request.Shift.ShiftLength,
-                        RequestID = request.Id
+                        RequestID = request.Id,
+                        Location = (Location) request.Shift.LocationId
                     };
                 }
                 result = new RequestSummary()
