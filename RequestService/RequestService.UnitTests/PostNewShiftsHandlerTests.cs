@@ -84,7 +84,7 @@ namespace RequestService.UnitTests
             _request = new PostNewShiftsRequest()
             {
                 CreatedByUserId = 1,
-                Location = new SingleLocationRequest() { Location = Location.Location1 },
+                Location = new SingleLocationRequest() { Location = Location.FranklinHallSpilsby },
                 OtherDetails = "OTHER DETAILS",
                 ReferringGroupId = -7,
                 Source = "a",

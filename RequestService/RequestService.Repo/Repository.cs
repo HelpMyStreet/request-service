@@ -20,7 +20,8 @@ using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
 using System.Security.Cryptography.X509Certificates;
-
+using RequestService.Core.Domains.Entities;
+using Polly.Caching;
 
 namespace RequestService.Repo
 {
@@ -1355,13 +1356,46 @@ namespace RequestService.Repo
             }
             int result = await _context.SaveChangesAsync(cancellationToken);
             
-            if(result == (jobs.Count() *2))
+            if(jobs.Count()==0)
             {
                 return true;
             }
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            List<int> result = new List<int>();
+
+            byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
+
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != cancelledJobStatus);
+
+            if(jobs == null)
+            {
+                //No jobs need to be cancelled
+                return result;
+            }
+
+            foreach (EntityFramework.Entities.Job job in jobs)
+            {
+                job.JobStatusId = cancelledJobStatus;
+                job.VolunteerUserId = null;
+                AddJobStatus(job.Id, createdByUserID, null, cancelledJobStatus);
+                result.Add(job.Id);
+            }
+            await _context.SaveChangesAsync(cancellationToken);
+
+            if (jobs.Count()==0)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
             }
         }
     }

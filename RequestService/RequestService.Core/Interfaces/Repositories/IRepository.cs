@@ -4,6 +4,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Domains;
+using RequestService.Core.Domains.Entities;
 using RequestService.Core.Dto;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
         List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
