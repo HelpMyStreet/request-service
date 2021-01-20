@@ -1195,6 +1195,7 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                Location = (Location) x.NewRequest.Shift.LocationId,
                 ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
@@ -1244,7 +1245,7 @@ namespace RequestService.Repo
 
             if(request.Locations?.Locations.Count >0)
             {
-                //TODO
+                jobs = jobs.Where(x => request.Locations.Locations.Contains((Location)x.NewRequest.Shift.LocationId));
             }
 
             if (request.DateFrom.HasValue)
@@ -1259,6 +1260,7 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                Location = (Location) x.NewRequest.Shift.LocationId,
                 ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
@@ -1297,7 +1299,7 @@ namespace RequestService.Repo
 
             if (request.Locations?.Locations.Count > 0)
             {
-                //TODO
+                requests = requests.Where(x => request.Locations.Locations.Contains((Location)x.Shift.LocationId));
             }
 
             if (request.DateFrom.HasValue)
