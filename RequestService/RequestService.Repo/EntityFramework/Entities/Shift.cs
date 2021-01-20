@@ -9,6 +9,7 @@ namespace RequestService.Repo.EntityFramework.Entities
         public int RequestId { get; set; }
         public DateTime StartDate { get; set; }
         public int ShiftLength { get; set; }
+        public int LocationId { get; set; }
 
         public virtual Request Request { get; set; }
     }

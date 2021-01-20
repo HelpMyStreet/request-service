@@ -272,7 +272,8 @@ namespace RequestService.Repo
                     {
                         Request = request,
                         StartDate = postNewShiftsRequest.StartDate,
-                        ShiftLength = postNewShiftsRequest.ShiftLength
+                        ShiftLength = postNewShiftsRequest.ShiftLength,
+                        LocationId = (int) postNewShiftsRequest.Location.Location
                     });
 
                     foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
@@ -687,7 +688,8 @@ namespace RequestService.Repo
                     {
                         StartDate = request.Shift.StartDate,
                         ShiftLength = request.Shift.ShiftLength,
-                        RequestID = request.Id
+                        RequestID = request.Id,
+                        Location = (Location) request.Shift.LocationId
                     };
                 }
                 result = new RequestSummary()
@@ -1193,6 +1195,7 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                Location = (Location) x.NewRequest.Shift.LocationId,
                 ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
@@ -1242,7 +1245,7 @@ namespace RequestService.Repo
 
             if(request.Locations?.Locations.Count >0)
             {
-                //TODO
+                jobs = jobs.Where(x => request.Locations.Locations.Contains((Location)x.NewRequest.Shift.LocationId));
             }
 
             if (request.DateFrom.HasValue)
@@ -1257,6 +1260,7 @@ namespace RequestService.Repo
 
             return jobs.Select(x => new ShiftJob()
             {
+                Location = (Location) x.NewRequest.Shift.LocationId,
                 ReferringGroupID = x.NewRequest.ReferringGroupId,
                 JobID = x.Id,
                 RequestID = x.NewRequest.Id,
@@ -1295,7 +1299,7 @@ namespace RequestService.Repo
 
             if (request.Locations?.Locations.Count > 0)
             {
-                //TODO
+                requests = requests.Where(x => request.Locations.Locations.Contains((Location)x.Shift.LocationId));
             }
 
             if (request.DateFrom.HasValue)
