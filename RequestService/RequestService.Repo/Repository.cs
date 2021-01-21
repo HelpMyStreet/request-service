@@ -363,7 +363,7 @@ namespace RequestService.Repo
                     job.JobStatusId = cancelledJobStatus;
                     job.VolunteerUserId = null;
                     AddJobStatus(jobID, createdByUserID, null, cancelledJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -390,7 +390,7 @@ namespace RequestService.Repo
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
                     AddJobStatus(jobID, createdByUserID, volunteerUserID, inProgressJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -418,7 +418,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = doneJobStatus;
                     AddJobStatus(jobID, createdByUserID, null, doneJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -1437,14 +1437,14 @@ namespace RequestService.Repo
                             .ThenInclude(i=> i.Shift)
                             .Where(x => x.JobStatusId == jobStatusID
                             && x.DueDateTypeId == dueDateTypeSpecificStartAndEndTimesID
-                            && x.NewRequest.Shift.StartDate>now
+                            && x.NewRequest.Shift.StartDate<now
                             ).ToList();
             return jobs;
         }
 
         private List<EntityFramework.Entities.Job> ReturnJobsWhereShiftsHaveEnded(List<EntityFramework.Entities.Job> jobs)
         {
-            return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) > DateTime.Now).ToList();
+            return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) < DateTime.Now).ToList();
         }
         public async Task UpdateInProgressFromAccepted()
         {
