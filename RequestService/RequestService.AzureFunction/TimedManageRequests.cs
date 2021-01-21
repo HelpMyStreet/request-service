@@ -19,7 +19,7 @@ namespace RequestService.AzureFunction
         }
 
         [FunctionName("TimedManageRequests")]
-        public async Task Run([TimerTrigger("%TimedManageRequestsCronExpression%",RunOnStartup = true)] TimerInfo timerInfo, ILogger log, CancellationToken cancellationToken)
+        public async Task Run([TimerTrigger("%TimedManageRequestsCronExpression%")] TimerInfo timerInfo, ILogger log, CancellationToken cancellationToken)
         {
             try
             {
