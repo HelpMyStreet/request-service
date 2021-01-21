@@ -1425,5 +1425,92 @@ namespace RequestService.Repo
                 throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
             }
         }
+
+        private List<EntityFramework.Entities.Job> GetJobs(JobStatuses jobStatus)
+        {
+            byte jobStatusID = (byte)jobStatus;
+            byte dueDateTypeSpecificStartAndEndTimesID = (byte)DueDateType.SpecificStartAndEndTimes;
+            DateTime now = DateTime.Now;
+
+            var jobs = _context.Job
+                            .Include(i=> i.NewRequest)
+                            .ThenInclude(i=> i.Shift)
+                            .Where(x => x.JobStatusId == jobStatusID
+                            && x.DueDateTypeId == dueDateTypeSpecificStartAndEndTimesID
+                            && x.NewRequest.Shift.StartDate>now
+                            ).ToList();
+            return jobs;
+        }
+
+        private List<EntityFramework.Entities.Job> ReturnJobsWhereShiftsHaveEnded(List<EntityFramework.Entities.Job> jobs)
+        {
+            return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) > DateTime.Now).ToList();
+        }
+        public async Task UpdateInProgressFromAccepted()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobs(JobStatuses.Accepted);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, CancellationToken.None);
+                }
+            }
+
+        }
+
+        public async Task UpdateJobsToDoneFromInProgressOrAccepted()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobs(JobStatuses.Accepted);
+            jobs = ReturnJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusDoneAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+
+            jobs = GetJobs(JobStatuses.InProgress);
+            jobs = ReturnJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusDoneAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+        }
+
+        public async Task UpdateJobsToCancelledFromNewOrOpen()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobs(JobStatuses.New);
+            jobs = ReturnJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+
+            jobs = GetJobs(JobStatuses.Open);
+            jobs = ReturnJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+        }
     }
 }
