@@ -16,7 +16,7 @@ namespace RequestService.Core.Interfaces.Repositories
     public interface IRepository
     {
         Task UpdateInProgressFromAccepted();
-        Task UpdateJobsToDoneFromInProgressOrAccepted();
+        Task UpdateJobsToDoneFromInProgress();
         Task UpdateJobsToCancelledFromNewOrOpen();
 
         Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);

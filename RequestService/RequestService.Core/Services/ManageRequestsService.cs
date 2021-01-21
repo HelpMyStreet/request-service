@@ -15,7 +15,7 @@ namespace RequestService.Core.Services
         public void ManageRequests()
         {
             _repository.UpdateInProgressFromAccepted();
-            _repository.UpdateJobsToDoneFromInProgressOrAccepted();
+            _repository.UpdateJobsToDoneFromInProgress();
             _repository.UpdateJobsToCancelledFromNewOrOpen();
         }
     }
