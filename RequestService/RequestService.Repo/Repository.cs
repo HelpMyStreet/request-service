@@ -465,6 +465,33 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte acceptedJobStatus = (byte)JobStatuses.Accepted;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+
+            if (job != null)
+            {
+                if (job.JobStatusId != acceptedJobStatus)
+                {
+                    job.JobStatusId = acceptedJobStatus;
+                    job.VolunteerUserId = null;
+                    AddJobStatus(jobID, createdByUserID, null, acceptedJobStatus);
+                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
