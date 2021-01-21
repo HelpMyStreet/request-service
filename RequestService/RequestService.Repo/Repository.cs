@@ -465,7 +465,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
         {
             UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte acceptedJobStatus = (byte)JobStatuses.Accepted;
@@ -476,8 +476,8 @@ namespace RequestService.Repo
                 if (job.JobStatusId != acceptedJobStatus)
                 {
                     job.JobStatusId = acceptedJobStatus;
-                    job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, acceptedJobStatus);
+                    job.VolunteerUserId = volunteerUserID; ;
+                    AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
