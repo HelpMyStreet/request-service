@@ -363,7 +363,7 @@ namespace RequestService.Repo
                     job.JobStatusId = cancelledJobStatus;
                     job.VolunteerUserId = null;
                     AddJobStatus(jobID, createdByUserID, null, cancelledJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -390,7 +390,7 @@ namespace RequestService.Repo
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
                     AddJobStatus(jobID, createdByUserID, volunteerUserID, inProgressJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -418,7 +418,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = doneJobStatus;
                     AddJobStatus(jobID, createdByUserID, null, doneJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -1423,6 +1423,82 @@ namespace RequestService.Repo
             else
             {
                 throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
+            }
+        }
+
+        private List<EntityFramework.Entities.Job> GetJobsWhereShiftStartDateHasPassed(JobStatuses jobStatus)
+        {
+            byte jobStatusID = (byte)jobStatus;
+            byte dueDateTypeSpecificStartAndEndTimesID = (byte)DueDateType.SpecificStartAndEndTimes;
+            DateTime now = DateTime.Now;
+
+            var jobs = _context.Job
+                            .Include(i=> i.NewRequest)
+                            .ThenInclude(i=> i.Shift)
+                            .Where(x => x.JobStatusId == jobStatusID
+                            && x.DueDateTypeId == dueDateTypeSpecificStartAndEndTimesID
+                            && x.NewRequest.Shift.StartDate<now
+                            ).ToList();
+            return jobs;
+        }
+
+        private List<EntityFramework.Entities.Job> GetJobsWhereShiftsHaveEnded(List<EntityFramework.Entities.Job> jobs)
+        {
+            return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) < DateTime.Now).ToList();
+        }
+        public async Task UpdateInProgressFromAccepted()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Accepted);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, CancellationToken.None);
+                }
+            }
+
+        }
+
+        public async Task UpdateJobsToDoneFromInProgress()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.InProgress);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusDoneAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+        }
+
+        public async Task UpdateJobsToCancelledFromNewOrOpen()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.New);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Open);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
             }
         }
     }

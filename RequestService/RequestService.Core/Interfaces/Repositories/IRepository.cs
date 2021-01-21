@@ -15,6 +15,10 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task UpdateInProgressFromAccepted();
+        Task UpdateJobsToDoneFromInProgress();
+        Task UpdateJobsToCancelledFromNewOrOpen();
+
         Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
