@@ -40,7 +40,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<JobSummary> GetOpenJobsSummaries();
         List<JobSummary> GetJobsInProgressSummaries();
         List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID);
-        Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
+        Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusOpenAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
