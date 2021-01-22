@@ -24,7 +24,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
         List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
-        int UpdateShiftStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
+        int UpdateRequestStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
         
         Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken);

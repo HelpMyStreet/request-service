@@ -169,7 +169,7 @@ namespace RequestService.Core.Services
             }
         }
 
-        public async Task<bool> HasPermissionToViewRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
+        public async Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
         {
             var requestDetails = _repository.GetRequestDetails(requestID);
 

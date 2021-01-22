@@ -65,7 +65,7 @@ namespace RequestService.UnitTests
         private void SetupJobService()
         {
             _jobService = new Mock<IJobService>();
-            _jobService.Setup(x => x.HasPermissionToViewRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            _jobService.Setup(x => x.HasPermissionToChangeRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _permission);
         }
 

@@ -726,6 +726,7 @@ namespace RequestService.Repo
                     ReferringGroupID = request.ReferringGroupId,
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
+                    DateRequested = request.DateRequested,
                     JobSummaries = request.Job.Select(d => new JobBasic()
                     {
                         ReferringGroupID = request.ReferringGroupId,
@@ -1121,7 +1122,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public int UpdateShiftStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        public int UpdateRequestStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
         {
             byte supportActivity = (byte)activity;
             byte jobStatusOpen = (byte)JobStatuses.Open;
@@ -1231,7 +1232,9 @@ namespace RequestService.Repo
                 JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
-                VolunteerUserID = x.VolunteerUserId
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType) x.NewRequest.RequestType
             }).ToList();
         }
 
@@ -1296,7 +1299,9 @@ namespace RequestService.Repo
                 JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
-                VolunteerUserID = x.VolunteerUserId
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType)x.NewRequest.RequestType
             }).ToList();
         }
 
@@ -1351,6 +1356,7 @@ namespace RequestService.Repo
                 ReferringGroupID = x.ReferringGroupId,
                 RequestID = x.Id,
                 RequestType = (RequestType) x.RequestType,
+                DateRequested = x.DateRequested,
                 JobSummaries = x.Job.Select(x => new JobBasic()
                 {
                     JobID = x.Id,

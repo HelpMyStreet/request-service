@@ -22,7 +22,7 @@ namespace RequestService.Handlers
 
         public async Task<GetRequestDetailsResponse> Handle(GetRequestDetailsRequest request, CancellationToken cancellationToken)
         {
-            bool hasPermission = await _jobService.HasPermissionToViewRequestAsync(request.RequestID, request.AuthorisedByUserID, cancellationToken);
+            bool hasPermission = await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.AuthorisedByUserID, cancellationToken);
             GetRequestDetailsResponse response = null;
             
             if (hasPermission)

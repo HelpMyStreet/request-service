@@ -49,7 +49,7 @@ namespace RequestService.Handlers
             {                
                 try
                 {
-                    var jobId = _repository.UpdateShiftStatusToAccepted(request.RequestID, request.SupportActivity.SupportActivity, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
+                    var jobId = _repository.UpdateRequestStatusToAccepted(request.RequestID, request.SupportActivity.SupportActivity, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
 
                     if (jobId > 0)
                     {
