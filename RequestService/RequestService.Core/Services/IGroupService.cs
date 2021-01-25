@@ -17,6 +17,7 @@ namespace RequestService.Core.Services
         Task<GetGroupActivityCredentialsResponse> GetGroupActivityCredentials(GetGroupActivityCredentialsRequest request);
         Task<GetRequestHelpFormVariantResponse> GetRequestHelpFormVariant(int groupId, string source, CancellationToken cancellationToken);
         Task<GetNewShiftActionsResponse> GetNewShiftActions(GetNewShiftActionsRequest request, CancellationToken cancellationToken);
+        Task<GetGroupResponse> GetGroup(int groupID);
     }
 
 }

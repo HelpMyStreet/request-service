@@ -156,17 +156,28 @@ namespace RequestService.Core.Services
             }
 
             int referringGroupId = await _repository.GetReferringGroupIDForJobAsync(jobID, cancellationToken);
-
             var userRoles = await _groupService.GetUserRoles(createdByUserID, cancellationToken);
 
-            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            if(userRoles.UserGroupRoles.ContainsKey(referringGroupId))
             {
-                return true;
+                if(userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
-            else
+
+            var group = await _groupService.GetGroup(referringGroupId);
+            int? parentGroupId = group.Group.ParentGroupId;
+
+            if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
             {
-                return false;
+                if (userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
+            
+            return false;
         }
 
         public async Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
@@ -184,22 +195,28 @@ namespace RequestService.Core.Services
             }
 
             int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
+             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
 
-            var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
-
-            if(!userRoles.UserGroupRoles.ContainsKey(referringGroupId))
+            if(userRoles.UserGroupRoles.ContainsKey(referringGroupId))
             {
-                return false;
+                if(userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
 
-            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            var group = await _groupService.GetGroup(referringGroupId);
+            int? parentGroupId = group.Group.ParentGroupId;
+
+            if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
             {
-                return true;
+                if (userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
-            else
-            {
-                return false;
-            }
+            
+            return false;
         }
     }
 }
