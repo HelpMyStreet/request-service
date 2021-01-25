@@ -191,5 +191,37 @@ namespace RequestService.Core.Services
             }
             throw new Exception("Unable to assign role");
         }
+
+        public async Task<GetGroupResponse> GetGroup(int groupID)
+        {
+            string path = $"/api/GetGroup?groupID=" + groupID;
+            string absolutePath = $"{path}";
+            using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, absolutePath, CancellationToken.None).ConfigureAwait(false))
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var getJobsResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetGroupResponse, GroupServiceErrorCode>>(jsonResponse);
+                if (getJobsResponse.HasContent && getJobsResponse.IsSuccessful)
+                {
+                    return getJobsResponse.Content;
+                }
+                return null;
+            }
+        }
+
+        public async Task<GetChildGroupsResponse> GetChildGroups(int groupID)
+        {
+            string path = $"/api/GetChildGroups?groupID=" + groupID;
+            string absolutePath = $"{path}";
+            using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, absolutePath, CancellationToken.None).ConfigureAwait(false))
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var getJobsResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetChildGroupsResponse, GroupServiceErrorCode>>(jsonResponse);
+                if (getJobsResponse.HasContent && getJobsResponse.IsSuccessful)
+                {
+                    return getJobsResponse.Content;
+                }
+                return null;
+            }
+        }
     }
 }

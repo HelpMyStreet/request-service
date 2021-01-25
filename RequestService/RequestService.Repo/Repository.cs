@@ -610,6 +610,21 @@ namespace RequestService.Repo
             };
         }
 
+        private SqlParameter GetReferringGroupsAsSqlParameter(List<int> referringGroups)
+        {
+            string sqlValue = string.Empty;
+            if (referringGroups?.Count > 0)
+            {
+                sqlValue = string.Join(",", referringGroups.ToArray());
+            }
+            return new SqlParameter()
+            {
+                ParameterName = "@ReferringGroups",
+                SqlDbType = System.Data.SqlDbType.VarChar,
+                SqlValue = sqlValue
+            };
+        }
+
         private SqlParameter GetJobStatusesAsSqlParameter(List<JobStatuses> jobStatuses)
         {
             string sqlValue = string.Empty;
@@ -641,17 +656,17 @@ namespace RequestService.Repo
             };
         }
 
-        public List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request)
+        public List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups)
         {
             SqlParameter[] parameters = new SqlParameter[5];
             parameters[0] = GetParameter("@UserID", request.UserID);
             parameters[1] = GetSupportActivitiesAsSqlParameter(request.SupportActivities?.SupportActivities);
-            parameters[2] = GetParameter("@RefferingGroupID", request.ReferringGroupID);
+            parameters[2] = GetReferringGroupsAsSqlParameter(referringGroups);
             parameters[3] = GetJobStatusesAsSqlParameter(request.JobStatuses?.JobStatuses);
             parameters[4] = GetGroupsAsSqlParameter(request.Groups?.Groups);
 
             IQueryable<QueryJobHeader> jobHeaders = _context.JobHeader
-                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@RefferingGroupID=@RefferingGroupID,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
+                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@RefferingGroups=@RefferingGroups,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
 
             List<JobHeader> response = new List<JobHeader>();
             foreach (QueryJobHeader j in jobHeaders)
@@ -1275,7 +1290,7 @@ namespace RequestService.Repo
             }).ToList();
         }
 
-        public List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request)
+        public List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request, List<int> referringGroups)
         {
             byte requestTypeShift = (byte)RequestType.Shift;
             byte jobstatusOpen = (byte)JobStatuses.Open;
@@ -1301,9 +1316,9 @@ namespace RequestService.Repo
                 jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId));
             };
 
-            if (request.ReferringGroupID.HasValue)
+            if (referringGroups.Count > 0)
             {
-                jobs = jobs.Where(x => request.ReferringGroupID.Value == x.NewRequest.ReferringGroupId);
+                jobs = jobs.Where(x => referringGroups.Contains(x.NewRequest.ReferringGroupId));
             }
 
             if (request.Groups?.Groups.Count > 0)
@@ -1342,7 +1357,7 @@ namespace RequestService.Repo
             }).ToList();
         }
 
-        public List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request)
+        public List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups)
         {
             byte requestTypeShift = (byte)RequestType.Shift;
 
@@ -1357,9 +1372,9 @@ namespace RequestService.Repo
                 return new List<RequestSummary>();
             }
 
-            if (request.ReferringGroupID.HasValue)
+            if (referringGroups.Count > 0)
             {
-                requests = requests.Where(x => request.ReferringGroupID.Value == x.ReferringGroupId);
+                requests = requests.Where(x => referringGroups.Contains(x.ReferringGroupId));
             }
 
             if (request.Groups?.Groups.Count > 0)
