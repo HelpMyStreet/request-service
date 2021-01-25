@@ -3,6 +3,7 @@ using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Utils.Enums;
 using Moq;
 using NUnit.Framework;
+using RequestService.Core.Exceptions;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
@@ -77,6 +78,7 @@ namespace RequestService.UnitTests
                 SupportActivity = new SingleSupportActivityRequest() { SupportActivity = SupportActivities.VolunteerSupport},
                 VolunteerUserID = 1
             };
+            _jobId = 0;
             _newJobId = 1;
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
             _repository.Verify(x => x.VolunteerAlreadyAcceptedShift(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -114,6 +116,7 @@ namespace RequestService.UnitTests
                 SupportActivity = new SingleSupportActivityRequest() { SupportActivity = SupportActivities.VolunteerSupport },
                 VolunteerUserID = 1
             };
+            _jobId = 0;
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
             _repository.Verify(x => x.VolunteerAlreadyAcceptedShift(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _jobService.Verify(x => x.HasPermissionToChangeRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -124,6 +127,7 @@ namespace RequestService.UnitTests
         [Test]
         public async Task WhenRequestStatusIsAlreadyAccepted_ReturnsAlreadyInThisStatus()
         {
+
             _hasPermission = true;
             _request = new PutUpdateShiftStatusToAcceptedRequest
             {
@@ -139,5 +143,33 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.UpdateRequestStatusToAccepted(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(UpdateJobStatusOutcome.AlreadyInThisStatus, response.Outcome);
         }
+
+        [Test]
+        public async Task WhenVolunteerAlreadyAssignedForRequestAndSupportActivity_ReturnsNoLongerAvailable()
+        {
+            _hasPermission = true;
+            int requestID = 1;
+            SupportActivities activity = SupportActivities.VolunteerSupport;
+            int volunteerUserID = 1;
+            _request = new PutUpdateShiftStatusToAcceptedRequest
+            {
+                CreatedByUserID = 1,
+                RequestID = requestID,
+                SupportActivity = new SingleSupportActivityRequest() { SupportActivity = activity },
+                VolunteerUserID = volunteerUserID
+            };
+            _jobId = 0;
+
+            _repository.Setup(x => x.UpdateRequestStatusToAccepted(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Throws(new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}"));
+
+            var response = await _classUnderTest.Handle(_request, CancellationToken.None);
+            _repository.Verify(x => x.VolunteerAlreadyAcceptedShift(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _jobService.Verify(x => x.HasPermissionToChangeRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _repository.Verify(x => x.UpdateRequestStatusToAccepted(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.AreEqual(UpdateJobStatusOutcome.NoLongerAvailable, response.Outcome);
+        }
+
+
     }
 }
