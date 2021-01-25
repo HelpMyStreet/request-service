@@ -21,8 +21,8 @@ namespace RequestService.Core.Interfaces.Repositories
 
         Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
-        List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request);
-        List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request);
+        List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);
+        List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request, List<int> referringGroups);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateRequestStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
@@ -60,7 +60,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task UpdateCommunicationSentAsync(int requestId, bool communicationSent, CancellationToken cancellationToken);
         Task<List<LatitudeAndLongitudeDTO>> GetLatitudeAndLongitudes(List<string> postCodes, CancellationToken cancellationToken);
         List<JobSummary> GetJobsByStatusesSummaries(List<JobStatuses> jobStatuses);
-        List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request);
+        List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups);
         void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged);        
         bool JobHasStatus(int jobID, JobStatuses status);
         bool JobIsInProgressWithSameVolunteerUserId(int jobID, int? volunteerUserID);

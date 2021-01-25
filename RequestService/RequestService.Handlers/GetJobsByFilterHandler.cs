@@ -9,6 +9,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Exceptions;
 using System.Net.Http;
+using System.Linq;
 
 namespace RequestService.Handlers
 {
@@ -17,14 +18,17 @@ namespace RequestService.Handlers
         private readonly IRepository _repository;
         private readonly IAddressService _addressService;
         private readonly IJobFilteringService _jobFilteringService;
+        private readonly IGroupService _groupService;
         public GetJobsByFilterHandler(
             IRepository repository,
             IAddressService addressService,
-            IJobFilteringService jobFilteringService)
+            IJobFilteringService jobFilteringService,
+            IGroupService groupService)
         {
             _repository = repository;
             _addressService = addressService;
             _jobFilteringService = jobFilteringService;
+            _groupService = groupService;
         }
 
         public async Task<GetJobsByFilterResponse> Handle(GetJobsByFilterRequest request, CancellationToken cancellationToken)
@@ -49,8 +53,26 @@ namespace RequestService.Handlers
             {
                 return result;
             }
-            
-            List<JobHeader> jobHeaders = _repository.GetJobHeaders(request);
+
+            List<int> referringGroups = new List<int>();
+
+            if (request.ReferringGroupID.HasValue)
+            {
+                referringGroups.Add(request.ReferringGroupID.Value);
+
+                if (request.IncludeChildGroups)
+                {
+                    var childGroups = await _groupService.GetChildGroups(request.ReferringGroupID.Value);
+
+                    if (childGroups.ChildGroups.Count > 0)
+                    {
+                        referringGroups.AddRange(childGroups.ChildGroups.Select(x => x.GroupId).ToList());
+                    }
+
+                }
+            }
+
+            List<JobHeader> jobHeaders = _repository.GetJobHeaders(request, referringGroups);
 
             if (jobHeaders.Count == 0)
                 return result;
