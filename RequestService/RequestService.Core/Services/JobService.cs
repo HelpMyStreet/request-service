@@ -187,7 +187,7 @@ namespace RequestService.Core.Services
 
             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
 
-            if(userRoles.UserGroupRoles.Count==0)
+            if(!userRoles.UserGroupRoles.ContainsKey(referringGroupId))
             {
                 return false;
             }
