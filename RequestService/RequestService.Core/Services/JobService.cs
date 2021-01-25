@@ -187,6 +187,11 @@ namespace RequestService.Core.Services
 
             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
 
+            if(userRoles.UserGroupRoles.Count==0)
+            {
+                return false;
+            }
+
             if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
             {
                 return true;

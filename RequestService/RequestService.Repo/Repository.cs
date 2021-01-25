@@ -1126,6 +1126,7 @@ namespace RequestService.Repo
         {
             byte supportActivity = (byte)activity;
             byte jobStatusOpen = (byte)JobStatuses.Open;
+            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
             byte requestTypeShift = (byte)RequestType.Shift;
 
             var job = _context.Job
@@ -1137,11 +1138,25 @@ namespace RequestService.Repo
 
             if (job != null)
             {
-                job.JobStatusId = (byte)JobStatuses.Accepted;
-                job.VolunteerUserId = volunteerUserID;
-                AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
-                _context.SaveChanges();
-                return job.Id;
+                //final check before adding volunteer to make sure that for given requestID and support activity
+                //that the volunteer has not accepted a shift
+                int count = _context.Job.Count(x => x.RequestId == requestID
+                                && x.SupportActivityId == supportActivity
+                                && x.JobStatusId == jobStatusAccepted
+                                && x.VolunteerUserId == volunteerUserID);
+
+                if (count == 0)
+                {
+                    job.JobStatusId = (byte)JobStatuses.Accepted;
+                    job.VolunteerUserId = volunteerUserID;
+                    AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
+                    _context.SaveChanges();
+                    return job.Id;
+                }
+                else
+                {
+                    throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}");
+                }
             }
             else
             {
