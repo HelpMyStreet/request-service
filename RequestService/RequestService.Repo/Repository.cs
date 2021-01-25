@@ -274,7 +274,7 @@ namespace RequestService.Repo
                         Request = request,
                         StartDate = postNewShiftsRequest.StartDate,
                         ShiftLength = postNewShiftsRequest.ShiftLength,
-                        LocationId = (int) postNewShiftsRequest.Location.Location
+                        LocationId = (int)postNewShiftsRequest.Location.Location
                     });
 
                     foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
@@ -286,7 +286,7 @@ namespace RequestService.Repo
                                 NewRequest = request,
                                 IsHealthCritical = false,
                                 SupportActivityId = (byte)item.SupportActivity,
-                                DueDate = new DateTime(1900,1,1),
+                                DueDate = new DateTime(1900, 1, 1),
                                 DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
@@ -700,7 +700,7 @@ namespace RequestService.Repo
                 DueDateType = (DueDateType)job.DueDateTypeId,
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
-                RequestType = (RequestType) job.NewRequest.RequestType
+                RequestType = (RequestType)job.NewRequest.RequestType
             };
         }
 
@@ -717,7 +717,7 @@ namespace RequestService.Repo
                         StartDate = request.Shift.StartDate,
                         ShiftLength = request.Shift.ShiftLength,
                         RequestID = request.Id,
-                        Location = (Location) request.Shift.LocationId
+                        Location = (Location)request.Shift.LocationId
                     };
                 }
                 result = new RequestSummary()
@@ -726,6 +726,7 @@ namespace RequestService.Repo
                     ReferringGroupID = request.ReferringGroupId,
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
+                    DateRequested = request.DateRequested,
                     JobSummaries = request.Job.Select(d => new JobBasic()
                     {
                         ReferringGroupID = request.ReferringGroupId,
@@ -860,8 +861,8 @@ namespace RequestService.Repo
 
         public async Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
         {
-            _context.Job.Where(x=> x.RequestId == requestID)
-                .ToList()                
+            _context.Job.Where(x => x.RequestId == requestID)
+                .ToList()
                 .ForEach(v =>
                 {
                     _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
@@ -870,7 +871,7 @@ namespace RequestService.Repo
                         JobId = v.Id
                     });
                 });
-            
+
             await _context.SaveChangesAsync(cancellationToken);
         }
 
@@ -972,7 +973,7 @@ namespace RequestService.Repo
 
         public GetJobSummaryResponse GetJobSummary(int jobID)
         {
-            GetJobSummaryResponse response = new GetJobSummaryResponse();            
+            GetJobSummaryResponse response = new GetJobSummaryResponse();
             var efJob = _context.Job
                         .Include(i => i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
@@ -987,7 +988,7 @@ namespace RequestService.Repo
                 {
                     JobSummary = MapEFJobToSummary(efJob),
                     RequestID = efJob.NewRequest.Id,
-                    RequestType = (RequestType) efJob.NewRequest.RequestType,
+                    RequestType = (RequestType)efJob.NewRequest.RequestType,
                     RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
                 };
             }
@@ -1121,7 +1122,18 @@ namespace RequestService.Repo
             return response;
         }
 
-        public int UpdateShiftStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        private int GetVolunteerCountForGivenRequestIDAndSupportActivity(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int volunteerUserID)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
+
+            return _context.Job.Count(x => x.RequestId == requestID
+                                && x.SupportActivityId == supportActivity
+                                && x.JobStatusId == jobStatusAccepted
+                                && x.VolunteerUserId == volunteerUserID);
+        }
+
+        public int UpdateRequestStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
         {
             byte supportActivity = (byte)activity;
             byte jobStatusOpen = (byte)JobStatuses.Open;
@@ -1136,11 +1148,37 @@ namespace RequestService.Repo
 
             if (job != null)
             {
-                job.JobStatusId = (byte)JobStatuses.Accepted;
-                job.VolunteerUserId = volunteerUserID;
-                AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
-                _context.SaveChanges();
-                return job.Id;
+                //final check before adding volunteer to make sure that for given requestID and support activity
+                //that the volunteer has not accepted a shift
+                int count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
+
+                if (count == 0)
+                {
+                    using (var transaction = _context.Database.BeginTransaction())
+                    {
+                        job.JobStatusId = (byte)JobStatuses.Accepted;
+                        job.VolunteerUserId = volunteerUserID;
+                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
+                        _context.SaveChanges();
+
+                        count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
+
+                        if(count<2)
+                        {
+                            transaction.CommitAsync();
+                            return job.Id;
+                        }
+                        else
+                        {
+                            transaction.RollbackAsync();
+                            throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}");
+                        }
+                    }
+                }
+                else
+                {
+                    throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}");
+                }
             }
             else
             {
@@ -1231,7 +1269,9 @@ namespace RequestService.Repo
                 JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
-                VolunteerUserID = x.VolunteerUserId
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType) x.NewRequest.RequestType
             }).ToList();
         }
 
@@ -1296,7 +1336,9 @@ namespace RequestService.Repo
                 JobStatus = (JobStatuses)x.JobStatusId,
                 StartDate = x.NewRequest.Shift.StartDate,
                 ShiftLength = x.NewRequest.Shift.ShiftLength,
-                VolunteerUserID = x.VolunteerUserId
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType)x.NewRequest.RequestType
             }).ToList();
         }
 
@@ -1351,6 +1393,7 @@ namespace RequestService.Repo
                 ReferringGroupID = x.ReferringGroupId,
                 RequestID = x.Id,
                 RequestType = (RequestType) x.RequestType,
+                DateRequested = x.DateRequested,
                 JobSummaries = x.Job.Select(x => new JobBasic()
                 {
                     JobID = x.Id,

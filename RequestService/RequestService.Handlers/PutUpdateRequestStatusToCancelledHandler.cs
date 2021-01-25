@@ -34,7 +34,7 @@ namespace RequestService.Handlers
                 Outcome = UpdateJobStatusOutcome.Unauthorized
             };
 
-            bool hasPermission = await _jobService.HasPermissionToViewRequestAsync(request.RequestID, request.CreatedByUserID, cancellationToken);
+            bool hasPermission = await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.CreatedByUserID, cancellationToken);
 
             if(hasPermission)
             {

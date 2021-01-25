@@ -169,7 +169,7 @@ namespace RequestService.Core.Services
             }
         }
 
-        public async Task<bool> HasPermissionToViewRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
+        public async Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
         {
             var requestDetails = _repository.GetRequestDetails(requestID);
 
@@ -186,6 +186,11 @@ namespace RequestService.Core.Services
             int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
 
             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
+
+            if(!userRoles.UserGroupRoles.ContainsKey(referringGroupId))
+            {
+                return false;
+            }
 
             if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
             {
