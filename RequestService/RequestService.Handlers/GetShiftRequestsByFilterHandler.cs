@@ -9,22 +9,45 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using RequestService.Core.Services;
 using HelpMyStreet.Utils.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RequestService.Handlers
 {
     public class GetShiftRequestsByFilterHandler : IRequestHandler<GetShiftRequestsByFilterRequest, GetShiftRequestsByFilterResponse>
     {
         private readonly IRepository _repository;
-        public GetShiftRequestsByFilterHandler(IRepository repository)
+        private readonly IGroupService _groupService;
+
+        public GetShiftRequestsByFilterHandler(IRepository repository, IGroupService groupService)
         {
             _repository = repository;
+            _groupService = groupService;
         }
 
         public async Task<GetShiftRequestsByFilterResponse> Handle(GetShiftRequestsByFilterRequest request, CancellationToken cancellationToken)
         {
             GetShiftRequestsByFilterResponse response = null;
 
-            var requestSummaries = _repository.GetShiftRequestsByFilter(request);
+            List<int> referringGroups = new List<int>();
+
+            if (request.ReferringGroupID.HasValue)
+            {
+                referringGroups.Add(request.ReferringGroupID.Value);
+
+                if (request.IncludeChildGroups)
+                {
+                    var childGroups = await _groupService.GetChildGroups(request.ReferringGroupID.Value);
+
+                    if (childGroups.ChildGroups.Count > 0)
+                    {
+                        referringGroups.AddRange(childGroups.ChildGroups.Select(x => x.GroupId).ToList());
+                    }
+
+                }
+            }
+
+            var requestSummaries = _repository.GetShiftRequestsByFilter(request, referringGroups);
 
             if (requestSummaries != null)
             {
