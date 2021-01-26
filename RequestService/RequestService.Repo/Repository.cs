@@ -1403,7 +1403,8 @@ namespace RequestService.Repo
                 {
                     RequestID = x.Id,
                     ShiftLength = x.Shift.ShiftLength,
-                    StartDate = x.Shift.StartDate
+                    StartDate = x.Shift.StartDate,
+                    Location = (Location) x.Shift.LocationId
                 },
                 ReferringGroupID = x.ReferringGroupId,
                 RequestID = x.Id,
