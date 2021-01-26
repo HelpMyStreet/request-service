@@ -666,8 +666,8 @@ namespace RequestService.Repo
             parameters[4] = GetGroupsAsSqlParameter(request.Groups?.Groups);
 
             IQueryable<QueryJobHeader> jobHeaders = _context.JobHeader
-                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@RefferingGroups=@RefferingGroups,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
-
+                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@ReferringGroups=@ReferringGroups,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
+           
             List<JobHeader> response = new List<JobHeader>();
             foreach (QueryJobHeader j in jobHeaders)
             {
