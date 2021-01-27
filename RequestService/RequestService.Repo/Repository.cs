@@ -686,7 +686,10 @@ namespace RequestService.Repo
                     ReferringGroupID = j.ReferringGroupID,
                     SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)j.SupportActivityID,
                     Reference = j.Reference,
-                    DueDateType = (DueDateType)j.DueDateTypeId
+                    DueDateType = (DueDateType)j.DueDateTypeId,
+                    RequestID = j.RequestID,
+                    RequestType = (RequestType) j.RequestType,
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup
                 });
             }
             return response;

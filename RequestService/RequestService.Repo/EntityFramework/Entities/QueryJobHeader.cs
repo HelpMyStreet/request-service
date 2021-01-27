@@ -19,5 +19,8 @@ namespace RequestService.Repo.EntityFramework.Entities
         public bool? Archive { get; set; }
         public string Reference { get; set; }
         public byte DueDateTypeId { get; set; }
+        public int RequestID { get; set; }
+        public byte RequestType { get; set; }
+        public bool RequestorDefinedByGroup { get; set; }
     }
 }
