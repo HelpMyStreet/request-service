@@ -49,7 +49,7 @@ namespace RequestService.Handlers
             {                
                 try
                 {
-                    bool hasPermission = await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.CreatedByUserID, cancellationToken);
+                    bool hasPermission = (request.CreatedByUserID == request.VolunteerUserID || await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.CreatedByUserID, cancellationToken));
 
                     if (hasPermission)
                     {
