@@ -69,6 +69,25 @@ namespace RequestService.UnitTests
         }
 
         [Test]
+        public async Task WhenVolunteerAndRequestedByIsTheSame_ReturnsTrue()
+        {
+            _request = new PutUpdateShiftStatusToAcceptedRequest
+            {
+                CreatedByUserID = 1,
+                RequestID = 1,
+                SupportActivity = new SingleSupportActivityRequest() { SupportActivity = SupportActivities.VolunteerSupport },
+                VolunteerUserID = 1
+            };
+            _jobId = 0;
+            _newJobId = 1;
+            var response = await _classUnderTest.Handle(_request, CancellationToken.None);
+            _repository.Verify(x => x.VolunteerAlreadyAcceptedShift(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _jobService.Verify(x => x.HasPermissionToChangeRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.UpdateRequestStatusToAccepted(It.IsAny<int>(), It.IsAny<SupportActivities>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.AreEqual(UpdateJobStatusOutcome.Success, response.Outcome);
+        }
+
+        [Test]
         public async Task WhenSuccessfullyChangingJobStatusToAccepted_ReturnsTrue()
         {
             _request = new PutUpdateShiftStatusToAcceptedRequest
@@ -76,7 +95,7 @@ namespace RequestService.UnitTests
                 CreatedByUserID = 1,
                 RequestID = 1,
                 SupportActivity = new SingleSupportActivityRequest() { SupportActivity = SupportActivities.VolunteerSupport},
-                VolunteerUserID = 1
+                VolunteerUserID = 2
             };
             _jobId = 0;
             _newJobId = 1;
@@ -114,7 +133,7 @@ namespace RequestService.UnitTests
                 CreatedByUserID = 1,
                 RequestID = 1,
                 SupportActivity = new SingleSupportActivityRequest() { SupportActivity = SupportActivities.VolunteerSupport },
-                VolunteerUserID = 1
+                VolunteerUserID = 2
             };
             _jobId = 0;
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
@@ -153,7 +172,7 @@ namespace RequestService.UnitTests
             int volunteerUserID = 1;
             _request = new PutUpdateShiftStatusToAcceptedRequest
             {
-                CreatedByUserID = 1,
+                CreatedByUserID = 2,
                 RequestID = requestID,
                 SupportActivity = new SingleSupportActivityRequest() { SupportActivity = activity },
                 VolunteerUserID = volunteerUserID
