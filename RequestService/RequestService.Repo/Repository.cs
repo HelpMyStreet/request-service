@@ -258,7 +258,7 @@ namespace RequestService.Repo
                     Request request = new Request()
                     {
                         OtherDetails = postNewShiftsRequest.OtherDetails,
-                        PostCode = "POSTCODE",
+                        PostCode = "",
                         RequestorType = (byte)RequestorType.Organisation,
                         FulfillableStatus = (byte)fulfillable,
                         CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
