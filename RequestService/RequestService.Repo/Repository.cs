@@ -19,6 +19,9 @@ using Microsoft.Data.SqlClient;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
+using System.Security.Cryptography.X509Certificates;
+using RequestService.Core.Domains.Entities;
+using Polly.Caching;
 
 namespace RequestService.Repo
 {
@@ -42,7 +45,7 @@ namespace RequestService.Repo
         }
 
         public async Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken)
-        {            
+        {
             Request request = new Request
             {
                 PostCode = postCode,
@@ -51,7 +54,7 @@ namespace RequestService.Repo
                 CommunicationSent = false,
             };
 
-           _context.Request.Add(request);
+            _context.Request.Add(request);
             await _context.SaveChangesAsync(cancellationToken);
             return request.Id;
         }
@@ -64,7 +67,7 @@ namespace RequestService.Repo
             {
                 request.FulfillableStatus = (byte)fulfillable;
                 await _context.SaveChangesAsync(cancellationToken);
-            }        
+            }
         }
 
         public async Task UpdateCommunicationSentAsync(int requestId, bool communicationSent, CancellationToken cancellationToken)
@@ -90,13 +93,13 @@ namespace RequestService.Repo
                 RequestorPhoneNumber = dto.RequestorPhoneNumber,
             };
             _context.PersonalDetails.Add(personalDetails);
-            await _context.SaveChangesAsync(cancellationToken);               
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task AddSupportActivityAsync(SupportActivityDTO dto, CancellationToken cancellationToken)
         {
             List<SupportActivities> activties = new List<SupportActivities>();
-            foreach(var activtity in dto.SupportActivities)
+            foreach (var activtity in dto.SupportActivities)
             {
                 activties.Add(new SupportActivities
                 {
@@ -150,10 +153,10 @@ namespace RequestService.Repo
 
         public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
         {
-           
+
             Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
             Person recipient;
-            
+
             if (postNewRequestForHelpRequest.HelpRequest.RequestorType == RequestorType.Myself)
             {
                 recipient = requester;
@@ -186,7 +189,8 @@ namespace RequestService.Repo
                         CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
                         ReferringGroupId = postNewRequestForHelpRequest.HelpRequest.ReferringGroupId,
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup
+                        RequestorDefinedByGroup = requestorDefinedByGroup,
+                        RequestType = (byte)RequestType.Task
                     };
 
                     foreach (HelpMyStreet.Utils.Models.Job job in postNewRequestForHelpRequest.NewJobsRequest.Jobs)
@@ -199,8 +203,8 @@ namespace RequestService.Repo
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
                             DueDate = DateTime.Now.AddDays(job.DueDays),
-                            DueDateTypeId = (byte) job.DueDateType,
-                            JobStatusId = (byte) JobStatuses.New,
+                            DueDateTypeId = (byte)job.DueDateType,
+                            JobStatusId = (byte)JobStatuses.New,
                             Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
@@ -233,40 +237,44 @@ namespace RequestService.Repo
                 }
                 catch (Exception exc)
                 {
-                    if(exc.InnerException.Message.StartsWith("Cannot insert duplicate key row in object 'Request.Request' with unique index 'UC_Guid'"))
+                    if (exc.InnerException.Message.StartsWith("Cannot insert duplicate key row in object 'Request.Request' with unique index 'UC_Guid'"))
                     {
                         transaction.Rollback();
                         throw new DuplicateException();
                     }
-                    
+
                 }
             }
             throw new Exception("Unable to save request");
         }
 
-        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewShiftsRequestAsync(PostNewShiftsRequest postNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails)
         {
+            Person requester = GetPersonFromPersonalDetails(requestorPersonalDetails);
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     Request request = new Request()
                     {
-                        OtherDetails = postNewShiftsRequest.OtherDetails,                        
-                        PostCode = "POSTCODE",                        
-                        RequestorType = (byte) RequestorType.Organisation,
+                        OtherDetails = postNewShiftsRequest.OtherDetails,
+                        PostCode = "",
+                        RequestorType = (byte)RequestorType.Organisation,
                         FulfillableStatus = (byte)fulfillable,
                         CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
                         ReferringGroupId = postNewShiftsRequest.ReferringGroupId,
                         Source = postNewShiftsRequest.Source,
-                        RequestorDefinedByGroup = requestorDefinedByGroup
+                        RequestorDefinedByGroup = true,
+                        PersonIdRequesterNavigation = requester,
+                        RequestType = (byte)RequestType.Shift
                     };
 
                     _context.Shift.Add(new EntityFramework.Entities.Shift()
                     {
                         Request = request,
                         StartDate = postNewShiftsRequest.StartDate,
-                        ShiftLength = postNewShiftsRequest.ShiftLength
+                        ShiftLength = postNewShiftsRequest.ShiftLength,
+                        LocationId = (int)postNewShiftsRequest.Location.Location
                     });
 
                     foreach (var item in postNewShiftsRequest.SupportActivitiesCount)
@@ -278,7 +286,7 @@ namespace RequestService.Repo
                                 NewRequest = request,
                                 IsHealthCritical = false,
                                 SupportActivityId = (byte)item.SupportActivity,
-                                DueDate = DateTime.MinValue,
+                                DueDate = new DateTime(1900, 1, 1),
                                 DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
@@ -295,7 +303,7 @@ namespace RequestService.Repo
 
                     await _context.SaveChangesAsync();
                     transaction.Commit();
-                    return request.Id;                    
+                    return request.Id;
                 }
                 catch (Exception exc)
                 {
@@ -344,7 +352,7 @@ namespace RequestService.Repo
 
         public async Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
         {
-            UpdateJobStatusOutcome response =  UpdateJobStatusOutcome.BadRequest;
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
             var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
 
@@ -355,10 +363,10 @@ namespace RequestService.Repo
                     job.JobStatusId = cancelledJobStatus;
                     job.VolunteerUserId = null;
                     AddJobStatus(jobID, createdByUserID, null, cancelledJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
-                        response =  UpdateJobStatusOutcome.Success;
+                        response = UpdateJobStatusOutcome.Success;
                     }
                 }
                 else
@@ -382,7 +390,7 @@ namespace RequestService.Repo
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
                     AddJobStatus(jobID, createdByUserID, volunteerUserID, inProgressJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -410,7 +418,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = doneJobStatus;
                     AddJobStatus(jobID, createdByUserID, null, doneJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    int result = _context.SaveChanges();
                     if (result == 2)
                     {
                         response = UpdateJobStatusOutcome.Success;
@@ -457,26 +465,55 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte acceptedJobStatus = (byte)JobStatuses.Accepted;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+
+            if (job != null)
+            {
+                if (job.JobStatusId != acceptedJobStatus)
+                {
+                    job.JobStatusId = acceptedJobStatus;
+                    job.VolunteerUserId = volunteerUserID; ;
+                    AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
+                    int result = await _context.SaveChangesAsync(cancellationToken);
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
+            byte requestType_task = (byte)RequestType.Task;
 
             List<EntityFramework.Entities.Job> jobSummaries = _context.Job
                                     .Include(i => i.RequestJobStatus)
                                     .Include(i => i.NewRequest)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
-                                    .Where(w => w.VolunteerUserId == volunteerUserID 
+                                    .Where(w => w.VolunteerUserId == volunteerUserID
                                                 && w.JobStatusId == jobStatusID_InProgress
+                                                && w.NewRequest.RequestType == requestType_task
                                             ).ToList();
 
             return GetJobSummaries(jobSummaries);
-            
+
         }
 
         public List<JobSummary> GetOpenJobsSummaries()
         {
-            
+
             byte jobStatusID_Open = (byte)JobStatuses.Open;
 
             List<EntityFramework.Entities.Job> jobSummaries = _context.Job
@@ -488,7 +525,7 @@ namespace RequestService.Repo
                                     .Where(w => w.JobStatusId == jobStatusID_Open
                                             ).ToList();
             return GetJobSummaries(jobSummaries);
-            
+
         }
 
         public List<JobSummary> GetJobsInProgressSummaries()
@@ -510,7 +547,7 @@ namespace RequestService.Repo
         {
             List<byte> statuses = new List<byte>();
 
-            foreach(JobStatuses js in jobStatuses)
+            foreach (JobStatuses js in jobStatuses)
             {
                 statuses.Add((byte)js);
             }
@@ -521,7 +558,7 @@ namespace RequestService.Repo
                                     .Include(i => i.NewRequest)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
-                                    .Where(w =>statuses.Contains(w.JobStatusId.Value)
+                                    .Where(w => statuses.Contains(w.JobStatusId.Value)
                                             ).ToList();
             return GetJobSummaries(jobSummaries);
         }
@@ -561,13 +598,28 @@ namespace RequestService.Repo
         private SqlParameter GetSupportActivitiesAsSqlParameter(List<HelpMyStreet.Utils.Enums.SupportActivities> supportActivities)
         {
             string sqlValue = string.Empty;
-            if(supportActivities?.Count>0)
+            if (supportActivities?.Count > 0)
             {
                 sqlValue = string.Join(",", supportActivities.Cast<int>().ToArray());
             }
             return new SqlParameter()
             {
                 ParameterName = "@SupportActivities",
+                SqlDbType = System.Data.SqlDbType.VarChar,
+                SqlValue = sqlValue
+            };
+        }
+
+        private SqlParameter GetReferringGroupsAsSqlParameter(List<int> referringGroups)
+        {
+            string sqlValue = string.Empty;
+            if (referringGroups?.Count > 0)
+            {
+                sqlValue = string.Join(",", referringGroups.ToArray());
+            }
+            return new SqlParameter()
+            {
+                ParameterName = "@ReferringGroups",
                 SqlDbType = System.Data.SqlDbType.VarChar,
                 SqlValue = sqlValue
             };
@@ -604,18 +656,18 @@ namespace RequestService.Repo
             };
         }
 
-        public List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request)
+        public List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups)
         {
             SqlParameter[] parameters = new SqlParameter[5];
             parameters[0] = GetParameter("@UserID", request.UserID);
             parameters[1] = GetSupportActivitiesAsSqlParameter(request.SupportActivities?.SupportActivities);
-            parameters[2] = GetParameter("@RefferingGroupID", request.ReferringGroupID);
+            parameters[2] = GetReferringGroupsAsSqlParameter(referringGroups);
             parameters[3] = GetJobStatusesAsSqlParameter(request.JobStatuses?.JobStatuses);
             parameters[4] = GetGroupsAsSqlParameter(request.Groups?.Groups);
-            
-            IQueryable<QueryJobHeader> jobHeaders = _context.JobHeader
-                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@RefferingGroupID=@RefferingGroupID,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
 
+            IQueryable<QueryJobHeader> jobHeaders = _context.JobHeader
+                                .FromSqlRaw("EXECUTE [Request].[GetJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@ReferringGroups=@ReferringGroups,@JobStatuses=@JobStatuses,@Groups=@Groups", parameters);
+           
             List<JobHeader> response = new List<JobHeader>();
             foreach (QueryJobHeader j in jobHeaders)
             {
@@ -629,12 +681,15 @@ namespace RequestService.Repo
                     DistanceInMiles = j.DistanceInMiles,
                     DueDate = j.DueDate,
                     IsHealthCritical = j.IsHealthCritical,
-                    JobStatus = (JobStatuses) j.JobStatusID,
+                    JobStatus = (JobStatuses)j.JobStatusID,
                     PostCode = j.PostCode,
                     ReferringGroupID = j.ReferringGroupID,
-                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities) j.SupportActivityID,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)j.SupportActivityID,
                     Reference = j.Reference,
-                    DueDateType = (DueDateType) j.DueDateTypeId
+                    DueDateType = (DueDateType)j.DueDateTypeId,
+                    RequestID = j.RequestID,
+                    RequestType = (RequestType) j.RequestType,
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup
                 });
             }
             return response;
@@ -660,9 +715,53 @@ namespace RequestService.Repo
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive,
-                DueDateType = (DueDateType) job.DueDateTypeId,
-                RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup
+                DueDateType = (DueDateType)job.DueDateTypeId,
+                RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
+                RequestID = job.NewRequest.Id,
+                RequestType = (RequestType)job.NewRequest.RequestType
             };
+        }
+
+        private RequestSummary MapEFRequestToSummary(Request request)
+        {
+            RequestSummary result = null;
+            if (request != null)
+            {
+                HelpMyStreet.Utils.Models.Shift shift = null;
+                if (request.Shift != null)
+                {
+                    shift = new HelpMyStreet.Utils.Models.Shift()
+                    {
+                        StartDate = request.Shift.StartDate,
+                        ShiftLength = request.Shift.ShiftLength,
+                        RequestID = request.Id,
+                        Location = (Location)request.Shift.LocationId
+                    };
+                }
+                result = new RequestSummary()
+                {
+                    Shift = shift,
+                    ReferringGroupID = request.ReferringGroupId,
+                    RequestType = (RequestType)request.RequestType,
+                    RequestID = request.Id,
+                    DateRequested = request.DateRequested,
+                    JobSummaries = request.Job.Select(d => new JobBasic()
+                    {
+                        ReferringGroupID = request.ReferringGroupId,
+                        JobID = d.Id,
+                        VolunteerUserID = d.VolunteerUserId,
+                        SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
+                        JobStatus = (JobStatuses)d.JobStatusId,
+                        RequestType = (RequestType)request.RequestType,
+                        RequestID = request.Id
+                    }).ToList()
+                };
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Error  mapping EFReqest to Summary");
+            }
         }
 
         public List<JobSummary> GetJobSummaries(List<EntityFramework.Entities.Job> jobs)
@@ -690,44 +789,54 @@ namespace RequestService.Repo
 
         private RequestPersonalDetails GetPerson(Person person)
         {
-            return new RequestPersonalDetails()
+            if (person != null)
             {
-                FirstName = person.FirstName,
-                LastName = person.LastName,
-                EmailAddress = person.EmailAddress,
-                MobileNumber = person.MobilePhone,
-                OtherNumber = person.OtherPhone,
-                Address = new Address()
+                return new RequestPersonalDetails()
                 {
-                    AddressLine1 = person.AddressLine1,
-                    AddressLine2 = person.AddressLine2,
-                    AddressLine3 = person.AddressLine3,
-                    Locality = person.Locality,
-                    Postcode = person.Postcode
-                }
-            };
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    EmailAddress = person.EmailAddress,
+                    MobileNumber = person.MobilePhone,
+                    OtherNumber = person.OtherPhone,
+                    Address = new Address()
+                    {
+                        AddressLine1 = person.AddressLine1,
+                        AddressLine2 = person.AddressLine2,
+                        AddressLine3 = person.AddressLine3,
+                        Locality = person.Locality,
+                        Postcode = person.Postcode
+                    }
+                };
+            }
+            else
+            {
+                //for shifts the recipient will be null
+                return null;
+            }
         }
 
         public GetJobDetailsResponse GetJobDetails(int jobID)
         {
             GetJobDetailsResponse response = new GetJobDetailsResponse();
             var efJob = _context.Job
-                        .Include(i=> i.RequestJobStatus)
+                        .Include(i => i.RequestJobStatus)
                         .Include(i => i.JobQuestions)
                         .ThenInclude(rq => rq.Question)
                         .Include(i => i.NewRequest)
                         .ThenInclude(i => i.PersonIdRecipientNavigation)
                         .Include(i => i.NewRequest)
-                        .ThenInclude(i=> i.PersonIdRequesterNavigation)
+                        .ThenInclude(i => i.PersonIdRequesterNavigation)
+                        .Include(i => i.NewRequest)
+                        .ThenInclude(i => i.Shift)
                         .Where(w => w.Id == jobID).FirstOrDefault();
 
-            if(efJob == null)
+            if (efJob == null)
             {
                 return response;
             }
 
             bool isArchived = false;
-            if(efJob.NewRequest.Archive.HasValue)
+            if (efJob.NewRequest.Archive.HasValue)
             {
                 isArchived = efJob.NewRequest.Archive.Value;
             }
@@ -735,9 +844,10 @@ namespace RequestService.Repo
             response = new GetJobDetailsResponse()
             {
                 JobSummary = MapEFJobToSummary(efJob),
-                Recipient = isArchived ? null:  GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
+                Recipient = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
                 Requestor = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRequesterNavigation),
-                History = GetJobStatusHistory(efJob.RequestJobStatus.ToList())
+                History = GetJobStatusHistory(efJob.RequestJobStatus.ToList()),
+                RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
             };
 
             return response;
@@ -767,12 +877,28 @@ namespace RequestService.Repo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
+        {
+            _context.Job.Where(x => x.RequestId == requestID)
+                .ToList()
+                .ForEach(v =>
+                {
+                    _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
+                    {
+                        GroupId = groupID,
+                        JobId = v.Id
+                    });
+                });
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         public List<StatusHistory> GetJobStatusHistory(int jobID)
         {
             return _context.RequestJobStatus.Where(x => x.JobId == jobID)
                 .Select(x => new StatusHistory
                 {
-                    JobStatus = (JobStatuses) x.JobStatusId,
+                    JobStatus = (JobStatuses)x.JobStatusId,
                     StatusDate = x.DateCreated,
                     VolunteerUserID = x.VolunteerUserId,
                     CreatedByUserID = x.CreatedByUserId
@@ -803,7 +929,7 @@ namespace RequestService.Repo
                 .Include(x => x.NewRequest)
                 .FirstAsync(x => x.Id == jobID);
 
-            if(job!=null)
+            if (job != null)
             {
                 return job.NewRequest.ReferringGroupId;
             }
@@ -831,18 +957,18 @@ namespace RequestService.Repo
         public void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged)
         {
             DateTime dtExpire = DateTime.Now.AddDays(-daysSinceJobRequested);
-            var requests =_context.Request
-                .Include(x=> x.Job)
-                .ThenInclude(x=> x.RequestJobStatus)
-                .Where(x => (x.Archive ?? false == false) 
-                && ((x.PersonIdRecipient.HasValue || x.PersonIdRequester.HasValue)) 
+            var requests = _context.Request
+                .Include(x => x.Job)
+                .ThenInclude(x => x.RequestJobStatus)
+                .Where(x => (x.Archive ?? false == false)
+                && ((x.PersonIdRecipient.HasValue || x.PersonIdRequester.HasValue))
                 && x.DateRequested < dtExpire)
                 .ToList();
 
             foreach (Request r in requests)
             {
                 int inActiveCount = 0;
-                
+
                 foreach (EntityFramework.Entities.Job j in r.Job)
                 {
                     if ((JobStatuses)j.JobStatusId.Value == JobStatuses.Done || (JobStatuses)j.JobStatusId.Value == JobStatuses.Cancelled)
@@ -853,7 +979,7 @@ namespace RequestService.Repo
                         }
                     }
                 }
-                
+
                 if (inActiveCount == r.Job.Count)
                 {
                     r.Archive = true;
@@ -871,13 +997,19 @@ namespace RequestService.Repo
                         .Include(i => i.JobQuestions)
                         .ThenInclude(rq => rq.Question)
                         .Include(i => i.NewRequest)
+                        .ThenInclude(i => i.Shift)
                         .Where(w => w.Id == jobID).FirstOrDefault();
 
-            response = new GetJobSummaryResponse()
+            if (efJob != null)
             {
-                JobSummary = MapEFJobToSummary(efJob)
-            };
-
+                response = new GetJobSummaryResponse()
+                {
+                    JobSummary = MapEFJobToSummary(efJob),
+                    RequestID = efJob.NewRequest.Id,
+                    RequestType = (RequestType)efJob.NewRequest.RequestType,
+                    RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
+                };
+            }
             return response;
         }
 
@@ -891,7 +1023,7 @@ namespace RequestService.Repo
             else
             {
                 return false;
-            }            
+            }
         }
 
         public async Task<List<HelpMyStreet.Utils.Models.Question>> GetQuestionsForActivity(HelpMyStreet.Utils.Enums.SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken)
@@ -957,30 +1089,144 @@ namespace RequestService.Repo
         {
             GetRequestDetailsResponse response = new GetRequestDetailsResponse();
 
-            var requests = _context.Request
+            var request = _context.Request
+                .Include(i => i.PersonIdRecipientNavigation)
+                .Include(i => i.PersonIdRequesterNavigation)
                 .Include(i => i.Shift)
                 .Include(i => i.Job)
                 .Where(x => x.Id == requestID)
                 .First();
 
-            if(requests != null)
+            if (request == null)
             {
-                response.Shift = new HelpMyStreet.Utils.Models.Shift()
-                {
-                    StartDate = requests.Shift.StartDate,
-                    ShiftLength = requests.Shift.ShiftLength
-                };
-                response.ShiftJobSummaries = new List<ShiftJobSummary>();
+                return response;
+            }
 
-                response.ShiftJobSummaries = requests.Job.Select(d => new ShiftJobSummary()
-                {
-                    ID = d.Id,
-                    Activity = (HelpMyStreet.Utils.Enums.SupportActivities) d.SupportActivityId,
-                    JobStatuses = (JobStatuses) d.JobStatusId
-                }).ToList();
+            bool isArchived = false;
+            if (request.Archive.HasValue)
+            {
+                isArchived = request.Archive.Value;
+            }
+
+            response.RequestSummary = MapEFRequestToSummary(request);
+
+
+            if (request.PersonIdRecipient.HasValue)
+            {
+                response.Recipient = isArchived ? null : GetPerson(request.PersonIdRecipientNavigation);
+            }
+
+            if (request.PersonIdRequester.HasValue)
+            {
+                response.Requestor = isArchived ? null : GetPerson(request.PersonIdRequesterNavigation);
+            }
+            return response;
+        }
+        public GetRequestSummaryResponse GetRequestSummary(int requestID)
+        {
+            GetRequestSummaryResponse response = new GetRequestSummaryResponse();
+
+            var request = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .Where(x => x.Id == requestID)
+                .First();
+
+            if (request != null)
+            {
+                response.RequestSummary = MapEFRequestToSummary(request);
             }
 
             return response;
+        }
+
+        private int GetVolunteerCountForGivenRequestIDAndSupportActivity(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int volunteerUserID)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
+
+            return _context.Job.Count(x => x.RequestId == requestID
+                                && x.SupportActivityId == supportActivity
+                                && x.JobStatusId == jobStatusAccepted
+                                && x.VolunteerUserId == volunteerUserID);
+        }
+
+        public int UpdateRequestStatusToAccepted(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusOpen = (byte)JobStatuses.Open;
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var job = _context.Job
+                .Include(i => i.NewRequest)
+                .FirstOrDefault(x => x.SupportActivityId == supportActivity
+                && x.RequestId == requestID
+                && x.JobStatusId == jobStatusOpen
+                && x.NewRequest.RequestType == requestTypeShift);
+
+            if (job != null)
+            {
+                //final check before adding volunteer to make sure that for given requestID and support activity
+                //that the volunteer has not accepted a shift
+                int count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
+
+                if (count == 0)
+                {
+                    using (var transaction = _context.Database.BeginTransaction())
+                    {
+                        job.JobStatusId = (byte)JobStatuses.Accepted;
+                        job.VolunteerUserId = volunteerUserID;
+                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
+                        _context.SaveChanges();
+
+                        count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
+
+                        if(count<2)
+                        {
+                            transaction.CommitAsync();
+                            return job.Id;
+                        }
+                        else
+                        {
+                            transaction.RollbackAsync();
+                            throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}");
+                        }
+                    }
+                }
+                else
+                {
+                    throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID:{requestID} SupportActivity:{activity} Volunteer:{volunteerUserID}");
+                }
+            }
+            else
+            {
+                throw new UnableToUpdateShiftException($"Unable to UpdateShiftStatus for RequestID { requestID}");
+            }
+
+        }
+
+        public async Task<int> VolunteerAlreadyAcceptedShift(int requestID, HelpMyStreet.Utils.Enums.SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken)
+        {
+            byte supportActivity = (byte)activity;
+            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var job = _context.Job
+                .Include(i => i.NewRequest)
+                .FirstOrDefault(x => x.VolunteerUserId == volunteerUserID
+                && x.SupportActivityId == supportActivity
+                && x.RequestId == requestID
+                && x.JobStatusId == jobStatusAccepted
+                && x.NewRequest.RequestType == requestTypeShift);
+
+            if (job != null)
+            {
+                return job.Id;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         public async Task<int> GetRequestIDFromGuid(Guid guid)
@@ -995,6 +1241,326 @@ namespace RequestService.Repo
             else
             {
                 return -1;
+            }
+        }
+
+        public List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request)
+        {
+            byte requestTypeShift = (byte)RequestType.Shift;
+            var jobs = _context.Job
+                .Include(i => i.NewRequest)
+                .ThenInclude(i => i.Shift)
+                .Where(x => x.VolunteerUserId == request.VolunteerUserId && x.NewRequest.RequestType == requestTypeShift);
+
+            if (jobs == null)
+            {
+                throw new Exception($"GetUserShiftJobsByFilter returned null for user id {request.VolunteerUserId}");
+            }
+
+            if (jobs.Count() == 0)
+            {
+                return new List<ShiftJob>();
+            }
+
+            if (request.JobStatusRequest.JobStatuses.Count > 0)
+            {
+                jobs = jobs.Where(x => request.JobStatusRequest.JobStatuses.Contains((JobStatuses)x.JobStatusId));
+            };
+
+            if (request.DateFrom.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value);
+            }
+
+            if (request.DateTo.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value);
+            }
+
+            return jobs.Select(x => new ShiftJob()
+            {
+                Location = (Location) x.NewRequest.Shift.LocationId,
+                ReferringGroupID = x.NewRequest.ReferringGroupId,
+                JobID = x.Id,
+                RequestID = x.NewRequest.Id,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                JobStatus = (JobStatuses)x.JobStatusId,
+                StartDate = x.NewRequest.Shift.StartDate,
+                ShiftLength = x.NewRequest.Shift.ShiftLength,
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType) x.NewRequest.RequestType
+            }).ToList();
+        }
+
+        public List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request, List<int> referringGroups)
+        {
+            byte requestTypeShift = (byte)RequestType.Shift;
+            byte jobstatusOpen = (byte)JobStatuses.Open;
+            var jobs = _context.Job
+                .Include(i => i.NewRequest)
+                .ThenInclude(i => i.Shift)
+                .Include(i => i.JobAvailableToGroup)
+                .Where(x => x.NewRequest.RequestType == requestTypeShift
+                && x.JobStatusId == jobstatusOpen);
+
+            if (jobs == null || jobs.Count() == 0)
+            {
+                return new List<ShiftJob>();
+            }
+
+            if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
+            {
+                //TODO
+            }
+
+            if (request.SupportActivities?.SupportActivities.Count > 0)
+            {
+                jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities) x.SupportActivityId));
+            };
+
+            if (referringGroups.Count > 0)
+            {
+                jobs = jobs.Where(x => referringGroups.Contains(x.NewRequest.ReferringGroupId));
+            }
+
+            if (request.Groups?.Groups.Count > 0)
+            {
+                jobs = jobs.Where(x => x.JobAvailableToGroup.Any(a=> request.Groups.Groups.Contains(a.GroupId)));
+            }
+
+            if(request.Locations?.Locations.Count >0)
+            {
+                jobs = jobs.Where(x => request.Locations.Locations.Contains((Location)x.NewRequest.Shift.LocationId));
+            }
+
+            if (request.DateFrom.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) >= request.DateFrom.Value);
+            }
+
+            if (request.DateTo.HasValue)
+            {
+                jobs = jobs.Where(x => x.NewRequest.Shift.StartDate <= request.DateTo.Value);
+            }
+
+            return jobs.Select(x => new ShiftJob()
+            {
+                Location = (Location) x.NewRequest.Shift.LocationId,
+                ReferringGroupID = x.NewRequest.ReferringGroupId,
+                JobID = x.Id,
+                RequestID = x.NewRequest.Id,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                JobStatus = (JobStatuses)x.JobStatusId,
+                StartDate = x.NewRequest.Shift.StartDate,
+                ShiftLength = x.NewRequest.Shift.ShiftLength,
+                VolunteerUserID = x.VolunteerUserId,
+                DateRequested = x.NewRequest.DateRequested,
+                RequestType = (RequestType)x.NewRequest.RequestType
+            }).ToList();
+        }
+
+        public List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups)
+        {
+            byte requestTypeShift = (byte)RequestType.Shift;
+
+            var requests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.JobAvailableToGroup)
+                .Where(x => x.RequestType == requestTypeShift);
+
+            if (requests == null || requests.Count() == 0)
+            {
+                return new List<RequestSummary>();
+            }
+
+            if (referringGroups.Count > 0)
+            {
+                requests = requests.Where(x => referringGroups.Contains(x.ReferringGroupId));
+            }
+
+            if (request.Groups?.Groups.Count > 0)
+            {
+                requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
+            }
+
+            if (request.Locations?.Locations.Count > 0)
+            {
+                requests = requests.Where(x => request.Locations.Locations.Contains((Location)x.Shift.LocationId));
+            }
+
+            if (request.DateFrom.HasValue)
+            {
+                requests = requests.Where(x => x.Shift.StartDate.AddMinutes(x.Shift.ShiftLength) >= request.DateFrom.Value);
+            }
+
+            if (request.DateTo.HasValue)
+            {
+                requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
+            }
+
+            return requests.Select(x => new RequestSummary()
+            {
+                Shift = new HelpMyStreet.Utils.Models.Shift()
+                {
+                    RequestID = x.Id,
+                    ShiftLength = x.Shift.ShiftLength,
+                    StartDate = x.Shift.StartDate,
+                    Location = (Location) x.Shift.LocationId
+                },
+                ReferringGroupID = x.ReferringGroupId,
+                RequestID = x.Id,
+                RequestType = (RequestType) x.RequestType,
+                DateRequested = x.DateRequested,
+                JobSummaries = x.Job.Select(x => new JobBasic()
+                {
+                    JobID = x.Id,
+                    ReferringGroupID = x.NewRequest.ReferringGroupId,
+                    JobStatus = (JobStatuses)x.JobStatusId,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                    VolunteerUserID = x.VolunteerUserId,
+                    RequestID = x.NewRequest.Id,
+                    RequestType = (RequestType) x.NewRequest.RequestType
+                }).ToList()
+            }).ToList();
+        }
+
+        public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            byte openJobStatus = (byte)JobStatuses.Open;
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != openJobStatus);
+
+            if(jobs == null)
+            {
+                //Not throwing an error as requestid might not exist or no not open jobs exist for request id
+                return false;
+            }
+
+            foreach(EntityFramework.Entities.Job job in jobs)
+            {
+                job.JobStatusId = openJobStatus;
+                job.VolunteerUserId = null;
+                AddJobStatus(job.Id, createdByUserID, null, openJobStatus);
+            }
+            int result = await _context.SaveChangesAsync(cancellationToken);
+            
+            if(jobs.Count()==0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            List<int> result = new List<int>();
+
+            byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
+
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != cancelledJobStatus);
+
+            if(jobs == null)
+            {
+                //No jobs need to be cancelled
+                return result;
+            }
+
+            foreach (EntityFramework.Entities.Job job in jobs)
+            {
+                job.JobStatusId = cancelledJobStatus;
+                job.VolunteerUserId = null;
+                AddJobStatus(job.Id, createdByUserID, null, cancelledJobStatus);
+                result.Add(job.Id);
+            }
+            await _context.SaveChangesAsync(cancellationToken);
+
+            if (jobs.Count()==0)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
+            }
+        }
+
+        private List<EntityFramework.Entities.Job> GetJobsWhereShiftStartDateHasPassed(JobStatuses jobStatus)
+        {
+            byte jobStatusID = (byte)jobStatus;
+            byte dueDateTypeSpecificStartAndEndTimesID = (byte)DueDateType.SpecificStartAndEndTimes;
+            DateTime now = DateTime.Now;
+
+            var jobs = _context.Job
+                            .Include(i=> i.NewRequest)
+                            .ThenInclude(i=> i.Shift)
+                            .Where(x => x.JobStatusId == jobStatusID
+                            && x.DueDateTypeId == dueDateTypeSpecificStartAndEndTimesID
+                            && x.NewRequest.Shift.StartDate<now
+                            ).ToList();
+            return jobs;
+        }
+
+        private List<EntityFramework.Entities.Job> GetJobsWhereShiftsHaveEnded(List<EntityFramework.Entities.Job> jobs)
+        {
+            return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) < DateTime.Now).ToList();
+        }
+        public async Task UpdateInProgressFromAccepted()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Accepted);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, CancellationToken.None);
+                }
+            }
+
+        }
+
+        public async Task UpdateJobsToDoneFromInProgress()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.InProgress);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusDoneAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+        }
+
+        public async Task UpdateJobsToCancelledFromNewOrOpen()
+        {
+            List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.New);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
+            }
+
+            jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Open);
+            jobs = GetJobsWhereShiftsHaveEnded(jobs);
+
+            if (jobs != null)
+            {
+                foreach (EntityFramework.Entities.Job job in jobs)
+                {
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                }
             }
         }
     }

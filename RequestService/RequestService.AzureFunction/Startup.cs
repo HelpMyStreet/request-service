@@ -90,6 +90,7 @@ namespace RequestService.AzureFunction
             builder.Services.AddTransient<IJobService, JobService>();
             builder.Services.AddTransient<IJobFilteringService, JobFilteringService>();
             builder.Services.AddTransient<IArchiveService, ArchiveService>();
+            builder.Services.AddTransient<IManageRequestsService, ManageRequestsService>();
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));

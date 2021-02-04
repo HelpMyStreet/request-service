@@ -1,0 +1,80 @@
+﻿using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
+using RequestService.Core.Interfaces.Repositories;
+using RequestService.Core.Services;
+using HelpMyStreet.Contracts.RequestService.Request;
+using HelpMyStreet.Contracts.RequestService.Response;
+using HelpMyStreet.Contracts.CommunicationService.Request;
+using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Utils.Models;
+using System.Collections.Generic;
+using System.Linq;
+using RequestService.Core.Exceptions;
+
+namespace RequestService.Handlers
+{
+    public class PutUpdateShiftStatusToAcceptedHandler : IRequestHandler<PutUpdateShiftStatusToAcceptedRequest, PutUpdateShiftStatusToAcceptedResponse>
+    {
+        private readonly IRepository _repository;
+        private readonly ICommunicationService _communicationService;
+        private readonly IJobService _jobService;
+        public PutUpdateShiftStatusToAcceptedHandler(IRepository repository, ICommunicationService communicationService, IJobService jobService)
+        {
+            _repository = repository;
+            _communicationService = communicationService;
+            _jobService = jobService;
+        }
+
+        public async Task<PutUpdateShiftStatusToAcceptedResponse> Handle(PutUpdateShiftStatusToAcceptedRequest request, CancellationToken cancellationToken)
+        {
+            PutUpdateShiftStatusToAcceptedResponse response = new PutUpdateShiftStatusToAcceptedResponse()
+            {
+                Outcome = UpdateJobStatusOutcome.Unauthorized,
+                JobID = -1
+            };
+
+            int existingJobId = await _repository.VolunteerAlreadyAcceptedShift(request.RequestID, request.SupportActivity.SupportActivity, request.VolunteerUserID, cancellationToken);
+
+            if (existingJobId > 0)
+            {
+                response = new PutUpdateShiftStatusToAcceptedResponse()
+                {
+                    Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus,
+                    JobID = existingJobId
+                };
+                return response;
+            }
+            else
+            {                
+                try
+                {
+                    bool hasPermission = (request.CreatedByUserID == request.VolunteerUserID || await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.CreatedByUserID, cancellationToken));
+
+                    if (hasPermission)
+                    {
+                        var jobId = _repository.UpdateRequestStatusToAccepted(request.RequestID, request.SupportActivity.SupportActivity, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
+
+                        if (jobId > 0)
+                        {
+                            return new PutUpdateShiftStatusToAcceptedResponse()
+                            {
+                                JobID = jobId,
+                                Outcome = UpdateJobStatusOutcome.Success
+                            };
+                        }
+                    }
+                }
+                catch (UnableToUpdateShiftException)
+                {
+                    return new PutUpdateShiftStatusToAcceptedResponse()
+                    {
+                        Outcome = UpdateJobStatusOutcome.NoLongerAvailable,
+                        JobID = -1
+                    };
+                }
+            }
+            return response;
+        }
+    }
+}

@@ -30,6 +30,7 @@ namespace RequestService.UnitTests
         private GetUserRolesResponse _getUserRolesResponse;
         private int _refferingGroupID;
         private GetJobDetailsResponse _getjobdetailsResponse;
+        private GetGroupResponse _getGroupResponse;
 
         [SetUp]
         public void Setup()
@@ -65,6 +66,8 @@ namespace RequestService.UnitTests
             _groupService = _mockRepository.Create<IGroupService>();
             _groupService.Setup(x => x.GetUserRoles(It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _getUserRolesResponse);
+            _groupService.Setup(x => x.GetGroup(It.IsAny<int>()))
+                .ReturnsAsync(() => _getGroupResponse);
         }
 
         [TearDown]
@@ -164,18 +167,30 @@ namespace RequestService.UnitTests
             };
 
             Dictionary<int, List<int>> roles = new Dictionary<int, List<int>>();
-            roles.Add(1, new List<int>() { (int)GroupRoles.TaskAdmin });
+            roles.Add(2, new List<int>() { (int)GroupRoles.TaskAdmin });
 
             _getUserRolesResponse = new GetUserRolesResponse()
             {
                 UserGroupRoles = roles
             };
+
+            _getGroupResponse = new GetGroupResponse()
+            {
+                Group = new Group()
+                {
+                    GroupId = 1,
+                    GroupKey = "KEY",
+                    GroupName = "GroupName",
+                    ParentGroupId = 2
+                }
+            };
+
             var response = await _classUnderTest.HasPermissionToChangeStatusAsync(jobId, createdByUserID, true, CancellationToken.None);
 
             _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), Times.Once);
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _groupService.Verify(x => x.GetUserRoles(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
-
+            _groupService.Verify(x => x.GetGroup(It.IsAny<int>()), Times.Once);
             Assert.AreEqual(true, response);
         }
 
@@ -223,11 +238,23 @@ namespace RequestService.UnitTests
             {
                 UserGroupRoles = roles
             };
+
+            _getGroupResponse = new GetGroupResponse()
+            {
+                Group = new Group()
+                {
+                    GroupId = 1,
+                    GroupKey = "KEY",
+                    GroupName = "GroupName",
+                    ParentGroupId = 2
+                }
+            };
+
             var response = await _classUnderTest.HasPermissionToChangeStatusAsync(jobId, createdByUserID, false, CancellationToken.None);
             _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), Times.Once);
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _groupService.Verify(x => x.GetUserRoles(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
-
+            _groupService.Verify(x => x.GetGroup(It.IsAny<int>()), Times.Once);
             Assert.AreEqual(false, response);
         }
 
@@ -250,11 +277,25 @@ namespace RequestService.UnitTests
             {
                 UserGroupRoles = roles
             };
+
+
+            _getGroupResponse = new GetGroupResponse()
+            {
+                Group = new Group()
+                {
+                    GroupId = 1,
+                    GroupKey = "KEY",
+                    GroupName = "GroupName",
+                    ParentGroupId = 2
+                }
+            };
+
             var response = await _classUnderTest.HasPermissionToChangeStatusAsync(jobId, createdByUserID, true, CancellationToken.None);
 
             _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), Times.Once);
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _groupService.Verify(x => x.GetUserRoles(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _groupService.Verify(x => x.GetGroup(It.IsAny<int>()), Times.Once);
 
             Assert.AreEqual(false, response);
         }

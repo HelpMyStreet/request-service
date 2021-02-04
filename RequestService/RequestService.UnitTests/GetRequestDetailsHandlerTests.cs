@@ -30,25 +30,28 @@ namespace RequestService.UnitTests
             _classUnderTest = new GetRequestDetailsHandler(_repository.Object,_jobService.Object);
             _response = new GetRequestDetailsResponse()
             {
-                Shift = new HelpMyStreet.Utils.Models.Shift()
+                RequestSummary = new HelpMyStreet.Utils.Models.RequestSummary()
                 {
-                    StartDate = DateTime.Now,
-                    ShiftLength = 10
-                },
-                ShiftJobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.ShiftJobSummary>()
-                {
-                    new HelpMyStreet.Utils.Models.ShiftJobSummary()
+                    Shift = new HelpMyStreet.Utils.Models.Shift()
                     {
-                        ID = 1,
-                        Activity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
-                        JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
+                        StartDate = DateTime.Now,
+                        ShiftLength = 10
                     },
-                    new HelpMyStreet.Utils.Models.ShiftJobSummary()
-                    {
-                        ID = 1,
-                        Activity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
-                        JobStatuses = HelpMyStreet.Utils.Enums.JobStatuses.New
-                    }
+                    JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobBasic>()
+                     {
+                         new HelpMyStreet.Utils.Models.JobBasic()
+                        {
+                            JobID = 1,
+                            SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
+                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
+                         },
+                        new HelpMyStreet.Utils.Models.JobBasic()
+                        {
+                            JobID = 1,
+                            SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
+                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
+                        }
+                     }
                 }
             };
         }
@@ -62,7 +65,7 @@ namespace RequestService.UnitTests
         private void SetupJobService()
         {
             _jobService = new Mock<IJobService>();
-            _jobService.Setup(x => x.HasPermissionToViewRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            _jobService.Setup(x => x.HasPermissionToChangeRequestAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _permission);
         }
 

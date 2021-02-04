@@ -22,22 +22,25 @@ using System.Threading.Tasks;
 
 namespace RequestService.UnitTests
 {
-    public class PostNewRequestForHelpShiftHandlerTests
+    public class PostNewShiftsHandlerTests
     {
         private Mock<IRepository> _repository;
         private Mock<IGroupService> _groupService;
+        private Mock<ICommunicationService> _communicationService;
         private PostNewShiftsHandler _classUnderTest;
         private PostNewShiftsRequest _request;
         private int _requestId;
         private GetRequestHelpFormVariantResponse _formVariantResponse;
-        
+        private GetNewShiftActionsResponse _getNewShiftActionsResponse;
+
 
         [SetUp]
         public void Setup()
         {
             SetupRepository();
             SetupGroupService();
-            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
+            SetupCommunicationService();
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object, _communicationService.Object);
         }
 
         private void SetupRepository()
@@ -46,7 +49,7 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.NewShiftsRequestAsync(
                 It.IsAny<PostNewShiftsRequest>(),
                 It.IsAny<Fulfillable>(),
-                It.IsAny<bool>()))
+                It.IsAny<RequestPersonalDetails>()))
                 .ReturnsAsync(() => _requestId);
         }
        
@@ -57,13 +60,21 @@ namespace RequestService.UnitTests
             _formVariantResponse = new GetRequestHelpFormVariantResponse()
             {
                 AccessRestrictedByRole = false,
-                RequestorDefinedByGroup = false,
+                RequestorDefinedByGroup = true,
                 RequestHelpFormVariant = RequestHelpFormVariant.Default,
                 TargetGroups = TargetGroups.GenericGroup
             };
 
             _groupService.Setup(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _formVariantResponse);
+
+            _groupService.Setup(x => x.GetNewShiftActions(It.IsAny<GetNewShiftActionsRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => _getNewShiftActionsResponse);
+        }
+
+        private void SetupCommunicationService()
+        {
+            _communicationService = new Mock<ICommunicationService>();
         }
 
         [Test]
@@ -73,7 +84,7 @@ namespace RequestService.UnitTests
             _request = new PostNewShiftsRequest()
             {
                 CreatedByUserId = 1,
-                LocationRef = "LOCATION_REF",
+                Location = new SingleLocationRequest() { Location = Location.FranklinHallSpilsby },
                 OtherDetails = "OTHER DETAILS",
                 ReferringGroupId = -7,
                 Source = "a",
@@ -93,9 +104,18 @@ namespace RequestService.UnitTests
                     }
                 }
             };
+            _getNewShiftActionsResponse = new GetNewShiftActionsResponse()
+            {
+                TaskActions = new Dictionary<NewTaskAction, List<int>>()
+                {
+
+                    { NewTaskAction.MakeAvailableToGroups, new List<int>() }
+                }
+            };
+          
             var response = await _classUnderTest.Handle(_request, new CancellationToken());
             _groupService.Verify(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object);
+            _classUnderTest = new PostNewShiftsHandler(_repository.Object, _groupService.Object, _communicationService.Object);
             Assert.AreEqual(_requestId, response.RequestID);
         }
     }

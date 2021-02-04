@@ -10,24 +10,24 @@ using RequestService.Core.Services;
 
 namespace RequestService.Handlers
 {
-    public class GetRequestDetailsHandler : IRequestHandler<GetRequestDetailsRequest, GetRequestDetailsResponse>
+    public class GetRequestSummaryHandler : IRequestHandler<GetRequestSummaryRequest, GetRequestSummaryResponse>
     {
         private readonly IRepository _repository;
         private readonly IJobService _jobService;
-        public GetRequestDetailsHandler(IRepository repository, IJobService jobService)
+        public GetRequestSummaryHandler(IRepository repository, IJobService jobService)
         {
             _repository = repository;
             _jobService = jobService;
         }
 
-        public async Task<GetRequestDetailsResponse> Handle(GetRequestDetailsRequest request, CancellationToken cancellationToken)
+        public async Task<GetRequestSummaryResponse> Handle(GetRequestSummaryRequest request, CancellationToken cancellationToken)
         {
             bool hasPermission = await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.AuthorisedByUserID, cancellationToken);
-            GetRequestDetailsResponse response = null;
+            GetRequestSummaryResponse response = null;
             
             if (hasPermission)
             {
-                response = _repository.GetRequestDetails(request.RequestID);
+                response = _repository.GetRequestSummary(request.RequestID);
             }
             return response;
         }

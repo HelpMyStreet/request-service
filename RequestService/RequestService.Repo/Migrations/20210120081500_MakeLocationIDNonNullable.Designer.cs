@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210120081500_MakeLocationIDNonNullable")]
+    partial class MakeLocationIDNonNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5357,11 +5359,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 16,
                             Name = "AgeUKFavershamAndSittingbourne_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "LincolnshireVolunteers"
                         });
                 });
 
@@ -5523,11 +5520,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 23,
                             Name = "MealtimeCompanion"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "VaccineSupport"
                         });
                 });
 

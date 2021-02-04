@@ -156,20 +156,31 @@ namespace RequestService.Core.Services
             }
 
             int referringGroupId = await _repository.GetReferringGroupIDForJobAsync(jobID, cancellationToken);
-
             var userRoles = await _groupService.GetUserRoles(createdByUserID, cancellationToken);
 
-            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            if(userRoles.UserGroupRoles.ContainsKey(referringGroupId))
             {
-                return true;
+                if(userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
-            else
+
+            var group = await _groupService.GetGroup(referringGroupId);
+            int? parentGroupId = group.Group.ParentGroupId;
+
+            if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
             {
-                return false;
+                if (userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
+            
+            return false;
         }
 
-        public async Task<bool> HasPermissionToViewRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
+        public async Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken)
         {
             var requestDetails = _repository.GetRequestDetails(requestID);
 
@@ -178,18 +189,34 @@ namespace RequestService.Core.Services
                 throw new Exception($"Unable to retrieve request details for requestID:{requestID}");
             }
 
-            int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
-
-            var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
-
-            if (userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+            if(authorisedByUserID == -1)
             {
                 return true;
             }
-            else
+
+            int referringGroupId = await _repository.GetReferringGroupIDForRequestAsync(requestID, cancellationToken);
+             var userRoles = await _groupService.GetUserRoles(authorisedByUserID, cancellationToken);
+
+            if(userRoles.UserGroupRoles.ContainsKey(referringGroupId))
             {
-                return false;
+                if(userRoles.UserGroupRoles[referringGroupId].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
             }
+
+            var group = await _groupService.GetGroup(referringGroupId);
+            int? parentGroupId = group.Group.ParentGroupId;
+
+            if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
+            {
+                if (userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.TaskAdmin))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
     }
 }
