@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HelpMyStreet.Utils.Enums;
+using System.Collections.Generic;
 
 namespace RequestService.Repo.EntityFramework.Entities
 {
@@ -15,6 +16,8 @@ namespace RequestService.Repo.EntityFramework.Entities
         public byte QuestionType { get; set; }        
         public string AdditionalData { get; set; }
         public bool AnswerContainsSensitiveData { get; set; }
+        public byte? AdditionalDataSource { get; set; }
+
         public virtual ICollection<ActivityQuestions> ActivityQuestions { get; set; }
         public virtual ICollection<JobQuestions> JobQuestions { get; set; }
     }
