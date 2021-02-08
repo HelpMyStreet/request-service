@@ -31,7 +31,7 @@ namespace RequestService.Core.Services
             string absolutePath = $"{path}";
             var jsonContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-            using (HttpResponseMessage response = await _httpClientWrapper.PostAsync(HttpClientConfigName.GroupService, absolutePath, jsonContent, CancellationToken.None).ConfigureAwait(false))
+            using (HttpResponseMessage response = await _httpClientWrapper.PostAsync(HttpClientConfigName.AddressService, absolutePath, jsonContent, CancellationToken.None).ConfigureAwait(false))
             {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 var getJobsResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetLocationsResponse, AddressServiceErrorCode>>(jsonResponse);

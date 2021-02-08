@@ -41,12 +41,15 @@ namespace RequestService.Handlers
                 {
                     GetLocationsRequest locationRequest = new GetLocationsRequest()
                     {
-                        LocationRequests = groupLocations.Locations.Select(x => new LocationRequest() { Location = x }).ToList()
+                        LocationsRequests = new HelpMyStreet.Contracts.AddressService.Request.LocationsRequest()
+                        {
+                            Locations = groupLocations.Locations.ToList()
+                        }
                     };
                     var details = await _addressService.GetLocations(locationRequest);
                     if (details != null)
                     {
-                        data = details.LocationDetails.Select(x => new AdditonalQuestionData() { Key = x.Location.ToString(), Value = x.ShortName }).ToList();
+                        data = details.LocationDetails.Select(x => new AdditonalQuestionData() { Key = ((int) x.Location).ToString(), Value = x.ShortName }).ToList();
                     }
                 }
             }
