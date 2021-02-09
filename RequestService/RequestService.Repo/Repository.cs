@@ -1041,7 +1041,8 @@ namespace RequestService.Repo
                             PlaceholderText = x.PlaceholderText,
                             Type = (QuestionType)x.Question.QuestionType,
                             AddtitonalData = x.Question.AdditionalData != null ? JsonConvert.DeserializeObject<List<AdditonalQuestionData>>(x.Question.AdditionalData) : new List<AdditonalQuestionData>(),
-                            AnswerContainsSensitiveData = x.Question.AnswerContainsSensitiveData
+                            AnswerContainsSensitiveData = x.Question.AnswerContainsSensitiveData,
+                            AdditionalDataSource = (AdditionalDataSource) x.Question.AdditionalDataSource
                         }).ToList();
         }
 

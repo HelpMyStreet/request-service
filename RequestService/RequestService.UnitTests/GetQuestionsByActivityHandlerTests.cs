@@ -17,6 +17,8 @@ namespace RequestService.UnitTests
     public class GetQuestionsByActivityHandlerTests
     {
         private Mock<IRepository> _repository;
+        private Mock<IGroupService> _groupService;
+        private Mock<IAddressService> _addressService;
         private GetQuestionsByActivityHandler _classUnderTest;
         private GetQuestionsByActivitiesRequest _request;
         private List<ActivityQuestionDTO> _response;
@@ -26,7 +28,9 @@ namespace RequestService.UnitTests
         public void Setup()
         {
             SetupRepository();
-            _classUnderTest = new GetQuestionsByActivityHandler(_repository.Object);
+            SetupGroupService();
+            SetupAddressService();
+            _classUnderTest = new GetQuestionsByActivityHandler(_repository.Object, _groupService.Object, _addressService.Object);
             _request = new GetQuestionsByActivitiesRequest()
             {
 
@@ -78,6 +82,16 @@ namespace RequestService.UnitTests
             _repository = new Mock<IRepository>();
             _repository.Setup(x => x.GetQuestionsForActivity(It.IsAny<HelpMyStreet.Utils.Enums.SupportActivities>(), It.IsAny<HelpMyStreet.Utils.Enums.RequestHelpFormVariant>(), It.IsAny<HelpMyStreet.Utils.Enums.RequestHelpFormStage>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(()=> _questions);
+        }
+
+        private void SetupGroupService()
+        {
+            _groupService = new Mock<IGroupService>();
+        }
+
+        private void SetupAddressService()
+        {
+            _addressService = new Mock<IAddressService>();
         }
 
         [Test]
