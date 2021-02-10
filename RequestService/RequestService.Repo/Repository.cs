@@ -22,6 +22,8 @@ using RequestService.Core.Exceptions;
 using System.Security.Cryptography.X509Certificates;
 using RequestService.Core.Domains.Entities;
 using Polly.Caching;
+using HelpMyStreet.Utils.Extensions;
+using AutoMapper.Configuration.Conventions;
 
 namespace RequestService.Repo
 {
@@ -173,6 +175,8 @@ namespace RequestService.Repo
                     _context.Person.Add(requester);
                     _context.Person.Add(recipient);
 
+                    RequestType requestType = postNewRequestForHelpRequest.NewJobsRequest.Jobs.First().SupportActivity.RequestType();
+
                     Request newRequest = new Request()
                     {
                         Guid = postNewRequestForHelpRequest.HelpRequest.Guid,
@@ -190,44 +194,89 @@ namespace RequestService.Repo
                         ReferringGroupId = postNewRequestForHelpRequest.HelpRequest.ReferringGroupId,
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup,
-                        RequestType = (byte)RequestType.Task
+                        RequestType = (byte)requestType
                     };
 
                     foreach (HelpMyStreet.Utils.Models.Job job in postNewRequestForHelpRequest.NewJobsRequest.Jobs)
                     {
-
-                        EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
+                        if (job.SupportActivity.RequestType() == RequestType.Shift)
                         {
-                            NewRequest = newRequest,
-                            Details = job.Details,
-                            IsHealthCritical = job.HealthCritical,
-                            SupportActivityId = (byte)job.SupportActivity,
-                            DueDate = DateTime.Now.AddDays(job.DueDays),
-                            DueDateTypeId = (byte)job.DueDateType,
-                            JobStatusId = (byte)JobStatuses.New,
-                            Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
-                        };
-                        _context.Job.Add(EFcoreJob);
-                        await _context.SaveChangesAsync();
-                        job.JobID = EFcoreJob.Id;
+                            var locationQuestion = job.Questions.Where(x => x.Id == (int) Questions.Location).First();
+                            var numberOfSlotsQuestion = job.Questions.Where(x => x.Id == (int)Questions.NumberOfSlots).First();
 
-                        foreach (var question in job.Questions)
-                        {
-                            _context.JobQuestions.Add(new JobQuestions
+                            if(locationQuestion==null || numberOfSlotsQuestion == null )
                             {
-                                Job = EFcoreJob,
-                                QuestionId = question.Id,
-                                Answer = question.Answer
-                            });
-                        }
+                                throw new Exception("Missing location question or number of slots question");
+                            }
 
-                        _context.RequestJobStatus.Add(new RequestJobStatus()
+                            int numberofSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
+
+                            _context.Shift.Add(new EntityFramework.Entities.Shift()
+                            {
+                                Request = newRequest,
+                                StartDate = job.StartDate.Value,
+                                ShiftLength = (int) (job.EndDate.Value - job.StartDate.Value).TotalMinutes,
+                                LocationId = Convert.ToInt32(locationQuestion.Answer)
+                            });
+
+                            for (int i = 0; i < numberofSlots; i++)
+                            {
+                                EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
+                                {
+                                    NewRequest = newRequest,
+                                    IsHealthCritical = false,
+                                    SupportActivityId = (byte)job.SupportActivity,
+                                    DueDate = new DateTime(1900, 1, 1),
+                                    DueDateTypeId = (byte)DueDateType.SpecificStartAndEndTimes,
+                                    JobStatusId = (byte)JobStatuses.Open,
+                                };
+                                _context.Job.Add(EFcoreJob);
+                                await _context.SaveChangesAsync();
+                                job.JobID = EFcoreJob.Id;
+                                _context.RequestJobStatus.Add(new RequestJobStatus()
+                                {
+                                    DateCreated = DateTime.Now,
+                                    JobStatusId = (byte)JobStatuses.Open,
+                                    Job = EFcoreJob,
+                                    CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
+                                });
+                            }
+                        }
+                        else
                         {
-                            DateCreated = DateTime.Now,
-                            JobStatusId = (byte)JobStatuses.New,
-                            Job = EFcoreJob,
-                            CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
-                        });
+                            EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
+                            {
+                                NewRequest = newRequest,
+                                IsHealthCritical = job.HealthCritical,
+                                SupportActivityId = (byte)job.SupportActivity,
+                                DueDate = DateTime.Now.AddDays(job.DueDays),
+                                DueDateTypeId = (byte)job.DueDateType,
+                                JobStatusId = (byte)JobStatuses.New,
+                                Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
+                            };
+                            _context.Job.Add(EFcoreJob);
+                            await _context.SaveChangesAsync();
+                            job.JobID = EFcoreJob.Id;
+
+                            foreach (var question in job.Questions)
+                            {
+                                _context.JobQuestions.Add(new JobQuestions
+                                {
+                                    Job = EFcoreJob,
+                                    QuestionId = question.Id,
+                                    Answer = question.Answer
+                                });
+                            }
+
+                            _context.RequestJobStatus.Add(new RequestJobStatus()
+                            {
+                                DateCreated = DateTime.Now,
+                                JobStatusId = (byte)JobStatuses.New,
+                                Job = EFcoreJob,
+                                CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
+                            });
+                                                     
+                        }
                     }
 
                     await _context.SaveChangesAsync();
