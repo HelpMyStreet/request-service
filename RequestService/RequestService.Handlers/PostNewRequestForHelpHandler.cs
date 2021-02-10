@@ -127,17 +127,21 @@ namespace RequestService.Handlers
             {
                 CopyRequestorAsRecipient(request);
             }
-            string postcode = request.HelpRequest.Recipient.Address.Postcode;
 
-            var postcodeValid = await _addressService.IsValidPostcode(postcode, cancellationToken);
-
-            if (!postcodeValid || postcode.Length > 10)
+            if (!string.IsNullOrEmpty(request.HelpRequest.Recipient?.Address?.Postcode))
             {
-                return new PostNewRequestForHelpResponse
+                string postcode = request.HelpRequest.Recipient.Address.Postcode;
+
+                var postcodeValid = await _addressService.IsValidPostcode(postcode, cancellationToken);
+
+                if (!postcodeValid || postcode.Length > 10)
                 {
-                    RequestID = -1,
-                    Fulfillable = Fulfillable.Rejected_InvalidPostcode
-                };
+                    return new PostNewRequestForHelpResponse
+                    {
+                        RequestID = -1,
+                        Fulfillable = Fulfillable.Rejected_InvalidPostcode
+                    };
+                }
             }
 
             // Currently indicates standard "passed to volunteers" result
@@ -170,6 +174,12 @@ namespace RequestService.Handlers
 
                     switch (newTaskAction)
                     {
+                        case NewTaskAction.MakeAvailableToGroups:
+                            foreach (int i in actionAppliesToIds)
+                            {
+                                await _repository.AddRequestAvailableToGroupAsync(requestId, i, cancellationToken);
+                            }
+                            break;
                         case NewTaskAction.NotifyGroupAdmins:
                             foreach (int groupId in actionAppliesToIds)
                             {
@@ -211,13 +221,6 @@ namespace RequestService.Handlers
 
                         switch (newTaskAction)
                         {
-                            case NewTaskAction.MakeAvailableToGroups:
-                                foreach (int i in actionAppliesToIds)
-                                {
-                                    await _repository.AddJobAvailableToGroupAsync(jobID, i, cancellationToken);
-                                }
-                                break;
-
                             case NewTaskAction.NotifyMatchingVolunteers:
                                 foreach (int groupId in actionAppliesToIds)
                                 {
