@@ -170,6 +170,12 @@ namespace RequestService.Handlers
 
                     switch (newTaskAction)
                     {
+                        case NewTaskAction.MakeAvailableToGroups:
+                            foreach (int i in actionAppliesToIds)
+                            {
+                                await _repository.AddRequestAvailableToGroupAsync(requestId, i, cancellationToken);
+                            }
+                            break;
                         case NewTaskAction.NotifyGroupAdmins:
                             foreach (int groupId in actionAppliesToIds)
                             {
@@ -211,13 +217,6 @@ namespace RequestService.Handlers
 
                         switch (newTaskAction)
                         {
-                            case NewTaskAction.MakeAvailableToGroups:
-                                foreach (int i in actionAppliesToIds)
-                                {
-                                    await _repository.AddJobAvailableToGroupAsync(jobID, i, cancellationToken);
-                                }
-                                break;
-
                             case NewTaskAction.NotifyMatchingVolunteers:
                                 foreach (int groupId in actionAppliesToIds)
                                 {
