@@ -138,19 +138,26 @@ namespace RequestService.Repo
 
         private Person GetPersonFromPersonalDetails(RequestPersonalDetails requestPersonalDetails)
         {
-            return new Person()
+            if (requestPersonalDetails != null)
             {
-                FirstName = requestPersonalDetails.FirstName,
-                LastName = requestPersonalDetails.LastName,
-                EmailAddress = requestPersonalDetails.EmailAddress,
-                AddressLine1 = requestPersonalDetails.Address.AddressLine1,
-                AddressLine2 = requestPersonalDetails.Address.AddressLine2,
-                AddressLine3 = requestPersonalDetails.Address.AddressLine3,
-                Locality = requestPersonalDetails.Address.Locality,
-                Postcode = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Postcode),
-                MobilePhone = requestPersonalDetails.MobileNumber,
-                OtherPhone = requestPersonalDetails.OtherNumber,
-            };
+                return new Person()
+                {
+                    FirstName = requestPersonalDetails.FirstName,
+                    LastName = requestPersonalDetails.LastName,
+                    EmailAddress = requestPersonalDetails.EmailAddress,
+                    AddressLine1 = requestPersonalDetails.Address.AddressLine1,
+                    AddressLine2 = requestPersonalDetails.Address.AddressLine2,
+                    AddressLine3 = requestPersonalDetails.Address.AddressLine3,
+                    Locality = requestPersonalDetails.Address.Locality,
+                    Postcode = PostcodeFormatter.FormatPostcode(requestPersonalDetails.Address.Postcode),
+                    MobilePhone = requestPersonalDetails.MobileNumber ?? string.Empty,
+                    OtherPhone = requestPersonalDetails.OtherNumber ?? string.Empty,
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
@@ -172,11 +179,18 @@ namespace RequestService.Repo
             {
                 try
                 {
-                    _context.Person.Add(requester);
-                    _context.Person.Add(recipient);
+                    if (requester != null)
+                    {
+                        _context.Person.Add(requester);
+                    }
+
+                    if (recipient != null)
+                    {
+                        _context.Person.Add(recipient);
+                    }
 
                     RequestType requestType = postNewRequestForHelpRequest.NewJobsRequest.Jobs.First().SupportActivity.RequestType();
-
+                                        
                     Request newRequest = new Request()
                     {
                         Guid = postNewRequestForHelpRequest.HelpRequest.Guid,
@@ -185,7 +199,7 @@ namespace RequestService.Repo
                         AcceptedTerms = postNewRequestForHelpRequest.HelpRequest.AcceptedTerms,
                         OtherDetails = postNewRequestForHelpRequest.HelpRequest.OtherDetails,
                         OrganisationName = postNewRequestForHelpRequest.HelpRequest.OrganisationName,
-                        PostCode = PostcodeFormatter.FormatPostcode(postNewRequestForHelpRequest.HelpRequest.Recipient.Address.Postcode),
+                        PostCode = PostcodeFormatter.FormatPostcode(postNewRequestForHelpRequest.HelpRequest.Recipient?.Address?.Postcode ?? string.Empty),
                         PersonIdRecipientNavigation = recipient,
                         PersonIdRequesterNavigation = requester,
                         RequestorType = (byte)postNewRequestForHelpRequest.HelpRequest.RequestorType,
