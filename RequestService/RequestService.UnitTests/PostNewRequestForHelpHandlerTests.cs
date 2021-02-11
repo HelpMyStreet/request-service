@@ -38,6 +38,8 @@ namespace RequestService.UnitTests
         private GetGroupMembersResponse _getGroupMembersResponse;
         private GetRequestHelpFormVariantResponse _formVariantResponse;
         private GetGroupMemberResponse _getGroupMemberResponse;
+        private GetUserRolesResponse _getUserRolesResponse;
+        private GetGroupResponse _getGroupResponse;
 
         [SetUp]
         public void Setup()
@@ -131,6 +133,13 @@ namespace RequestService.UnitTests
 
             _groupService.Setup(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()))
                 .ReturnsAsync(() => _getGroupMemberResponse);
+
+            _groupService.Setup(x => x.GetUserRoles(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => _getUserRolesResponse);
+
+            _groupService.Setup(x => x.GetGroup(It.IsAny<int>()))
+                .ReturnsAsync(() => _getGroupResponse);
+                
         }
 
         [Test]
@@ -399,6 +408,8 @@ namespace RequestService.UnitTests
             requestId = 1;
             _validPostcode = true;
             _emailSent = true;
+            int referringGroupId = -20;
+
             Guid guid = Guid.NewGuid();
             var request = new PostNewRequestForHelpRequest
             {
@@ -413,7 +424,8 @@ namespace RequestService.UnitTests
                         }
                     },
                     VolunteerUserId = 1,
-                    CreatedByUserId = createdByUserId
+                    CreatedByUserId = createdByUserId,
+                    ReferringGroupId = referringGroupId
                 },
                 NewJobsRequest = new NewJobsRequest
                 {
@@ -456,7 +468,18 @@ namespace RequestService.UnitTests
                 }
             };
 
-            
+            _getGroupResponse = new GetGroupResponse()
+            {
+                Group = new Group()
+                {
+                    GroupId = referringGroupId
+                }
+            };
+
+            _getUserRolesResponse = new GetUserRolesResponse()
+            {
+                UserGroupRoles = new Dictionary<int, List<int>>()
+            };
 
             _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
             _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
