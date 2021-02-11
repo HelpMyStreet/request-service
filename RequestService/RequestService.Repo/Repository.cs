@@ -223,6 +223,8 @@ namespace RequestService.Repo
                                 throw new Exception("Missing location question or number of slots question");
                             }
 
+                            int locationId = Convert.ToInt32(locationQuestion.AddtitonalData.Where(x => x.Value == locationQuestion.Answer).First().Key);
+
                             int numberofSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
 
                             _context.Shift.Add(new EntityFramework.Entities.Shift()
@@ -230,7 +232,7 @@ namespace RequestService.Repo
                                 Request = newRequest,
                                 StartDate = job.StartDate.Value,
                                 ShiftLength = (int) (job.EndDate.Value - job.StartDate.Value).TotalMinutes,
-                                LocationId = Convert.ToInt32(locationQuestion.Answer)
+                                LocationId = locationId
                             });
 
                             for (int i = 0; i < numberofSlots; i++)

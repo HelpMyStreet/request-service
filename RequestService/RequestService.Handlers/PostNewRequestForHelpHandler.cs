@@ -106,6 +106,20 @@ namespace RequestService.Handlers
                     });
 
                     failedChecks = !groupMember.UserInGroup.GroupRoles.Contains(GroupRoles.RequestSubmitter);
+
+                    if(failedChecks)
+                    {
+                        //check if user has request submitter role with parant group
+                        var userRoles = await _groupService.GetUserRoles(request.HelpRequest.CreatedByUserId, cancellationToken);
+
+                        var group = await _groupService.GetGroup(request.HelpRequest.ReferringGroupId);
+                        int? parentGroupId = group.Group.ParentGroupId;
+
+                        if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
+                        {
+                            failedChecks = !(userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.RequestSubmitter));                            
+                        }
+                    }
                 }
 
                 if (failedChecks)
