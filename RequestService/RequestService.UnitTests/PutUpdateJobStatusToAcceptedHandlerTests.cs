@@ -107,7 +107,7 @@ namespace RequestService.UnitTests
             {
                 CreatedByUserID = 1,
                 JobID = 1,
-                VolunteerUserID = 1
+                VolunteerUserID = 2
             };
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
             _repository.Verify(x => x.JobHasStatus(It.IsAny<int>(), It.IsAny<JobStatuses>()), Times.Once);
