@@ -199,7 +199,6 @@ namespace RequestService.Repo
                         EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
                         {
                             NewRequest = newRequest,
-                            Details = job.Details,
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
                             DueDate = DateTime.Now.AddDays(job.DueDays),
