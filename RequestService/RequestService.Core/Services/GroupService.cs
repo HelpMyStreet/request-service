@@ -223,5 +223,21 @@ namespace RequestService.Core.Services
                 return null;
             }
         }
+
+        public async Task<GetGroupLocationsResponse> GetGroupLocations(int groupId)
+        {
+            string path = $"/api/GetGroupLocations?GroupID={groupId}&IncludeChildGroups=true";
+            string absolutePath = $"{path}";
+            using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, absolutePath, CancellationToken.None).ConfigureAwait(false))
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var getJobsResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetGroupLocationsResponse, GroupServiceErrorCode>>(jsonResponse);
+                if (getJobsResponse.HasContent && getJobsResponse.IsSuccessful)
+                {
+                    return getJobsResponse.Content;
+                }
+                return null;
+            }
+        }
     }
 }

@@ -4,11 +4,13 @@ using HelpMyStreet.Contracts.Shared;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Utils;
 using Marvin.StreamExtensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Utf8Json.Resolvers;
@@ -21,6 +23,24 @@ namespace RequestService.Core.Services
         public AddressService(IHttpClientWrapper httpClientWrapper)
         {
             _httpClientWrapper = httpClientWrapper;
+        }
+
+        public async Task<GetLocationsResponse> GetLocations(GetLocationsRequest request)
+        {
+            string path = $"/api/GetLocations";
+            string absolutePath = $"{path}";
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+            using (HttpResponseMessage response = await _httpClientWrapper.PostAsync(HttpClientConfigName.AddressService, absolutePath, jsonContent, CancellationToken.None).ConfigureAwait(false))
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var getJobsResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetLocationsResponse, AddressServiceErrorCode>>(jsonResponse);
+                if (getJobsResponse.HasContent && getJobsResponse.IsSuccessful)
+                {
+                    return getJobsResponse.Content;
+                }
+                return null;
+            }
         }
 
         public async Task<GetPostcodeCoordinatesResponse> GetPostcodeCoordinatesAsync(List<string> postCodes, CancellationToken cancellationToken)

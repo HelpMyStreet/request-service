@@ -142,6 +142,25 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
             });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.NumberOfSlots,
+                Name = "How many volunteers are required?",
+                QuestionType = (int)QuestionType.Number,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.Location,
+                Name = "Where is the help needed?",
+                QuestionType = (int)QuestionType.Radio,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false,
+                AdditionalDataSource = (byte) AdditionalDataSource.GroupLocation
+            });
         }
         private static string GetAdditionalData(Questions question)
         {
@@ -229,11 +248,37 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants.Where(x=> !x.Equals(RequestHelpFormVariant.LincolnshireVolunteers)))
+            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.ChildGroupSelector)))
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
-                    if (activity == SupportActivities.FaceMask)
+                    if(activity == SupportActivities.VaccineSupport)
+                    {
+                        entity.HasData(new ActivityQuestions 
+                        { 
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                            QuestionId = (int)Questions.NumberOfSlots,
+                            Location = "pos3", 
+                            Order = 1, 
+                            RequestFormVariantId = (int)form, 
+                            Required = true, 
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.Location,
+                            Location = "pos2",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+                    }
+                    else if (activity == SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.FaceMask_SpecificRequirements, Location = "pos2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Don’t forget to tell us how many of each size you need. If you have very specific style requirements it may take longer to find a volunteer to help with your request. Please don’t include personal information such as name or address in this box, we’ll ask for that later.", Subtext = "Size guide:<br />&nbsp;- Men’s (Small / Medium / Large)<br />&nbsp;- Ladies’ (Small / Medium / Large)<br />&nbsp;- Children’s (One Size - under 12)" });
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.FaceMask_Amount, Location = "pos3", Order = 1, RequestFormVariantId = (int)form, Required = true, Subtext = "Remember they’re washable and reusable, so only request what you need between washes." });
@@ -490,6 +535,14 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
+
+                case RequestHelpFormVariant.LincolnshireVolunteers:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.VaccineSupport
+                    };
+                    break;
+
                 default: 
                     activites = genericSupportActivities; 
                     break;
