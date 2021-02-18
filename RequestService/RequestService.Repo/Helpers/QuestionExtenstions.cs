@@ -252,17 +252,17 @@ namespace RequestService.Repo.Helpers
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
-                    if(activity == SupportActivities.VaccineSupport)
+                    if (activity == SupportActivities.VaccineSupport)
                     {
-                        entity.HasData(new ActivityQuestions 
-                        { 
-                            ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.NumberOfSlots,
-                            Location = "pos3", 
-                            Order = 1, 
-                            RequestFormVariantId = (int)form, 
-                            Required = true, 
+                            Location = "pos3",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
                             PlaceholderText = string.Empty
                         });
 
@@ -318,7 +318,7 @@ namespace RequestService.Repo.Helpers
                             RequestHelpFormVariant.Ruddington => "For example, let us know if you’re struggling to find help elsewhere.",
                             _ => "For example, any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box."
                         };
-                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext= subText_anythingElse });
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext = subText_anythingElse });
                     }
                     else if (activity == SupportActivities.CollectingPrescriptions)
                     {
@@ -334,15 +334,15 @@ namespace RequestService.Repo.Helpers
                             PlaceholderText = "Please give the name and address of the pharmacy, e.g. Boots Pharmacy, Victoria Centre, Nottingham."
                         });
 
-                        entity.HasData(new ActivityQuestions 
-                        { 
-                            ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
-                            QuestionId = (int)Questions.AnythingElseToTellUs, 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
                             Location = "details2",
-                            Order = 2, 
-                            RequestFormVariantId = (int)form, 
-                            Required = false, 
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
                             PlaceholderText = "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
                             Subtext = subText_anythingElse
                         });
@@ -362,18 +362,58 @@ namespace RequestService.Repo.Helpers
                             Subtext = string.Empty
                         });
 
-                        entity.HasData(new ActivityQuestions 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
+                            Location = "details2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            Subtext = subText_anythingElse
+                        });
+                    }
+                    else if (activity == SupportActivities.VolunteerSupport || activity == SupportActivities.EmergencySupport)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.NumberOfSlots,
+                            Location = "pos1",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
                         { 
                             ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
-                            QuestionId = (int)Questions.AnythingElseToTellUs, 
-                            Location = "details2", 
+                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                            QuestionId = (int)Questions.SupportRequesting, 
+                            Location = "pos1", 
                             Order = 2, 
                             RequestFormVariantId = (int)form, 
                             Required = false, 
-                            PlaceholderText = "For example, any special instructions for the volunteer.", 
-                            Subtext = subText_anythingElse 
+                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" 
                         });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
+                            Location = "details2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            Subtext = subText_anythingElse
+                        });
+
                     }
                     else
                     {
@@ -448,11 +488,13 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.VitalsForVeterans:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Add(SupportActivities.WellbeingPackage);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
                     break;
 
                 case RequestHelpFormVariant.Ruddington:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Remove(SupportActivities.HomeworkSupport);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
@@ -539,7 +581,9 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.LincolnshireVolunteers:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.VaccineSupport
+                        SupportActivities.VaccineSupport,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.EmergencySupport
                     };
                     break;
 
