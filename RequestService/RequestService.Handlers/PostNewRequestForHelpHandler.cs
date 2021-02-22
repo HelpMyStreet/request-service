@@ -116,8 +116,6 @@ namespace RequestService.Handlers
                 }
             };
 
-            var jsonString = JsonConvert.SerializeObject(request);
-
             var formVariant = await _groupService.GetRequestHelpFormVariant(request.HelpRequest.ReferringGroupId, request.HelpRequest.Source, cancellationToken);
 
             if (formVariant == null)
