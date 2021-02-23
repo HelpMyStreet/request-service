@@ -50,6 +50,12 @@ namespace RequestService.Repo.Migrations
                     { 19, "HealthcareAssistant" },
                     { 20, "Steward" }
                 });
+
+            migrationBuilder.Sql(@"
+                UPDATE  [Request].[Shift]
+                SET     LocationID = LocationID * -1                
+                WHERE   LocationID<0
+                ");
         }
     }
 }
