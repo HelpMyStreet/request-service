@@ -248,7 +248,7 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.ChildGroupSelector) && !x.Equals(RequestHelpFormVariant.Sandbox_RequestSubmitter)))
+            foreach (var form in requestFormVariants)
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
@@ -543,8 +543,14 @@ namespace RequestService.Repo.Helpers
                     };
                     break;
 
-                default: 
+                case RequestHelpFormVariant.Default:
+                case RequestHelpFormVariant.FaceMasks:
+                case RequestHelpFormVariant.AgeUKNottsNorthMuskham:
+                case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                default:
+                    activites = new List<SupportActivities>();
                     break;
             };
 
