@@ -252,17 +252,17 @@ namespace RequestService.Repo.Helpers
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
-                    if(activity == SupportActivities.VaccineSupport)
+                    if (activity == SupportActivities.VaccineSupport)
                     {
-                        entity.HasData(new ActivityQuestions 
-                        { 
-                            ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.NumberOfSlots,
-                            Location = "pos3", 
-                            Order = 1, 
-                            RequestFormVariantId = (int)form, 
-                            Required = true, 
+                            Location = "pos3",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
                             PlaceholderText = string.Empty
                         });
 
@@ -318,7 +318,7 @@ namespace RequestService.Repo.Helpers
                             RequestHelpFormVariant.Ruddington => "For example, let us know if you’re struggling to find help elsewhere.",
                             _ => "For example, any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box."
                         };
-                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext= subText_anythingElse });
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext = subText_anythingElse });
                     }
                     else if (activity == SupportActivities.CollectingPrescriptions)
                     {
@@ -334,15 +334,15 @@ namespace RequestService.Repo.Helpers
                             PlaceholderText = "Please give the name and address of the pharmacy, e.g. Boots Pharmacy, Victoria Centre, Nottingham."
                         });
 
-                        entity.HasData(new ActivityQuestions 
-                        { 
-                            ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
-                            QuestionId = (int)Questions.AnythingElseToTellUs, 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
                             Location = "details2",
-                            Order = 2, 
-                            RequestFormVariantId = (int)form, 
-                            Required = false, 
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
                             PlaceholderText = "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
                             Subtext = subText_anythingElse
                         });
@@ -362,17 +362,17 @@ namespace RequestService.Repo.Helpers
                             Subtext = string.Empty
                         });
 
-                        entity.HasData(new ActivityQuestions 
-                        { 
-                            ActivityId = (int)activity, 
-                            RequestFormStageId = (int)RequestHelpFormStage.Detail, 
-                            QuestionId = (int)Questions.AnythingElseToTellUs, 
-                            Location = "details2", 
-                            Order = 2, 
-                            RequestFormVariantId = (int)form, 
-                            Required = false, 
-                            PlaceholderText = "For example, any special instructions for the volunteer.", 
-                            Subtext = subText_anythingElse 
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
+                            Location = "details2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            Subtext = subText_anythingElse
                         });
                     }
                     else
@@ -393,7 +393,7 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.AgeUKReference, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
                     }
 
-                    if ((form  == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks 
+                    if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
@@ -403,10 +403,10 @@ namespace RequestService.Repo.Helpers
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
-                    
+
 
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });
-                    }
+                }
             }
         }
 
@@ -456,9 +456,14 @@ namespace RequestService.Repo.Helpers
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
-                    activites = new List<SupportActivities>() { SupportActivities.Shopping, SupportActivities.CollectingPrescriptions, SupportActivities.Other };
-                    ((List<SupportActivities>)activites).Add(SupportActivities.Transport);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.ColdWeatherArmy);
+                    activites = new List<SupportActivities>
+                    { 
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions, 
+                        SupportActivities.Other,
+                        SupportActivities.Transport,
+                        SupportActivities.ColdWeatherArmy,
+                    };
                     break;
 
                 case RequestHelpFormVariant.AgeUKNottsBalderton:
@@ -540,6 +545,20 @@ namespace RequestService.Repo.Helpers
                     activites = new List<SupportActivities>()
                     {
                         SupportActivities.VaccineSupport
+                    };
+                    break;
+
+                case RequestHelpFormVariant.Sandbox_RequestSubmitter:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.VaccineSupport,
+                        SupportActivities.Other,
+                        SupportActivities.EmergencySupport,
                     };
                     break;
 
