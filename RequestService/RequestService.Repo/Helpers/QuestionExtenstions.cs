@@ -248,7 +248,7 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.ChildGroupSelector)))
+            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.ChildGroupSelector) && !x.Equals(RequestHelpFormVariant.Sandbox_RequestSubmitter)))
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
