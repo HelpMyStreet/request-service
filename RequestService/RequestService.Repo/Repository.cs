@@ -823,6 +823,8 @@ namespace RequestService.Repo
                             ShiftLength = request.Shift.ShiftLength
                         }).ToList();
                         break;
+                    default:
+                        throw new Exception($"Unknown Request Type { requestType.ToString()}");
                 }
 
                 result = new RequestSummary()
