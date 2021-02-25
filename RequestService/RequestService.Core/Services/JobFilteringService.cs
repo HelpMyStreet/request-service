@@ -61,7 +61,7 @@ namespace RequestService.Core.Services
             //if postcode has been pased calculate distance between volunteer postcode and jobs
             if (!string.IsNullOrEmpty(postcode))
             {
-                //jobs = await _jobService.AttachedDistanceToJobHeaders(postcode, jobs, cancellationToken);
+                jobs = await _jobService.AttachedDistanceToAllJobs(postcode, jobs, cancellationToken);
                 applyDistanceFilter = true;
             }
 
