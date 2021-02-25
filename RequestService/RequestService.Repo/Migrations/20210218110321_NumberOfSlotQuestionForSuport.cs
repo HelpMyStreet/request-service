@@ -28,13 +28,7 @@ namespace RequestService.Repo.Migrations
                 schema: "Lookup",
                 table: "SupportActivity",
                 keyColumn: "ID",
-                keyValue: 20);
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
-                table: "SupportActivity",
-                columns: new[] { "ID", "Name" },
-                values: new object[] { 25, "EmergencySupport" });
+                keyValue: 20);     
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",

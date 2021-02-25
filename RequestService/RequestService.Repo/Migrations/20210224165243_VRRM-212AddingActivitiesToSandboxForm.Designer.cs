@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210224165243_VRRM-212AddingActivitiesToSandboxForm")]
+    partial class VRRM212AddingActivitiesToSandboxForm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1379,62 +1381,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 13,
-                            QuestionId = 14,
-                            RequestFormVariantId = 2,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 17,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 1,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 10,
-                            RequestFormVariantId = 2,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 11,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 2,
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -3057,52 +3003,6 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            ActivityId = 22,
-                            QuestionId = 17,
-                            RequestFormVariantId = 7,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 1,
-                            RequestFormVariantId = 7,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 10,
-                            RequestFormVariantId = 7,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 14,
-                            RequestFormVariantId = 7,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
                             ActivityId = 1,
                             QuestionId = 12,
                             RequestFormVariantId = 8,
@@ -3708,21 +3608,10 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 17,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 1,
                             RequestFormVariantId = 11,
                             Location = "pos1",
-                            Order = 2,
+                            Order = 1,
                             PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
                             RequestFormStageId = 1,
                             Required = false
@@ -4732,21 +4621,10 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 17,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 1,
                             RequestFormVariantId = 14,
                             Location = "pos1",
-                            Order = 2,
+                            Order = 1,
                             PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
                             RequestFormStageId = 1,
                             Required = false
@@ -5062,21 +4940,10 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 17,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 1,
                             RequestFormVariantId = 16,
                             Location = "pos1",
-                            Order = 2,
+                            Order = 1,
                             PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
                             RequestFormStageId = 1,
                             Required = false
