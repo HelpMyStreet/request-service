@@ -694,6 +694,23 @@ namespace RequestService.Repo
             };
         }
 
+        private SqlParameter GetRequestTypeAsSqlParameter(List<RequestType> requestTypes)
+        {
+            string sqlValue = string.Empty;
+            if (requestTypes?.Count > 0)
+            {
+                sqlValue = string.Join(",", requestTypes);
+            }
+
+            return new SqlParameter()
+            {
+                ParameterName = "@RequestTypes",
+                SqlDbType = System.Data.SqlDbType.VarChar,
+                SqlValue = sqlValue
+            };
+        }
+        
+
         public List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups)
         {
             SqlParameter[] parameters = new SqlParameter[5];
@@ -728,6 +745,49 @@ namespace RequestService.Repo
                     RequestID = j.RequestID,
                     RequestType = (RequestType) j.RequestType,
                     RequestorDefinedByGroup = j.RequestorDefinedByGroup
+                });
+            }
+            return response;
+        }
+
+        public List<JobDTO> GetAllJobs(GetAllJobsByFilterRequest request, List<int> referringGroups)
+        {
+            SqlParameter[] parameters = new SqlParameter[5];
+            parameters[0] = GetParameter("@UserID", request.AllocatedToUserId);
+            parameters[1] = GetSupportActivitiesAsSqlParameter(request.SupportActivities?.SupportActivities);
+            parameters[2] = GetReferringGroupsAsSqlParameter(referringGroups);
+            parameters[3] = GetJobStatusesAsSqlParameter(request.JobStatuses?.JobStatuses);
+            parameters[4] = GetGroupsAsSqlParameter(request.Groups?.Groups);
+            parameters[5] = GetRequestTypeAsSqlParameter(request.RequestType?.RequestTypes);
+
+            IQueryable<QueryAllJobs> allJobs = _context.QueryAllJobs
+                                .FromSqlRaw("EXECUTE [Request].[GetAllJobsByFilter] @UserID=@UserID,@SupportActivities=@SupportActivities,@ReferringGroups=@ReferringGroups,@JobStatuses=@JobStatuses,@Groups=@Groups,@RequestTypes=@RequestTypes", parameters);
+
+            List<JobDTO> response = new List<JobDTO>();
+            foreach (QueryAllJobs j in allJobs)
+            {
+                response.Add(new JobDTO()
+                {
+                    VolunteerUserID = j.VolunteerUserID,
+                    JobID = j.JobID,
+                    Archive = j.Archive,
+                    DateRequested = j.DateRequested,
+                    DateStatusLastChanged = j.DateStatusLastChanged,
+                    DistanceInMiles = j.DistanceInMiles,
+                    DueDate = j.DueDate,
+                    IsHealthCritical = j.IsHealthCritical,
+                    JobStatus = (JobStatuses)j.JobStatusID,
+                    PostCode = j.PostCode,
+                    ReferringGroupID = j.ReferringGroupID,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)j.SupportActivityID,
+                    Reference = j.Reference,
+                    DueDateType = (DueDateType)j.DueDateTypeId,
+                    RequestID = j.RequestID,
+                    RequestType = (RequestType)j.RequestType,
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup,
+                    Location = (Location) j.LocationId,
+                    StartDate = j.StartDate,
+                    ShiftLength = j.ShiftLength
                 });
             }
             return response;

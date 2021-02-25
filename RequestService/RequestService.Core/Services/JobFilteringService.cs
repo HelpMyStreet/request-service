@@ -50,6 +50,36 @@ namespace RequestService.Core.Services
             return jobs;
         }
 
+        public async Task<List<JobDTO>> FilterAllJobs(
+            List<JobDTO> jobs,
+            string postcode,
+            double? distanceInMiles,
+            Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,
+            CancellationToken cancellationToken)
+        {
+            bool applyDistanceFilter = false;
+            //if postcode has been pased calculate distance between volunteer postcode and jobs
+            if (!string.IsNullOrEmpty(postcode))
+            {
+                //jobs = await _jobService.AttachedDistanceToJobHeaders(postcode, jobs, cancellationToken);
+                applyDistanceFilter = true;
+            }
+
+            if (jobs == null)
+            {
+                // For now, return no jobs to avoid breaking things downstream
+                return new List<JobDTO>();
+            }
+
+            if (applyDistanceFilter)
+            {
+                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles))
+                        .ToList();
+            }
+
+            return jobs;
+        }
+
         private double GetSupportDistanceForActivity(SupportActivities supportActivity, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles)
         {
             if (activitySpecificSupportDistancesInMiles != null && activitySpecificSupportDistancesInMiles.ContainsKey(supportActivity))

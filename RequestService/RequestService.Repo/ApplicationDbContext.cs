@@ -46,6 +46,7 @@ namespace RequestService.Repo
         public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
         public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<QueryJobHeader> JobHeader { get; set; }
+        public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -54,6 +55,8 @@ namespace RequestService.Repo
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<QueryJobHeader>().HasNoKey().ToView("view_that_does_not_exist");
+
+            modelBuilder.Entity<QueryAllJobs>().HasNoKey().ToView("view_that_does_not_exist");
 
             modelBuilder.Entity<DailyReport>().HasNoKey().ToQuery(() => DailyReport.FromSqlRaw("TwoHourlyReport"));
 
