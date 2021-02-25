@@ -248,7 +248,7 @@ namespace RequestService.Repo.Helpers
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
             string subText_anythingElse = "This information will be visible to volunteers deciding whether to accept the request";
 
-            foreach (var form in requestFormVariants.Where(x => !x.Equals(RequestHelpFormVariant.ChildGroupSelector)))
+            foreach (var form in requestFormVariants)
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
@@ -433,7 +433,7 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.AgeUKReference, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
                     }
 
-                    if ((form  == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks 
+                    if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
@@ -443,10 +443,10 @@ namespace RequestService.Repo.Helpers
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
-                    
+
 
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });
-                    }
+                }
             }
         }
 
@@ -498,9 +498,14 @@ namespace RequestService.Repo.Helpers
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
-                    activites = new List<SupportActivities>() { SupportActivities.Shopping, SupportActivities.CollectingPrescriptions, SupportActivities.Other };
-                    ((List<SupportActivities>)activites).Add(SupportActivities.Transport);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.ColdWeatherArmy);
+                    activites = new List<SupportActivities>
+                    { 
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions, 
+                        SupportActivities.Other,
+                        SupportActivities.Transport,
+                        SupportActivities.ColdWeatherArmy,
+                    };
                     break;
 
                 case RequestHelpFormVariant.AgeUKNottsBalderton:
@@ -587,8 +592,28 @@ namespace RequestService.Repo.Helpers
                     };
                     break;
 
-                default: 
+                case RequestHelpFormVariant.Sandbox_RequestSubmitter:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.VaccineSupport,
+                        SupportActivities.Other,
+                        SupportActivities.EmergencySupport,
+                    };
+                    break;
+
+                case RequestHelpFormVariant.Default:
+                case RequestHelpFormVariant.FaceMasks:
+                case RequestHelpFormVariant.AgeUKNottsNorthMuskham:
+                case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                default:
+                    activites = new List<SupportActivities>();
                     break;
             };
 
