@@ -136,9 +136,8 @@ namespace RequestService.Handlers
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
             {
-                var dedupedJobs = allJobs.Distinct(_jobBasicDedupe_EqualityComparer);
-                var userJobs = allJobs.Where(x=> x.VolunteerUserID == request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
-                var notMyJobs = dedupedJobs.Where(s => !userJobs.Contains(s, _jobBasicDedupe_EqualityComparer));
+                var userRequests = allJobs.Where(x => x.VolunteerUserID == request.ExcludeSiblingsOfJobsAllocatedToUserID.Value).Distinct(_jobBasicDedupe_EqualityComparer);
+                allJobs = allJobs.Where(s =>  !userRequests.Contains(s,_jobBasicDedupe_EqualityComparer)).ToList();
             }
 
             List<JobSummary> jobSummaries = new List<JobSummary>();
