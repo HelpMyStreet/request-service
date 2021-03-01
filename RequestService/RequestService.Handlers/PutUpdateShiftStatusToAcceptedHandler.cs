@@ -11,6 +11,7 @@ using HelpMyStreet.Utils.Models;
 using System.Collections.Generic;
 using System.Linq;
 using RequestService.Core.Exceptions;
+using System;
 
 namespace RequestService.Handlers
 {
@@ -19,11 +20,13 @@ namespace RequestService.Handlers
         private readonly IRepository _repository;
         private readonly ICommunicationService _communicationService;
         private readonly IJobService _jobService;
-        public PutUpdateShiftStatusToAcceptedHandler(IRepository repository, ICommunicationService communicationService, IJobService jobService)
+        private readonly IGroupService _groupService;
+        public PutUpdateShiftStatusToAcceptedHandler(IRepository repository, ICommunicationService communicationService, IJobService jobService, IGroupService groupService)
         {
             _repository = repository;
             _communicationService = communicationService;
             _jobService = jobService;
+            _groupService = groupService;
         }
 
         public async Task<PutUpdateShiftStatusToAcceptedResponse> Handle(PutUpdateShiftStatusToAcceptedRequest request, CancellationToken cancellationToken)
@@ -33,6 +36,23 @@ namespace RequestService.Handlers
                 Outcome = UpdateJobStatusOutcome.Unauthorized,
                 JobID = -1
             };
+
+            var requestDetails = _repository.GetRequestDetails(request.RequestID);
+            var volunteerGroups = await _groupService.GetUserGroups(request.VolunteerUserID, cancellationToken);
+            var requestGroups = await _repository.GetGroupsForRequestAsync(request.RequestID, cancellationToken);
+
+            if (volunteerGroups == null || requestGroups == null)
+            {
+                throw new Exception("volunteerGroups or requestGroups is null");
+            }
+
+            bool jobGroupContainsVolunteerGroups = requestGroups.Any(volunteerGroups.Groups.Contains);
+
+            if (!jobGroupContainsVolunteerGroups)
+            {
+                response.Outcome = UpdateJobStatusOutcome.BadRequest;
+                return response;
+            }
 
             int existingJobId = await _repository.VolunteerAlreadyAcceptedShift(request.RequestID, request.SupportActivity.SupportActivity, request.VolunteerUserID, cancellationToken);
 
