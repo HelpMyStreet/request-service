@@ -11,6 +11,10 @@ using RequestService.Core.Exceptions;
 using System.Net.Http;
 using System.Linq;
 using RequestService.Core.Dto;
+using HelpMyStreet.Contracts.AddressService.Request;
+using System;
+using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Handlers
 {
@@ -20,6 +24,8 @@ namespace RequestService.Handlers
         private readonly IAddressService _addressService;
         private readonly IJobFilteringService _jobFilteringService;
         private readonly IGroupService _groupService;
+        private IEqualityComparer<JobBasic> _jobBasicDedupe_EqualityComparer;
+
         public GetAllJobsByFilterHandler(
             IRepository repository,
             IAddressService addressService,
@@ -30,6 +36,47 @@ namespace RequestService.Handlers
             _addressService = addressService;
             _jobFilteringService = jobFilteringService;
             _groupService = groupService;
+            _jobBasicDedupe_EqualityComparer = new JobBasicDedupe_EqualityComparer();
+        }
+
+        private async Task AddPostCodeForLocations(List<JobDTO> allJobs)
+        {
+            //add postcode for locations if locations exist
+            List<Location?> distinctLocations = allJobs
+                .Where(x => x.Location != null)
+                .Select(x => x.Location)
+                .Distinct().ToList();
+            List<LocationDetails> locationDetails = new List<LocationDetails>();
+
+            if (distinctLocations.Count > 0)
+            {
+                GetLocationsRequest locationRequest = new GetLocationsRequest()
+                {
+                    LocationsRequests = new HelpMyStreet.Contracts.AddressService.Request.LocationsRequest()
+                    {
+                        Locations = distinctLocations.Select(x => x.Value).ToList()
+                    }
+                };
+                var details = await _addressService.GetLocations(locationRequest);
+
+                if (details != null)
+                {
+                    locationDetails = details.LocationDetails;
+                }
+            }
+
+            if (locationDetails.Count > 0)
+            {
+                foreach (JobDTO j in allJobs.Where(x => x.Location != null))
+                {
+                    var location = locationDetails.First(x => x.Location == j.Location);
+
+                    if (location != null)
+                    {
+                        j.PostCode = location.Address.Postcode;
+                    }
+                }
+            }
         }
 
         public async Task<GetAllJobsByFilterResponse> Handle(GetAllJobsByFilterRequest request, CancellationToken cancellationToken)
@@ -78,16 +125,25 @@ namespace RequestService.Handlers
             if (allJobs.Count == 0)
                 return result;
 
-            //allJobs = await _jobFilteringService.FilterAllJobs(
-            //    allJobs,
-            //    request.Postcode,
-            //    request.DistanceInMiles,
-            //    request.ActivitySpecificSupportDistancesInMiles,
-            //    cancellationToken);
+            await AddPostCodeForLocations(allJobs);
+
+            allJobs = await _jobFilteringService.FilterAllJobs(
+                allJobs,
+                request.Postcode,
+                request.DistanceInMiles,
+                request.ActivitySpecificSupportDistancesInMiles,
+                cancellationToken);
+
+            if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
+            {
+                var dedupedJobs = allJobs.Distinct(_jobBasicDedupe_EqualityComparer);
+                var userJobs = allJobs.Where(x=> x.VolunteerUserID == request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
+                var notMyJobs = dedupedJobs.Where(s => !userJobs.Contains(s, _jobBasicDedupe_EqualityComparer));
+            }
 
             List<JobSummary> jobSummaries = new List<JobSummary>();
 
-            allJobs.Where(x => x.RequestType == HelpMyStreet.Utils.Enums.RequestType.Task)
+            allJobs.Where(x => x.RequestType == RequestType.Task)
             .ToList()
             .ForEach(job => jobSummaries.Add(new JobSummary()
             {
@@ -112,7 +168,7 @@ namespace RequestService.Handlers
 
             List<ShiftJob> shiftJobs = new List<ShiftJob>();
 
-            allJobs.Where(x => x.RequestType == HelpMyStreet.Utils.Enums.RequestType.Shift)
+            allJobs.Where(x => x.RequestType == RequestType.Shift)
             .ToList()
             .ForEach(job => shiftJobs.Add(new ShiftJob()
             {
@@ -124,9 +180,9 @@ namespace RequestService.Handlers
                 JobID = job.JobID,
                 RequestID = job.RequestID,
                 RequestType = job.RequestType,
-                Location = job.Location,
-                ShiftLength = job.ShiftLength,
-                StartDate = job.StartDate                
+                Location = job.Location.Value,
+                ShiftLength = job.ShiftLength.Value,
+                StartDate = job.StartDate.Value                
             }));
 
             result = new GetAllJobsByFilterResponse()

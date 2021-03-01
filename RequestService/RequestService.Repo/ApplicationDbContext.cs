@@ -56,7 +56,7 @@ namespace RequestService.Repo
         {
             modelBuilder.Entity<QueryJobHeader>().HasNoKey().ToView("view_that_does_not_exist");
 
-            modelBuilder.Entity<QueryAllJobs>().HasNoKey().ToView("view_that_does_not_exist");
+            modelBuilder.Entity<QueryAllJobs>().HasNoKey().ToView("view_that_does_not_exist2");
 
             modelBuilder.Entity<DailyReport>().HasNoKey().ToQuery(() => DailyReport.FromSqlRaw("TwoHourlyReport"));
 

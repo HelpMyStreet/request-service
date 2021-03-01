@@ -752,7 +752,7 @@ namespace RequestService.Repo
 
         public List<JobDTO> GetAllJobs(GetAllJobsByFilterRequest request, List<int> referringGroups)
         {
-            SqlParameter[] parameters = new SqlParameter[5];
+            SqlParameter[] parameters = new SqlParameter[6];
             parameters[0] = GetParameter("@UserID", request.AllocatedToUserId);
             parameters[1] = GetSupportActivitiesAsSqlParameter(request.SupportActivities?.SupportActivities);
             parameters[2] = GetReferringGroupsAsSqlParameter(referringGroups);
@@ -785,7 +785,7 @@ namespace RequestService.Repo
                     RequestID = j.RequestID,
                     RequestType = (RequestType)j.RequestType,
                     RequestorDefinedByGroup = j.RequestorDefinedByGroup,
-                    Location = (Location) j.LocationId,
+                    Location = j.LocationId.HasValue ? (Location?)j.LocationId.Value : null,
                     StartDate = j.StartDate,
                     ShiftLength = j.ShiftLength
                 });

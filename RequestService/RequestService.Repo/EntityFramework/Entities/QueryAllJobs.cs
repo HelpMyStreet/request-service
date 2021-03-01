@@ -22,8 +22,8 @@ namespace RequestService.Repo.EntityFramework.Entities
         public int RequestID { get; set; }
         public byte RequestType { get; set; }
         public bool RequestorDefinedByGroup { get; set; }
-        public  int LocationId { get; set; }
-        public int ShiftLength { get; set; }
-        public DateTime StartDate { get; set; }
+        public  int? LocationId { get; set; }
+        public int? ShiftLength { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }
