@@ -84,7 +84,7 @@ namespace RequestService.Repo
 
         public async Task UpdatePersonalDetailsAsync(PersonalDetailsDto dto, CancellationToken cancellationToken)
         {
-            var personalDetails = new PersonalDetails
+            var personalDetails = new Repo.EntityFramework.Entities.PersonalDetails
             {
                 RequestId = dto.RequestID,
                 FurtherDetails = dto.FurtherDetails,

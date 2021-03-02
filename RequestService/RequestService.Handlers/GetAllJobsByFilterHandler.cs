@@ -189,7 +189,8 @@ namespace RequestService.Handlers
                 RequestType = job.RequestType,
                 Location = job.Location.Value,
                 ShiftLength = job.ShiftLength.Value,
-                StartDate = job.StartDate.Value                
+                StartDate = job.StartDate.Value,
+                DistanceInMiles = job.DistanceInMiles
             }));
 
             result = new GetAllJobsByFilterResponse()
