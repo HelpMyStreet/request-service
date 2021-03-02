@@ -118,6 +118,55 @@ namespace RequestService.Core.Services
             return jobHeaders;
         }
 
+        public async Task<List<JobDTO>> AttachedDistanceToAllJobs(string volunteerPostCode, List<JobDTO> allJobs, CancellationToken cancellationToken)
+        {
+            if (allJobs.Count == 0)
+            {
+                return null;
+            }
+
+            volunteerPostCode = PostcodeFormatter.FormatPostcode(volunteerPostCode);
+
+            foreach (JobDTO job in allJobs)
+            {
+                job.PostCode = PostcodeFormatter.FormatPostcode(job.PostCode);
+            }
+
+            List<string> distinctPostCodes = allJobs.Select(d => d.PostCode).Distinct().ToList();
+
+            if (!distinctPostCodes.Contains(volunteerPostCode))
+            {
+                distinctPostCodes.Add(volunteerPostCode);
+            }
+
+            var postcodeCoordinatesResponse = await _repository.GetLatitudeAndLongitudes(distinctPostCodes, cancellationToken);
+
+            if (postcodeCoordinatesResponse == null)
+            {
+                return null;
+            }
+
+            var volunteerPostcodeCoordinates = postcodeCoordinatesResponse.Where(w => w.Postcode == volunteerPostCode).FirstOrDefault();
+            if (volunteerPostcodeCoordinates == null)
+            {
+                return null;
+            }
+
+            foreach (JobDTO job in allJobs)
+            {
+                var jobPostcodeCoordinates = postcodeCoordinatesResponse.Where(w => w.Postcode == job.PostCode).FirstOrDefault();
+                if (jobPostcodeCoordinates != null)
+                {
+                    job.DistanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
+                }
+                else
+                {
+                    job.DistanceInMiles = double.MaxValue;
+                }
+            }
+            return allJobs;
+        }
+
         public async Task<bool> HasPermissionToChangeJobAsync(int jobID, int authorisedByUserID, CancellationToken cancellationToken)
         {
             var jobDetails = _repository.GetJobDetails(jobID);
