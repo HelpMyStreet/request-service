@@ -97,7 +97,7 @@ namespace RequestService.Handlers
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
             {
-                if (request.JobStatuses?.JobStatuses.Count() > 0 || !request.JobStatuses.JobStatuses.Contains(JobStatuses.Open))
+                if (request.JobStatuses?.JobStatuses.Count() == 0 || !request.JobStatuses.JobStatuses.Contains(JobStatuses.Open))
                 {
                     throw new InvalidFilterException();
                 }
