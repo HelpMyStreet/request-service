@@ -45,6 +45,11 @@ namespace RequestService.AzureFunction
                 _logger.LogErrorAndNotifyNewRelic($"{req.Postcode} is an invalid postcode", exc);
                 return new ObjectResult(ResponseWrapper<GetAllJobsByFilterResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.ValidationError, "Invalid Postcode")) { StatusCode = StatusCodes.Status400BadRequest };
             }
+            catch (InvalidFilterException exc)
+            {
+                _logger.LogErrorAndNotifyNewRelic($"invalid filter", exc);
+                return new ObjectResult(ResponseWrapper<GetAllJobsByFilterResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.ValidationError, "Invalid filter combination")) { StatusCode = StatusCodes.Status400BadRequest };
+            }
             catch (Exception exc)
             {
                 _logger.LogErrorAndNotifyNewRelic("Exception occured in GetAllJobsByFilter", exc);

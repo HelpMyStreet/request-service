@@ -95,6 +95,14 @@ namespace RequestService.Handlers
                 }
             }
 
+            if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
+            {
+                if (request.JobStatuses?.JobStatuses.Count() > 0 || !request.JobStatuses.JobStatuses.Contains(JobStatuses.Open))
+                {
+                    throw new InvalidFilterException();
+                }
+            }
+
             GetAllJobsByFilterResponse result = new GetAllJobsByFilterResponse() { JobSummaries = new List<JobSummary>(), ShiftJobs = new List<ShiftJob>() };
 
             if (request.Groups != null && request.Groups.Groups.Count == 0)
