@@ -1065,6 +1065,14 @@ namespace RequestService.Repo
                 .Select(x => x.GroupId).ToList();
         }
 
+        public async Task<List<int>> GetGroupsForRequestAsync(int requestID, CancellationToken cancellationToken)
+        {
+            return _context.JobAvailableToGroup
+                        .Include(i=> i.Job)
+                        .Where(x => x.Job.RequestId == requestID)
+                        .Select(x => x.GroupId).Distinct().ToList();
+        }
+
         public async Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken)
         {
             var job = await _context.Job

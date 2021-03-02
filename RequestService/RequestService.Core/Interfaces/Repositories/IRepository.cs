@@ -30,6 +30,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken);
         Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
+        Task<List<int>> GetGroupsForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken);
         Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
