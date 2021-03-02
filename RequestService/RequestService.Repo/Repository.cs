@@ -750,7 +750,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public List<JobDTO> GetAllJobs(GetAllJobsByFilterRequest request, List<int> referringGroups)
+        public List<JobDTO> GetAllFilteredJobs(GetAllJobsByFilterRequest request, List<int> referringGroups)
         {
             SqlParameter[] parameters = new SqlParameter[6];
             parameters[0] = GetParameter("@UserID", request.AllocatedToUserId);

@@ -62,7 +62,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<JobSummary> GetJobsByStatusesSummaries(List<JobStatuses> jobStatuses);
         List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups);
 
-        List<JobDTO> GetAllJobs(GetAllJobsByFilterRequest request, List<int> referringGroups);
+        List<JobDTO> GetAllFilteredJobs(GetAllJobsByFilterRequest request, List<int> referringGroups);
 
         void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged);        
         bool JobHasStatus(int jobID, JobStatuses status);

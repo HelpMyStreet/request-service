@@ -97,7 +97,22 @@ namespace RequestService.Handlers
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
             {
-                if (request.JobStatuses?.JobStatuses.Count() == 0 || !request.JobStatuses.JobStatuses.Contains(JobStatuses.Open))
+                if (!(request.JobStatuses?.JobStatuses.Count() == 1 && request.JobStatuses?.JobStatuses.First() == JobStatuses.Open))
+                {
+                    throw new InvalidFilterException();
+                }                 
+            }
+
+            if (request.AllocatedToUserId.HasValue && request.JobStatuses?.JobStatuses.Count()>0)
+            {
+                List<JobStatuses> invalidStatuses = new List<JobStatuses>()
+                {
+                    JobStatuses.Cancelled,
+                    JobStatuses.New,
+                    JobStatuses.Open
+                };                
+                
+                if (request.JobStatuses.JobStatuses.Any(status => invalidStatuses.Contains(status)))
                 {
                     throw new InvalidFilterException();
                 }
@@ -128,15 +143,15 @@ namespace RequestService.Handlers
                 }
             }
 
-            List<JobDTO> allJobs = _repository.GetAllJobs(request, referringGroups);
+            List<JobDTO> allFilteredJobs = _repository.GetAllFilteredJobs(request, referringGroups);
 
-            if (allJobs.Count == 0)
+            if (allFilteredJobs.Count == 0)
                 return result;
 
-            await AddPostCodeForLocations(allJobs);
+            await AddPostCodeForLocations(allFilteredJobs);
 
-            allJobs = await _jobFilteringService.FilterAllJobs(
-                allJobs,
+            allFilteredJobs = await _jobFilteringService.FilterAllJobs(
+                allFilteredJobs,
                 request.Postcode,
                 request.DistanceInMiles,
                 request.ActivitySpecificSupportDistancesInMiles,
@@ -144,13 +159,16 @@ namespace RequestService.Handlers
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
             {
-                var userRequests = allJobs.Where(x => x.VolunteerUserID == request.ExcludeSiblingsOfJobsAllocatedToUserID.Value).Distinct(_jobBasicDedupe_EqualityComparer);
-                allJobs = allJobs.Where(s =>  !userRequests.Contains(s,_jobBasicDedupe_EqualityComparer)).ToList();
+                var allocatedJobsToUsers = _repository.GetJobsAllocatedToUser(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
+                if (allocatedJobsToUsers != null && allocatedJobsToUsers.Count() > 0)
+                {
+                    allFilteredJobs = allFilteredJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupe_EqualityComparer)).ToList();
+                }
             }
 
             List<JobSummary> jobSummaries = new List<JobSummary>();
 
-            allJobs.Where(x => x.RequestType == RequestType.Task)
+            allFilteredJobs.Where(x => x.RequestType == RequestType.Task)
             .ToList()
             .ForEach(job => jobSummaries.Add(new JobSummary()
             {
@@ -175,7 +193,7 @@ namespace RequestService.Handlers
 
             List<ShiftJob> shiftJobs = new List<ShiftJob>();
 
-            allJobs.Where(x => x.RequestType == RequestType.Shift)
+            allFilteredJobs.Where(x => x.RequestType == RequestType.Shift)
             .ToList()
             .ForEach(job => shiftJobs.Add(new ShiftJob()
             {
