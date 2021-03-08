@@ -159,7 +159,7 @@ namespace RequestService.Handlers
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
             {
-                var allocatedJobsToUsers = _repository.GetJobsAllocatedToUser(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
+                var allocatedJobsToUsers = _repository.GetUserJobs(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
                 if (allocatedJobsToUsers != null && allocatedJobsToUsers.Count() > 0)
                 {
                     allFilteredJobs = allFilteredJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupe_EqualityComparer)).ToList();
@@ -183,7 +183,7 @@ namespace RequestService.Handlers
                 SupportActivity = job.SupportActivity,
                 JobStatus = job.JobStatus,
                 JobID = job.JobID,
-                Archive = job.Archive,
+                Archive = job.Archive.Value,
                 Reference = job.Reference,
                 DueDateType = job.DueDateType,
                 RequestID = job.RequestID,
@@ -197,6 +197,8 @@ namespace RequestService.Handlers
             .ToList()
             .ForEach(job => shiftJobs.Add(new ShiftJob()
             {
+                DueDate = job.DueDate,
+                DateStatusLastChanged = job.DateStatusLastChanged,
                 DateRequested = job.DateRequested,
                 VolunteerUserID = job.VolunteerUserID,
                 ReferringGroupID = job.ReferringGroupID,
@@ -208,7 +210,8 @@ namespace RequestService.Handlers
                 Location = job.Location.Value,
                 ShiftLength = job.ShiftLength.Value,
                 StartDate = job.StartDate.Value,
-                DistanceInMiles = job.DistanceInMiles
+                DistanceInMiles = job.DistanceInMiles,
+                Archive = job.Archive.Value
             }));
 
             result = new GetAllJobsByFilterResponse()

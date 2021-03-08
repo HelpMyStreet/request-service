@@ -208,7 +208,8 @@ namespace RequestService.Repo
                         ReferringGroupId = postNewRequestForHelpRequest.HelpRequest.ReferringGroupId,
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup,
-                        RequestType = (byte)requestType
+                        RequestType = (byte)requestType,
+                        Archive = false
                     };
 
                     if(requestType == RequestType.Shift)
@@ -538,6 +539,7 @@ namespace RequestService.Repo
             List<EntityFramework.Entities.Job> jobSummaries = _context.Job
                                     .Include(i => i.RequestJobStatus)
                                     .Include(i => i.NewRequest)
+                                    .ThenInclude(i => i.Shift)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
                                     .Where(w => w.VolunteerUserId == volunteerUserID
@@ -549,19 +551,20 @@ namespace RequestService.Repo
 
         }
 
-        public List<JobSummary> GetOpenJobsSummaries()
+        public List<JobSummary> GetUserJobs(int volunteerUserID)
         {
-
-            byte jobStatusID_Open = (byte)JobStatuses.Open;
+            byte jobStatusID_Cancelled = (byte)JobStatuses.Cancelled;
 
             List<EntityFramework.Entities.Job> jobSummaries = _context.Job
                                     .Include(i => i.RequestJobStatus)
-                                    .Include(i => i.JobAvailableToGroup)
                                     .Include(i => i.NewRequest)
+                                    .ThenInclude(i => i.Shift)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
-                                    .Where(w => w.JobStatusId == jobStatusID_Open
+                                    .Where(w => w.VolunteerUserId == volunteerUserID
+                                                && w.JobStatusId != jobStatusID_Cancelled
                                             ).ToList();
+
             return GetJobSummaries(jobSummaries);
 
         }
@@ -574,6 +577,7 @@ namespace RequestService.Repo
                                     .Include(i => i.RequestJobStatus)
                                     .Include(i => i.JobAvailableToGroup)
                                     .Include(i => i.NewRequest)
+                                    .ThenInclude(i => i.Shift)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
                                     .Where(w => w.JobStatusId == jobStatusID_InProgress
@@ -594,6 +598,7 @@ namespace RequestService.Repo
                                     .Include(i => i.RequestJobStatus)
                                     .Include(i => i.JobAvailableToGroup)
                                     .Include(i => i.NewRequest)
+                                    .ThenInclude(i=> i.Shift)
                                     .Include(i => i.JobQuestions)
                                     .ThenInclude(rq => rq.Question)
                                     .Where(w => statuses.Contains(w.JobStatusId.Value)
@@ -699,7 +704,7 @@ namespace RequestService.Repo
             string sqlValue = string.Empty;
             if (requestTypes?.Count > 0)
             {
-                sqlValue = string.Join(",", requestTypes);
+                sqlValue = string.Join(",", requestTypes.Cast<int>().ToArray());                
             }
 
             return new SqlParameter()
@@ -730,7 +735,7 @@ namespace RequestService.Repo
                 {
                     VolunteerUserID = j.VolunteerUserID,
                     JobID = j.JobID,
-                    Archive = j.Archive,
+                    Archive = j.Archive.Value,
                     DateRequested = j.DateRequested,
                     DateStatusLastChanged = j.DateStatusLastChanged,
                     DistanceInMiles = j.DistanceInMiles,
@@ -744,7 +749,7 @@ namespace RequestService.Repo
                     DueDateType = (DueDateType)j.DueDateTypeId,
                     RequestID = j.RequestID,
                     RequestType = (RequestType) j.RequestType,
-                    RequestorDefinedByGroup = j.RequestorDefinedByGroup
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup                    
                 });
             }
             return response;
@@ -790,14 +795,16 @@ namespace RequestService.Repo
                     ShiftLength = j.ShiftLength
                 });
             }
+
             return response;
         }
         private JobSummary MapEFJobToSummary(EntityFramework.Entities.Job job)
         {
+            DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
             return new JobSummary()
             {
                 IsHealthCritical = job.IsHealthCritical,
-                DueDate = job.DueDate,
+                DueDate = dueDate,
                 Details = job.Details,
                 JobID = job.Id,
                 VolunteerUserID = job.VolunteerUserId,
@@ -809,10 +816,10 @@ namespace RequestService.Repo
                 Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                 RecipientOrganisation = job.NewRequest.OrganisationName,
                 DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                DueDays = Convert.ToInt32((job.DueDate.Date - DateTime.Now.Date).TotalDays),
+                DueDays = Convert.ToInt32((dueDate - DateTime.Now.Date).TotalDays),
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
-                Archive = job.NewRequest.Archive,
+                Archive = job.NewRequest.Archive.Value,
                 DueDateType = (DueDateType)job.DueDateTypeId,
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
@@ -861,7 +868,7 @@ namespace RequestService.Repo
                             DueDays = Convert.ToInt32((job.DueDate.Date - DateTime.Now.Date).TotalDays),
                             DateRequested = job.NewRequest.DateRequested,
                             RequestorType = (RequestorType)job.NewRequest.RequestorType,
-                            Archive = job.NewRequest.Archive,
+                            Archive = job.NewRequest.Archive.Value,
                             DueDateType = (DueDateType)job.DueDateTypeId,
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
@@ -906,7 +913,7 @@ namespace RequestService.Repo
             }
         }
 
-        public List<JobSummary> GetJobSummaries(List<EntityFramework.Entities.Job> jobs)
+        private List<JobSummary> GetJobSummaries(List<EntityFramework.Entities.Job> jobs)
         {
             List<JobSummary> response = new List<JobSummary>();
             foreach (EntityFramework.Entities.Job j in jobs)

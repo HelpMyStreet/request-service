@@ -18,7 +18,6 @@ namespace RequestService.Core.Interfaces.Repositories
         Task UpdateInProgressFromAccepted();
         Task UpdateJobsToDoneFromInProgress();
         Task UpdateJobsToCancelledFromNewOrOpen();
-
         Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);
@@ -27,7 +26,6 @@ namespace RequestService.Core.Interfaces.Repositories
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateRequestStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<int> VolunteerAlreadyAcceptedShift(int requestID, SupportActivities activity, int volunteerUserID, CancellationToken cancellationToken);
-        
         Task<int> GetReferringGroupIDForJobAsync(int jobID, CancellationToken cancellationToken);
         Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
@@ -39,9 +37,9 @@ namespace RequestService.Core.Interfaces.Repositories
         GetRequestSummaryResponse GetRequestSummary(int requestID);
         GetJobSummaryResponse GetJobSummary(int jobID);
         List<StatusHistory> GetJobStatusHistory(int jobID);
-        List<JobSummary> GetOpenJobsSummaries();
         List<JobSummary> GetJobsInProgressSummaries();
         List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID);
+        List<JobSummary> GetUserJobs(int volunteerUserID);
         Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusOpenAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
@@ -52,7 +50,6 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup);
         Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
-
         List<ReportItem> GetDailyReport();
         Task<int> CreateRequestAsync(string postCode, CancellationToken cancellationToken);
         Task UpdateFulfillmentAsync(int requestId, Fulfillable fulfillable, CancellationToken cancellationToken);
@@ -63,9 +60,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<List<LatitudeAndLongitudeDTO>> GetLatitudeAndLongitudes(List<string> postCodes, CancellationToken cancellationToken);
         List<JobSummary> GetJobsByStatusesSummaries(List<JobStatuses> jobStatuses);
         List<JobHeader> GetJobHeaders(GetJobsByFilterRequest request, List<int> referringGroups);
-
         List<JobDTO> GetAllFilteredJobs(GetAllJobsByFilterRequest request, List<int> referringGroups);
-
         void ArchiveOldRequests(int daysSinceJobRequested, int daysSinceJobStatusChanged);        
         bool JobHasStatus(int jobID, JobStatuses status);
         bool JobIsInProgressWithSameVolunteerUserId(int jobID, int? volunteerUserID);
