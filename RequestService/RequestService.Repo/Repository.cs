@@ -704,7 +704,7 @@ namespace RequestService.Repo
             string sqlValue = string.Empty;
             if (requestTypes?.Count > 0)
             {
-                sqlValue = string.Join(",", requestTypes);
+                sqlValue = string.Join(",", requestTypes.Cast<int>().ToArray());                
             }
 
             return new SqlParameter()
@@ -749,7 +749,7 @@ namespace RequestService.Repo
                     DueDateType = (DueDateType)j.DueDateTypeId,
                     RequestID = j.RequestID,
                     RequestType = (RequestType) j.RequestType,
-                    RequestorDefinedByGroup = j.RequestorDefinedByGroup
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup                    
                 });
             }
             return response;
