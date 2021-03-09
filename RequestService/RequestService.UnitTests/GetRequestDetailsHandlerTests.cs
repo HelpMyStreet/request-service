@@ -37,15 +37,16 @@ namespace RequestService.UnitTests
                         StartDate = DateTime.Now,
                         ShiftLength = 10
                     },
-                    JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobBasic>()
+                    
+                    JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobSummary>()
                      {
-                         new HelpMyStreet.Utils.Models.JobBasic()
+                         new HelpMyStreet.Utils.Models.JobSummary()
                         {
                             JobID = 1,
                             SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
                             JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
                          },
-                        new HelpMyStreet.Utils.Models.JobBasic()
+                        new HelpMyStreet.Utils.Models.JobSummary()
                         {
                             JobID = 1,
                             SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
