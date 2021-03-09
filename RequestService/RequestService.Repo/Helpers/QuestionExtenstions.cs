@@ -168,8 +168,7 @@ namespace RequestService.Repo.Helpers
                 Name = "Your / Their age",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
-                AnswerContainsSensitiveData = false,
-                AdditionalDataSource = (byte)AdditionalDataSource.GroupLocation
+                AnswerContainsSensitiveData = true
             });
         }
         private static string GetAdditionalData(Questions question)
