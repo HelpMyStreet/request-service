@@ -505,6 +505,7 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other,
                         SupportActivities.Transport,
                         SupportActivities.ColdWeatherArmy,
+                        SupportActivities.VolunteerSupport
                     };
                     break;
 
