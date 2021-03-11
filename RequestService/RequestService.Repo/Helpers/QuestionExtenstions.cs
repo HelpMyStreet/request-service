@@ -595,6 +595,37 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
+                case RequestHelpFormVariant.MeadowsCommunityHelpers_Public:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.FaceMask,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.BinDayAssistance,
+                        SupportActivities.Covid19Help,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.FaceMask,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.BinDayAssistance,
+                        SupportActivities.Covid19Help,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:
                 case RequestHelpFormVariant.AgeUKNottsNorthMuskham:
