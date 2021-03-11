@@ -10,7 +10,7 @@ using RequestService.Repo;
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210311105955_TweakHelpTextForVolunteerSupportAndEmergencySupport")]
+    [Migration("20210311110929_TweakHelpTextForVolunteerSupportAndEmergencySupport")]
     partial class TweakHelpTextForVolunteerSupportAndEmergencySupport
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1419,7 +1419,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 2,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -3086,7 +3086,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 7,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -3308,7 +3308,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 8,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -3782,7 +3782,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 11,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -4806,7 +4806,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 14,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -5136,7 +5136,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 16,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -5251,7 +5251,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 17,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -5297,7 +5297,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 17,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -5484,7 +5484,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 19,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
@@ -5599,7 +5599,7 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 19,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"

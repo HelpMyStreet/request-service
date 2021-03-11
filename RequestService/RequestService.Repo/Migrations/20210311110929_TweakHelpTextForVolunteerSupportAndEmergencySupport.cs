@@ -12,7 +12,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 2 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -20,7 +20,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 7 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -28,7 +28,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 8 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -36,7 +36,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 11 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -44,7 +44,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 14 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -52,7 +52,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 16 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -60,7 +60,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 17 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -68,7 +68,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 19 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -76,7 +76,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 25, 10, 17 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -84,7 +84,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 25, 10, 19 },
                 column: "PlaceholderText",
-                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
+                value: "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -95,7 +95,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 2 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -103,7 +103,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 7 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -111,7 +111,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 8 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -119,7 +119,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 11 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -127,7 +127,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 14 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -135,7 +135,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 16 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -143,7 +143,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 17 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -151,7 +151,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 22, 10, 19 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -159,7 +159,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 25, 10, 17 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
 
             migrationBuilder.UpdateData(
                 schema: "QuestionSet",
@@ -167,7 +167,7 @@ namespace RequestService.Repo.Migrations
                 keyColumns: new[] { "ActivityID", "QuestionID", "RequestFormVariantID" },
                 keyValues: new object[] { 25, 10, 19 },
                 column: "PlaceholderText",
-                value: "For example, any special instructions for the volunteer.");
+                value: "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.");
         }
     }
 }

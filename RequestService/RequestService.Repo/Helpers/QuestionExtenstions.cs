@@ -410,7 +410,7 @@ namespace RequestService.Repo.Helpers
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = false,
-                            PlaceholderText = "‘For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             Subtext = subText_anythingElse
                         });
 
