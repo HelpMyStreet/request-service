@@ -38,7 +38,7 @@ namespace RequestService.Handlers
 
             if(hasPermission)
             {
-                var jobs =  await _repository.UpdateRequestStatusAsync(JobStatuses.Done, request.RequestID, request.CreatedByUserID, cancellationToken);
+                var jobs =  await _repository.UpdateRequestStatusToDoneAsync(request.RequestID, request.CreatedByUserID, cancellationToken);
 
                 foreach (int jobId in jobs)
                 {

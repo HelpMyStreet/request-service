@@ -17,8 +17,9 @@ namespace RequestService.Core.Interfaces.Repositories
     {
         Task UpdateInProgressFromAccepted();
         Task UpdateJobsToDoneFromInProgress();
-        Task UpdateJobsToCancelledFromNewOrOpen();        
-        Task<List<int>> UpdateRequestStatusAsync(JobStatuses jobStatus, int requestId, int createdByUserID, CancellationToken cancellationToken);
+        Task UpdateJobsToCancelledFromNewOrOpen();
+        Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
+        Task<List<int>> UpdateRequestStatusToDoneAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);
         List<RequestSummary> GetRequestsByFilter(GetRequestsByFilterRequest request, List<int> referringGroups);
