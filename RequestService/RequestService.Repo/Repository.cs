@@ -1602,36 +1602,37 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<List<int>> UpdateRequestStatusAsync(JobStatuses jobStatus, int requestId, int createdByUserID, CancellationToken cancellationToken)
         {
             List<int> result = new List<int>();
 
-            byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
+            byte byteJobStatus = (byte)jobStatus;
+            byte byteCancelledJobStatus = (byte)JobStatuses.Cancelled;
 
-            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != cancelledJobStatus);
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != byteJobStatus && w.JobStatusId != byteCancelledJobStatus);
 
-            if(jobs == null)
+            if (jobs == null)
             {
-                //No jobs need to be cancelled
+                //No jobs need to be changed
                 return result;
             }
 
             foreach (EntityFramework.Entities.Job job in jobs)
             {
-                job.JobStatusId = cancelledJobStatus;
+                job.JobStatusId = byteJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, cancelledJobStatus);
+                AddJobStatus(job.Id, createdByUserID, null, byteJobStatus);
                 result.Add(job.Id);
             }
             await _context.SaveChangesAsync(cancellationToken);
 
-            if (jobs.Count()==0)
+            if (jobs.Count() == 0)
             {
                 return result;
             }
             else
             {
-                throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
+                throw new Exception($"Error when updating request status to {jobStatus.ToString()} for requestId={requestId}");
             }
         }
 

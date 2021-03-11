@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210311110929_TweakHelpTextForVolunteerSupportAndEmergencySupport")]
+    partial class TweakHelpTextForVolunteerSupportAndEmergencySupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5845,6 +5847,11 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 17,
                             Name = "NumberOfSlots"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "RecipientAge"
                         });
                 });
 
@@ -5991,6 +5998,16 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 19,
                             Name = "Sandbox_RequestSubmitter"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "AgeConnectsCardiff_RequestSubmitter"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "AgeConnectsCardiff_Public"
                         });
                 });
 
@@ -6142,6 +6159,21 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 25,
                             Name = "EmergencySupport"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "InPersonBefriending"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "PracticalSupport"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Name = "VolunteerInduction"
                         });
                 });
 
