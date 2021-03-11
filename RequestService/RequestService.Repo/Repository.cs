@@ -1662,8 +1662,7 @@ namespace RequestService.Repo
 
                 if (job.JobStatusId == (byte)JobStatuses.Accepted || job.JobStatusId == (byte)JobStatuses.InProgress)
                 {
-                    job.JobStatusId = byteDoneJobStatus;
-                    job.VolunteerUserId = null;
+                    job.JobStatusId = byteDoneJobStatus;                    
                     AddJobStatus(job.Id, createdByUserID, null, byteDoneJobStatus);
                     result.Add(job.Id);
                 }
