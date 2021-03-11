@@ -15,21 +15,21 @@ using System;
 
 namespace RequestService.Handlers
 {
-    public class PutUpdateRequestStatusToCancelledHandler : IRequestHandler<PutUpdateRequestStatusToCancelledRequest, PutUpdateRequestStatusToCancelledResponse>
+    public class PutUpdateRequestStatusToDoneHandler : IRequestHandler<PutUpdateRequestStatusToDoneRequest, PutUpdateRequestStatusToDoneResponse>
     {
         private readonly IRepository _repository;
         private readonly IJobService _jobService;
         private readonly ICommunicationService _communicationService;
-        public PutUpdateRequestStatusToCancelledHandler(IRepository repository, IJobService jobService, ICommunicationService communicationService)
+        public PutUpdateRequestStatusToDoneHandler(IRepository repository, IJobService jobService, ICommunicationService communicationService)
         {
             _repository = repository;
             _jobService = jobService;
             _communicationService = communicationService;
         }
 
-        public async Task<PutUpdateRequestStatusToCancelledResponse> Handle(PutUpdateRequestStatusToCancelledRequest request, CancellationToken cancellationToken)
+        public async Task<PutUpdateRequestStatusToDoneResponse> Handle(PutUpdateRequestStatusToDoneRequest request, CancellationToken cancellationToken)
         {
-            PutUpdateRequestStatusToCancelledResponse response = new PutUpdateRequestStatusToCancelledResponse()
+            PutUpdateRequestStatusToDoneResponse response = new PutUpdateRequestStatusToDoneResponse()
             {
                 Outcome = UpdateJobStatusOutcome.Unauthorized
             };
@@ -38,7 +38,7 @@ namespace RequestService.Handlers
 
             if(hasPermission)
             {
-                var jobs =  await _repository.UpdateRequestStatusAsync(JobStatuses.Cancelled, request.RequestID, request.CreatedByUserID, cancellationToken);
+                var jobs =  await _repository.UpdateRequestStatusAsync(JobStatuses.Done, request.RequestID, request.CreatedByUserID, cancellationToken);
 
                 foreach (int jobId in jobs)
                 {
