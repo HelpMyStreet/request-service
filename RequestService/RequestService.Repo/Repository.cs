@@ -1602,26 +1602,25 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<List<int>> UpdateRequestStatusAsync(JobStatuses jobStatus, int requestId, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
         {
             List<int> result = new List<int>();
 
-            byte byteJobStatus = (byte)jobStatus;
-            byte byteCancelledJobStatus = (byte)JobStatuses.Cancelled;
+            byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
 
-            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != byteJobStatus && w.JobStatusId != byteCancelledJobStatus);
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != cancelledJobStatus);
 
             if (jobs == null)
             {
-                //No jobs need to be changed
+                //No jobs need to be cancelled
                 return result;
             }
 
             foreach (EntityFramework.Entities.Job job in jobs)
             {
-                job.JobStatusId = byteJobStatus;
+                job.JobStatusId = cancelledJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, byteJobStatus);
+                AddJobStatus(job.Id, createdByUserID, null, cancelledJobStatus);
                 result.Add(job.Id);
             }
             await _context.SaveChangesAsync(cancellationToken);
@@ -1632,7 +1631,52 @@ namespace RequestService.Repo
             }
             else
             {
-                throw new Exception($"Error when updating request status to {jobStatus.ToString()} for requestId={requestId}");
+                throw new Exception($"Error when updating request status to cancelled for requestId={requestId}");
+            }
+        }
+
+        public async Task<List<int>> UpdateRequestStatusToDoneAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        {
+            List<int> result = new List<int>();
+
+            byte byteDoneJobStatus = (byte)JobStatuses.Done;
+            byte byteCancelledJobStatus = (byte)JobStatuses.Cancelled;
+
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != byteCancelledJobStatus && w.JobStatusId != byteDoneJobStatus);
+
+            if (jobs == null)
+            {
+                //No jobs need to be changed
+                return result;
+            }
+
+            foreach (EntityFramework.Entities.Job job in jobs)
+            {
+                if (job.JobStatusId == (byte)JobStatuses.New || job.JobStatusId == (byte)JobStatuses.Open)
+                {
+                    job.JobStatusId = byteCancelledJobStatus;
+                    job.VolunteerUserId = null;
+                    AddJobStatus(job.Id, createdByUserID, null, byteCancelledJobStatus);
+                    result.Add(job.Id);
+                }
+
+                if (job.JobStatusId == (byte)JobStatuses.Accepted || job.JobStatusId == (byte)JobStatuses.InProgress)
+                {
+                    job.JobStatusId = byteDoneJobStatus;                    
+                    AddJobStatus(job.Id, createdByUserID, null, byteDoneJobStatus);
+                    result.Add(job.Id);
+                }
+
+            }
+            await _context.SaveChangesAsync(cancellationToken);
+
+            if (jobs.Count() == 0)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Error when updating request status to done for requestId={requestId}");
             }
         }
 
