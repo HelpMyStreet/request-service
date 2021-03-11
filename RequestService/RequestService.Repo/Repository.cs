@@ -1607,8 +1607,9 @@ namespace RequestService.Repo
             List<int> result = new List<int>();
 
             byte byteJobStatus = (byte)jobStatus;
+            byte byteCancelledJobStatus = (byte)JobStatuses.Cancelled;
 
-            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != byteJobStatus);
+            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != byteJobStatus && w.JobStatusId != byteCancelledJobStatus);
 
             if (jobs == null)
             {
