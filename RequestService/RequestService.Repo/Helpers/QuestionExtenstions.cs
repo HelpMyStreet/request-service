@@ -168,7 +168,7 @@ namespace RequestService.Repo.Helpers
                 Id = (int)Questions.SuppressRecipientPersonalDetails,
                 Name = "Would you like the volunteer to contact your organisation directly to obtain the personal details for this request?",
                 QuestionType = (int)QuestionType.Radio,
-                AdditionalData = string.Empty,
+                AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
                 AnswerContainsSensitiveData = false,
             });
         }
