@@ -12,6 +12,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Core\RequestService.Core.csproj">
+            <Name>RequestService.Core</Name>
 		</ProjectReference>
 	</ItemGroup>
 </Project>

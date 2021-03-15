@@ -6238,11 +6238,6 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            Id = 18,
-                            Name = "RecipientAge"
-                        },
-                        new
-                        {
                             Id = 19,
                             Name = "SuppressRecipientPersonalDetails"
                         });
@@ -6391,26 +6386,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 19,
                             Name = "Sandbox_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "AgeConnectsCardiff_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Name = "AgeConnectsCardiff_Public"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "MeadowsCommunityHelpers_Public"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "MeadowsCommunityHelpers_RequestSubmitter"
                         });
                 });
 
@@ -6562,36 +6537,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 25,
                             Name = "EmergencySupport"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "InPersonBefriending"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Name = "PracticalSupport"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Name = "VolunteerInduction"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Name = "DigitalSupport"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Name = "BinDayAssistance"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Name = "Covid19Help"
                         });
                 });
 

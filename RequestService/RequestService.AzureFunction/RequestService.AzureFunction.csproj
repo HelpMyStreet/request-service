@@ -21,10 +21,13 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Handlers\RequestService.Handlers.csproj">
+            <Name>RequestService.Handlers</Name>
 		</ProjectReference>
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Mappers\RequestService.Mappers.csproj">
+            <Name>RequestService.Mappers</Name>
 		</ProjectReference>
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Repo\RequestService.Repo.csproj">
+            <Name>RequestService.Repo</Name>
 		</ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
