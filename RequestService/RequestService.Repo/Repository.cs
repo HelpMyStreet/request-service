@@ -84,7 +84,7 @@ namespace RequestService.Repo
 
         public async Task UpdatePersonalDetailsAsync(PersonalDetailsDto dto, CancellationToken cancellationToken)
         {
-            var personalDetails = new PersonalDetails
+            var personalDetails = new EntityFramework.Entities.PersonalDetails
             {
                 RequestId = dto.RequestID,
                 FurtherDetails = dto.FurtherDetails,
@@ -740,7 +740,7 @@ namespace RequestService.Repo
                 {
                     VolunteerUserID = j.VolunteerUserID,
                     JobID = j.JobID,
-                    Archive = j.Archive,
+                    Archive = j.Archive.Value,
                     DateRequested = j.DateRequested,
                     DateStatusLastChanged = j.DateStatusLastChanged,
                     DistanceInMiles = j.DistanceInMiles,
@@ -779,7 +779,7 @@ namespace RequestService.Repo
                 DueDays = Convert.ToInt32((job.DueDate.Date - DateTime.Now.Date).TotalDays),
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
-                Archive = job.NewRequest.Archive,
+                Archive = job.NewRequest.Archive.Value,
                 DueDateType = (DueDateType)job.DueDateTypeId,
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
@@ -803,6 +803,57 @@ namespace RequestService.Repo
                         Location = (Location)request.Shift.LocationId
                     };
                 }
+
+                List<JobSummary> jobSummaries = new List<JobSummary>();
+                List<ShiftJob> shiftJobs = new List<ShiftJob>();
+
+                RequestType requestType = (RequestType)request.RequestType;
+
+                switch (requestType)
+                {
+                    case RequestType.Task:
+                        jobSummaries = request.Job.Select(job => new JobSummary()
+                        {
+                            IsHealthCritical = job.IsHealthCritical,
+                            DueDate = job.DueDate,
+                            JobID = job.Id,
+                            VolunteerUserID = job.VolunteerUserId,
+                            JobStatus = (JobStatuses)job.JobStatusId,
+                            SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,
+                            PostCode = job.NewRequest.PostCode,
+                            ReferringGroupID = job.NewRequest.ReferringGroupId,
+                            Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
+                            RecipientOrganisation = job.NewRequest.OrganisationName,
+                            DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
+                            DueDays = Convert.ToInt32((job.DueDate.Date - DateTime.Now.Date).TotalDays),
+                            DateRequested = job.NewRequest.DateRequested,
+                            RequestorType = (RequestorType)job.NewRequest.RequestorType,
+                            Archive = job.NewRequest.Archive.Value,
+                            DueDateType = (DueDateType)job.DueDateTypeId,
+                            RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
+                            RequestID = job.NewRequest.Id,
+                            RequestType = (RequestType)job.NewRequest.RequestType
+                        }).ToList();
+                        break;
+                    case RequestType.Shift:
+                        shiftJobs = request.Job.Select(job => new ShiftJob()
+                        {
+                            ReferringGroupID = request.ReferringGroupId,
+                            JobID = job.Id,
+                            VolunteerUserID = job.VolunteerUserId,
+                            SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,
+                            JobStatus = (JobStatuses)job.JobStatusId,
+                            RequestType = (RequestType)request.RequestType,
+                            RequestID = request.Id,
+                            Location = (Location)request.Shift.LocationId,
+                            StartDate = request.Shift.StartDate,
+                            ShiftLength = request.Shift.ShiftLength
+                        }).ToList();
+                        break;
+                    default:
+                        throw new Exception($"Unknown Request Type { requestType.ToString()}");
+                }
+
                 result = new RequestSummary()
                 {
                     Shift = shift,
@@ -810,16 +861,9 @@ namespace RequestService.Repo
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
                     DateRequested = request.DateRequested,
-                    JobSummaries = request.Job.Select(d => new JobBasic()
-                    {
-                        ReferringGroupID = request.ReferringGroupId,
-                        JobID = d.Id,
-                        VolunteerUserID = d.VolunteerUserId,
-                        SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)d.SupportActivityId,
-                        JobStatus = (JobStatuses)d.JobStatusId,
-                        RequestType = (RequestType)request.RequestType,
-                        RequestID = request.Id
-                    }).ToList()
+                    PostCode = request.PostCode,
+                    JobSummaries = jobSummaries,
+                    ShiftJobs = shiftJobs
                 };
                 return result;
             }
@@ -1474,30 +1518,10 @@ namespace RequestService.Repo
                 requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
             }
 
-            return requests.Select(x => new RequestSummary()
-            {
-                Shift = new HelpMyStreet.Utils.Models.Shift()
-                {
-                    RequestID = x.Id,
-                    ShiftLength = x.Shift.ShiftLength,
-                    StartDate = x.Shift.StartDate,
-                    Location = (Location) x.Shift.LocationId
-                },
-                ReferringGroupID = x.ReferringGroupId,
-                RequestID = x.Id,
-                RequestType = (RequestType) x.RequestType,
-                DateRequested = x.DateRequested,
-                JobSummaries = x.Job.Select(x => new JobBasic()
-                {
-                    JobID = x.Id,
-                    ReferringGroupID = x.NewRequest.ReferringGroupId,
-                    JobStatus = (JobStatuses)x.JobStatusId,
-                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
-                    VolunteerUserID = x.VolunteerUserId,
-                    RequestID = x.NewRequest.Id,
-                    RequestType = (RequestType) x.NewRequest.RequestType
-                }).ToList()
-            }).ToList();
+            var results = requests.ToList();
+
+            return results.Select(x => MapEFRequestToSummary(x)).ToList();
+
         }
 
         public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
