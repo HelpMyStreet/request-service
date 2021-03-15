@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210315120052_AddPrivaryQuestionData")]
+    partial class AddPrivaryQuestionData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,16 +819,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 10,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 10,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -872,16 +864,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -927,16 +909,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 5,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 5,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -978,16 +950,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 3,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1058,16 +1020,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 12,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 12,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1109,16 +1061,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 9,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1168,16 +1110,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 6,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 6,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1223,16 +1155,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 4,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 4,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1274,16 +1196,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1329,16 +1241,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 8,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1384,16 +1286,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1444,16 +1336,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1495,16 +1377,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 13,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -1561,16 +1433,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -3812,16 +3674,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 21,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -3857,16 +3709,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -3898,16 +3740,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -3958,16 +3790,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -3999,16 +3821,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -4814,16 +4626,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4859,16 +4661,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4904,16 +4696,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4950,16 +4732,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4992,16 +4764,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5052,16 +4814,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -5093,16 +4845,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5284,16 +5026,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5330,16 +5062,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5372,16 +5094,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5432,16 +5144,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5473,16 +5175,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5649,16 +5341,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5694,16 +5376,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5739,16 +5411,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 3,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 3,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5780,16 +5442,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5836,16 +5488,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5884,16 +5526,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 24,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 24,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5925,16 +5557,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
@@ -5981,16 +5603,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "pos1",
-                            Order = 4,
-                            RequestFormStageId = 2,
-                            Required = true
                         },
                         new
                         {
