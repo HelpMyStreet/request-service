@@ -1,5 +1,6 @@
 ﻿using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using RequestService.Core.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,9 @@ namespace RequestService.Core.Services
     {
         Task<List<JobSummary>> AttachedDistanceToJobSummaries(string volunteerPostCode, List<JobSummary> jobHeaders, CancellationToken cancellationToken);
         Task<List<JobHeader>> AttachedDistanceToJobHeaders(string volunteerPostCode, List<JobHeader> jobHeaders, CancellationToken cancellationToken);
+
+        Task<List<JobDTO>> AttachedDistanceToAllJobs(string volunteerPostCode, List<JobDTO> allJobs, CancellationToken cancellationToken);
+
         Task<bool> HasPermissionToChangeStatusAsync(int jobID, int createdByUserID, bool allowVolunteerUserId, CancellationToken cancellationToken);
         Task<bool> HasPermissionToChangeJobAsync(int jobID, int authorisedByUserID, CancellationToken cancellationToken);
         Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken);

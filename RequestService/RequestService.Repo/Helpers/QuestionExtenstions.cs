@@ -382,6 +382,46 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
+                    else if (activity == SupportActivities.VolunteerSupport || activity == SupportActivities.EmergencySupport)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.NumberOfSlots,
+                            Location = "pos1",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        { 
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                            QuestionId = (int)Questions.SupportRequesting, 
+                            Location = "pos1", 
+                            Order = 2, 
+                            RequestFormVariantId = (int)form, 
+                            Required = false, 
+                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" 
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.AnythingElseToTellUs,
+                            Location = "details2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            Subtext = subText_anythingElse
+                        });
+
+                    }
                     else
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
@@ -457,11 +497,13 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.VitalsForVeterans:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Add(SupportActivities.WellbeingPackage);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
                     break;
 
                 case RequestHelpFormVariant.Ruddington:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Remove(SupportActivities.HomeworkSupport);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
@@ -472,6 +514,7 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other,
                         SupportActivities.Transport,
                         SupportActivities.ColdWeatherArmy,
+                        SupportActivities.VolunteerSupport
                     };
                     break;
 
@@ -553,7 +596,9 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.LincolnshireVolunteers:
                     activites = new List<SupportActivities>()
                     {
-                        SupportActivities.VaccineSupport
+                        SupportActivities.VaccineSupport,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.EmergencySupport
                     };
                     break;
 

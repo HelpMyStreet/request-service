@@ -1,5 +1,6 @@
 ﻿using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using RequestService.Core.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +16,13 @@ namespace RequestService.Core.Services
             string postcode, 
             double? distanceInMiles, 
             Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,            
+            CancellationToken cancellationToken);
+
+        Task<List<JobDTO>> FilterAllJobs(
+            List<JobDTO> jobs,
+            string postcode,
+            double? distanceInMiles,
+            Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,
             CancellationToken cancellationToken);
     }
 }

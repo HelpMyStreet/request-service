@@ -72,9 +72,44 @@ namespace RequestService.Handlers
                 };
             }
 
-            //add a guid for each job
+            List<Job> duplicatedJobs = new List<Job>();
+
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
+                //check if number of volunteer question has been asked
+                var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
+
+                if (numberOfSlotsQuestion != null)
+                {
+                    int numberOfSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
+                    if (numberOfSlots > 1)
+                    {
+                        for (int i = 0; i < (numberOfSlots - 1); i++)
+                        {
+                            duplicatedJobs.Add(new Job()
+                            {
+                                HealthCritical = j.HealthCritical,
+                                DueDateType = j.DueDateType,
+                                SupportActivity = j.SupportActivity,
+                                StartDate = j.StartDate,
+                                EndDate = j.EndDate,
+                                Questions = j.Questions,
+                                DueDays = j.DueDays,
+                            });
+                        }
+                    }
+                }
+            }
+
+            if(duplicatedJobs.Count>0)
+            {
+                request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
+            }
+
+
+            foreach (Job j in request.NewJobsRequest.Jobs)
+            {
+                //add a guid for each job
                 if (j.Guid == Guid.Empty)
                 {
                     j.Guid = Guid.NewGuid();
