@@ -37,7 +37,6 @@ namespace RequestService.UnitTests
                         StartDate = DateTime.Now,
                         ShiftLength = 10
                     },
-                    
                     JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobSummary>()
                      {
                          new HelpMyStreet.Utils.Models.JobSummary()
