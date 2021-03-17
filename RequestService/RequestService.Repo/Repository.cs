@@ -779,7 +779,7 @@ namespace RequestService.Repo
                     DateRequested = j.DateRequested,
                     DateStatusLastChanged = j.DateStatusLastChanged,
                     DistanceInMiles = j.DistanceInMiles,
-                    dayDate = j.DueDate,
+                    DueDate = j.DueDate,
                     IsHealthCritical = j.IsHealthCritical,
                     JobStatus = (JobStatuses)j.JobStatusID,
                     PostCode = j.PostCode,
@@ -816,7 +816,7 @@ namespace RequestService.Repo
                 Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                 RecipientOrganisation = job.NewRequest.OrganisationName,
                 DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                DueDays = (job.DueDate.Date - DateTime.UtcNow.Date).Days,
+                DueDays = (dueDate.Date - DateTime.UtcNow.Date).Days,
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive.Value,
@@ -887,7 +887,8 @@ namespace RequestService.Repo
                             RequestID = request.Id,
                             Location = (Location)request.Shift.LocationId,
                             StartDate = request.Shift.StartDate,
-                            ShiftLength = request.Shift.ShiftLength
+                            ShiftLength = request.Shift.ShiftLength,
+                            DueDate = request.Shift.StartDate,
                         }).ToList();
                         break;
                     default:
