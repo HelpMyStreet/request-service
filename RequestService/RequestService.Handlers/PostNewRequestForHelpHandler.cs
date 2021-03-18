@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Exceptions;
+using HelpMyStreet.Utils.Extensions;
 
 namespace RequestService.Handlers
 {
@@ -103,6 +104,9 @@ namespace RequestService.Handlers
                 }
             }
 
+            //on is a one window
+            //before today for the first one
+
             if(duplicatedJobs.Count>0)
             {
                 request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
@@ -112,7 +116,7 @@ namespace RequestService.Handlers
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
-                int 
+                int dueDays = j.DueDays+j.RepeatFrequency.FrequencyDays();
                 for(int i=1;i<j.NumberOfRepeats;i++)
                 {
                     repeatJobs.Add(new Job()
@@ -123,16 +127,16 @@ namespace RequestService.Handlers
                         StartDate = j.StartDate,
                         EndDate = j.EndDate,
                         Questions = j.Questions,
-                        DueDays = j.DueDays,
+                        DueDays = dueDays,
                         NumberOfRepeats = j.NumberOfRepeats,
-                        RepeatFrequency = j.RepeatFrequency,
+                        RepeatFrequency = j.RepeatFrequency
                     });
                 }
             }
 
             if (repeatJobs.Count > 0)
             {
-                request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
+                request.NewJobsRequest.Jobs.AddRange(repeatJobs);
             }
 
 
