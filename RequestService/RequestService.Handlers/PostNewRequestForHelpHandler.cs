@@ -95,6 +95,8 @@ namespace RequestService.Handlers
                                 EndDate = j.EndDate,
                                 Questions = j.Questions,
                                 DueDays = j.DueDays,
+                                NumberOfRepeats = j.NumberOfRepeats,
+                                RepeatFrequency = j.RepeatFrequency,
                             });
                         }
                     }
@@ -102,6 +104,33 @@ namespace RequestService.Handlers
             }
 
             if(duplicatedJobs.Count>0)
+            {
+                request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
+            }
+
+            List<Job> repeatJobs = new List<Job>();
+
+            foreach (Job j in request.NewJobsRequest.Jobs)
+            {
+                int 
+                for(int i=1;i<j.NumberOfRepeats;i++)
+                {
+                    repeatJobs.Add(new Job()
+                    {
+                        HealthCritical = j.HealthCritical,
+                        DueDateType = j.DueDateType,
+                        SupportActivity = j.SupportActivity,
+                        StartDate = j.StartDate,
+                        EndDate = j.EndDate,
+                        Questions = j.Questions,
+                        DueDays = j.DueDays,
+                        NumberOfRepeats = j.NumberOfRepeats,
+                        RepeatFrequency = j.RepeatFrequency,
+                    });
+                }
+            }
+
+            if (repeatJobs.Count > 0)
             {
                 request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
             }
