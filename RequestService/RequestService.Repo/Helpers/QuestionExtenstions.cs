@@ -171,6 +171,14 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
                 AnswerContainsSensitiveData = false,
             });
+          
+          entity.HasData(new Question
+                Id = (int)Questions.RecipientAge,
+                Name = "Your / Their age",
+                QuestionType = (int)QuestionType.Number,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = true
+            });
         }
         private static string GetAdditionalData(Questions question)
         {
@@ -268,8 +276,6 @@ namespace RequestService.Repo.Helpers
 
             return JsonConvert.SerializeObject(additionalData);
         }
-
-
         public static void SetActivityQuestionData(this EntityTypeBuilder<ActivityQuestions> entity)
         {
             var requestFormVariants = Enum.GetValues(typeof(RequestHelpFormVariant)).Cast<RequestHelpFormVariant>();
@@ -470,18 +476,22 @@ namespace RequestService.Repo.Helpers
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
-                    
+
                     if (Enum.GetName(typeof(RequestHelpFormVariant), form).Contains("RequestSubmitter") || form == RequestHelpFormVariant.VitalsForVeterans)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "pos1", Order = 4, RequestFormVariantId = (int)form, Required = true });
                     }
                     
 
+                    if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
+                    {
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.RecipientAge, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
+                    }
+
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });
                 }
             }
         }
-
         private static IEnumerable<SupportActivities> GetGenericSupportActivities()
         {
             IEnumerable<SupportActivities> activites = new List<SupportActivities>()
@@ -501,7 +511,6 @@ namespace RequestService.Repo.Helpers
             };
             return activites;
         }
-
         private static IEnumerable<SupportActivities> GetSupportActivitiesForRequestFormVariant(RequestHelpFormVariant form)
         {
             IEnumerable<SupportActivities> activites;
@@ -639,6 +648,61 @@ namespace RequestService.Repo.Helpers
                     };
                     break;
 
+                case RequestHelpFormVariant.AgeConnectsCardiff_Public:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.InPersonBefriending,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+
+                case RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.InPersonBefriending,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.MeadowsCommunityHelpers_Public:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.FaceMask,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.BinDayAssistance,
+                        SupportActivities.Covid19Help,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter:
+                    activites = new List<SupportActivities>
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.FaceMask,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.BinDayAssistance,
+                        SupportActivities.Covid19Help,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.Other
+                    };
+                    break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:
                 case RequestHelpFormVariant.AgeUKNottsNorthMuskham:

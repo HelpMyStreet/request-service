@@ -84,7 +84,7 @@ namespace RequestService.Repo
 
         public async Task UpdatePersonalDetailsAsync(PersonalDetailsDto dto, CancellationToken cancellationToken)
         {
-            var personalDetails = new Repo.EntityFramework.Entities.PersonalDetails
+            var personalDetails = new EntityFramework.Entities.PersonalDetails
             {
                 RequestId = dto.RequestID,
                 FurtherDetails = dto.FurtherDetails,
@@ -1569,8 +1569,7 @@ namespace RequestService.Repo
             }
 
             var results = requests.ToList();
-
-            return results.Select(x=> MapEFRequestToSummary(x)).ToList();                            
+            return results.Select(x => MapEFRequestToSummary(x)).ToList();
         }
 
         public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
