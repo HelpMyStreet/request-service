@@ -816,7 +816,7 @@ namespace RequestService.Repo
                 Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                 RecipientOrganisation = job.NewRequest.OrganisationName,
                 DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                DueDays = Convert.ToInt32((dueDate - DateTime.Now.Date).TotalDays),
+                DueDays = (dueDate.Date - DateTime.UtcNow.Date).Days,
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive.Value,
@@ -865,7 +865,7 @@ namespace RequestService.Repo
                             Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                             RecipientOrganisation = job.NewRequest.OrganisationName,
                             DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                            DueDays = Convert.ToInt32((job.DueDate.Date - DateTime.Now.Date).TotalDays),
+                            DueDays = (job.DueDate.Date - DateTime.UtcNow.Date).Days,
                             DateRequested = job.NewRequest.DateRequested,
                             RequestorType = (RequestorType)job.NewRequest.RequestorType,
                             Archive = job.NewRequest.Archive.Value,
@@ -887,7 +887,8 @@ namespace RequestService.Repo
                             RequestID = request.Id,
                             Location = (Location)request.Shift.LocationId,
                             StartDate = request.Shift.StartDate,
-                            ShiftLength = request.Shift.ShiftLength
+                            ShiftLength = request.Shift.ShiftLength,
+                            DueDate = request.Shift.StartDate,
                         }).ToList();
                         break;
                     default:

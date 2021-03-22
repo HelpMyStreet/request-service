@@ -468,7 +468,8 @@ namespace RequestService.Repo.Helpers
                     }
 
                     if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
-                        || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham) && activity != SupportActivities.FaceMask)
+                        || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham
+                        || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
