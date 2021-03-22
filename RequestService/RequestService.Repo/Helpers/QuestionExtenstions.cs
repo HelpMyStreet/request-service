@@ -1,6 +1,7 @@
 ﻿
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using HelpMyStreet.Utils.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using RequestService.Repo.EntityFramework.Entities;
@@ -164,6 +165,15 @@ namespace RequestService.Repo.Helpers
 
             entity.HasData(new Question
             {
+                Id = (int)Questions.SuppressRecipientPersonalDetails,
+                Name = "Would you like the volunteer to contact your organisation directly to obtain the personal details for this request?",
+                QuestionType = (int)QuestionType.Radio,
+                AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
+                AnswerContainsSensitiveData = false,
+            });
+          
+          entity.HasData(new Question
+            {
                 Id = (int)Questions.RecipientAge,
                 Name = "Your / Their age",
                 QuestionType = (int)QuestionType.Number,
@@ -196,6 +206,23 @@ namespace RequestService.Repo.Helpers
                         },
                     };
                     break;
+                    
+                case Questions.SuppressRecipientPersonalDetails:
+                    additionalData = new List<AdditonalQuestionData>
+                    {
+                        new AdditonalQuestionData
+                        {
+                            Key = "Yes",
+                            Value = "Yes, the volunteer should use our ‘requester’ details and we will provide the necessary personal information"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "No",
+                            Value = "No, the volunteer can access the necessary personal information as soon as they accept the request"
+                        },
+                    };
+                    break;
+                    
                 case Questions.FaceMask_Cost:
                     additionalData = new List<AdditonalQuestionData>
                     {
@@ -450,6 +477,12 @@ namespace RequestService.Repo.Helpers
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
+
+                    if (Enum.GetName(typeof(RequestHelpFormVariant), form).Contains("RequestSubmitter") || form == RequestHelpFormVariant.VitalsForVeterans)
+                    {
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "pos1", Order = 4, RequestFormVariantId = (int)form, Required = true });
+                    }
+                    
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
                     {
