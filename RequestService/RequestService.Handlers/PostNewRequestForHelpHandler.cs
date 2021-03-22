@@ -17,6 +17,7 @@ using System;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
+using RequestService.Handlers.BusinessLogic;
 
 namespace RequestService.Handlers
 {
@@ -28,13 +29,15 @@ namespace RequestService.Handlers
         private readonly IAddressService _addressService;
         private readonly IGroupService _groupService;
         private readonly IOptionsSnapshot<ApplicationConfig> _applicationConfig;
+        private readonly IMultiJobs _multiJobs;
         public PostNewRequestForHelpHandler(
             IRepository repository,
             IUserService userService,
             IAddressService addressService,
             ICommunicationService communicationService,
             IGroupService groupService,
-            IOptionsSnapshot<ApplicationConfig> applicationConfig)
+            IOptionsSnapshot<ApplicationConfig> applicationConfig,
+            IMultiJobs multiJobs)
         {
             _repository = repository;
             _userService = userService;
@@ -42,6 +45,7 @@ namespace RequestService.Handlers
             _communicationService = communicationService;
             _groupService = groupService;
             _applicationConfig = applicationConfig;
+            _multiJobs = multiJobs;
         }
 
         private void CopyRequestorAsRecipient(PostNewRequestForHelpRequest request)
@@ -73,79 +77,13 @@ namespace RequestService.Handlers
                 };
             }
 
-            List<Job> duplicatedJobs = new List<Job>();
-
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
                 j.NotBeforeDate = DateTime.UtcNow.AddDays(j.DueDays);
-
-                //check if number of volunteer question has been asked
-                var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
-
-                if (numberOfSlotsQuestion != null)
-                {
-                    int numberOfSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
-                    if (numberOfSlots > 1)
-                    {
-                        for (int i = 0; i < (numberOfSlots - 1); i++)
-                        {
-                            duplicatedJobs.Add(new Job()
-                            {
-                                HealthCritical = j.HealthCritical,
-                                DueDateType = j.DueDateType,
-                                SupportActivity = j.SupportActivity,
-                                StartDate = j.StartDate,
-                                EndDate = j.EndDate,
-                                Questions = j.Questions,
-                                DueDays = j.DueDays,
-                                NumberOfRepeats = j.NumberOfRepeats,
-                                RepeatFrequency = j.RepeatFrequency,
-                                NotBeforeDate = j.NotBeforeDate
-                            });
-                        }
-                    }
-                }
             }
 
-            if(duplicatedJobs.Count>0)
-            {
-                request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
-            }
-
-            List<Job> repeatJobs = new List<Job>();
-
-            foreach (Job j in request.NewJobsRequest.Jobs)
-            {
-                for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
-                {
-                    int dueDays = j.DueDays + (j.RepeatFrequency.FrequencyDays() * loopCount);
-                    DateTime? notBeforeDate = DateTime.UtcNow.AddDays(dueDays);
-                    if (j.DueDateType == DueDateType.Before)
-                    {
-                        notBeforeDate = DateTime.UtcNow.AddDays(dueDays - j.DueDays);
-                    }
-
-                    repeatJobs.Add(new Job()
-                    {
-                        HealthCritical = j.HealthCritical,
-                        DueDateType = j.DueDateType,
-                        SupportActivity = j.SupportActivity,
-                        StartDate = j.StartDate,
-                        EndDate = j.EndDate,
-                        Questions = j.Questions,
-                        DueDays = dueDays,
-                        NumberOfRepeats = j.NumberOfRepeats,
-                        RepeatFrequency = j.RepeatFrequency,
-                        NotBeforeDate = notBeforeDate
-                    });
-                }
-            }
-
-            if (repeatJobs.Count > 0)
-            {
-                request.NewJobsRequest.Jobs.AddRange(repeatJobs);
-            }
-
+            _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
+            _multiJobs.AddRepeats(request.NewJobsRequest);
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
