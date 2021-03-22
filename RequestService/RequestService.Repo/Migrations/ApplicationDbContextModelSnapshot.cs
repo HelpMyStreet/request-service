@@ -8327,8 +8327,8 @@ namespace RequestService.Repo.Migrations
                             AnswerContainsSensitiveData = false,
                             Name = "Would you like the volunteer to contact your organisation directly to obtain the personal details for this request?",
                             QuestionType = (byte)4
-                        }
-                        new,
+                        },
+                        new
                         {
                             Id = 18,
                             AdditionalData = "",
