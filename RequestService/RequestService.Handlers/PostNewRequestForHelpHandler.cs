@@ -77,6 +77,8 @@ namespace RequestService.Handlers
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
+                j.NotBeforeDate = DateTime.UtcNow.AddDays(j.DueDays);
+
                 //check if number of volunteer question has been asked
                 var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
 
@@ -98,14 +100,12 @@ namespace RequestService.Handlers
                                 DueDays = j.DueDays,
                                 NumberOfRepeats = j.NumberOfRepeats,
                                 RepeatFrequency = j.RepeatFrequency,
+                                NotBeforeDate = j.NotBeforeDate
                             });
                         }
                     }
                 }
             }
-
-            //on is a one window
-            //before today for the first one
 
             if(duplicatedJobs.Count>0)
             {
@@ -116,9 +116,15 @@ namespace RequestService.Handlers
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
-                int dueDays = j.DueDays+j.RepeatFrequency.FrequencyDays();
-                for(int i=1;i<j.NumberOfRepeats;i++)
+                for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
                 {
+                    int dueDays = j.DueDays + (j.RepeatFrequency.FrequencyDays() * loopCount);
+                    DateTime? notBeforeDate = DateTime.UtcNow.AddDays(dueDays);
+                    if (j.DueDateType == DueDateType.Before)
+                    {
+                        notBeforeDate = DateTime.UtcNow.AddDays(dueDays - j.DueDays);
+                    }
+
                     repeatJobs.Add(new Job()
                     {
                         HealthCritical = j.HealthCritical,
@@ -129,7 +135,8 @@ namespace RequestService.Handlers
                         Questions = j.Questions,
                         DueDays = dueDays,
                         NumberOfRepeats = j.NumberOfRepeats,
-                        RepeatFrequency = j.RepeatFrequency
+                        RepeatFrequency = j.RepeatFrequency,
+                        NotBeforeDate = notBeforeDate
                     });
                 }
             }

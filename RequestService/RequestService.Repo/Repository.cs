@@ -244,6 +244,7 @@ namespace RequestService.Repo
                             DueDate = DateTime.Now.AddDays(job.DueDays),
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
+                            NotBeforeDate = job.NotBeforeDate,
                             Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
