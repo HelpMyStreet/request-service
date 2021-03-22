@@ -173,6 +173,7 @@ namespace RequestService.Repo.Helpers
             });
           
           entity.HasData(new Question
+            {
                 Id = (int)Questions.RecipientAge,
                 Name = "Your / Their age",
                 QuestionType = (int)QuestionType.Number,
