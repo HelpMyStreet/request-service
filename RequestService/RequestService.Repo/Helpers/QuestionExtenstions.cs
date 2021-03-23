@@ -525,7 +525,8 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Shopping,
                         SupportActivities.CollectingPrescriptions,
                         SupportActivities.PhoneCalls_Friendly,
-                        SupportActivities.Other
+                        SupportActivities.Other,
+                        SupportActivities.DogWalking
                     };
                     break;
 
@@ -672,9 +673,19 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
-                case RequestHelpFormVariant.Default:
-                case RequestHelpFormVariant.FaceMasks:
                 case RequestHelpFormVariant.AgeUKNottsNorthMuskham:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.Errands,
+                        SupportActivities.DogWalking,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.Default:
+                case RequestHelpFormVariant.FaceMasks:                
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
                     break;
