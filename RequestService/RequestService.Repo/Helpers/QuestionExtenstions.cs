@@ -479,11 +479,10 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
 
-                    if (Enum.GetName(typeof(RequestHelpFormVariant), form).Contains("RequestSubmitter") || form == RequestHelpFormVariant.VitalsForVeterans)
+                    if (!form.IsPublic())
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "pos1", Order = 4, RequestFormVariantId = (int)form, Required = true });
                     }
-                    
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
                     {
