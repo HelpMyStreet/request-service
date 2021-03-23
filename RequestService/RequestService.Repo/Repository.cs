@@ -160,7 +160,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails)
         {
 
             Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
@@ -209,7 +209,8 @@ namespace RequestService.Repo
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup,
                         RequestType = (byte)requestType,
-                        Archive = false
+                        Archive = false,
+                        SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails
                     };
 
                     if(requestType == RequestType.Shift)
