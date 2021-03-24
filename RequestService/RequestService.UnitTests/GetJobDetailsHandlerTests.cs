@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RequestService.UnitTests
 {
-    public class GetJobDetailsHandlerTests
+    public class MultiJobTests
     {
         private Mock<IRepository> _repository;
         private Mock<IJobService> _jobService;

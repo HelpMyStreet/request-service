@@ -22,6 +22,7 @@ using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using RequestService.Handlers.BusinessLogic;
 
 [assembly: FunctionsStartup(typeof(RequestService.AzureFunction.Startup))]
 namespace RequestService.AzureFunction
@@ -91,6 +92,7 @@ namespace RequestService.AzureFunction
             builder.Services.AddTransient<IJobFilteringService, JobFilteringService>();
             builder.Services.AddTransient<IArchiveService, ArchiveService>();
             builder.Services.AddTransient<IManageRequestsService, ManageRequestsService>();
+            builder.Services.AddTransient<IMultiJobs, MultiJobs>();
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));

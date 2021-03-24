@@ -160,6 +160,8 @@ namespace RequestService.Repo
 
                 entity.Property(e => e.DueDate).HasColumnType("datetime");
 
+                entity.Property(e => e.NotBeforeDate).HasColumnType("datetime");
+
                 entity.Property(e => e.SupportActivityId).HasColumnName("SupportActivityID");
 
                 entity.Property(e => e.VolunteerUserId).HasColumnName("VolunteerUserID");
