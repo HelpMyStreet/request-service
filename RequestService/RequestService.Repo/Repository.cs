@@ -241,7 +241,7 @@ namespace RequestService.Repo
                             NewRequest = newRequest,
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
-                            DueDate = DateTime.Now.AddDays(job.DueDays),
+                            DueDate = job.StartDate.Value,
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
