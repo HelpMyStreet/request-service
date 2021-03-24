@@ -16,32 +16,27 @@ namespace RequestService.Handlers.BusinessLogic
 
             foreach (Job j in request.Jobs)
             {
-                j.NotBeforeDate = DateTime.UtcNow.AddDays(j.DueDays);
-
                 //check if number of volunteer question has been asked
                 var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
 
                 if (numberOfSlotsQuestion != null)
                 {
                     int numberOfSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
-                    if (numberOfSlots > 1)
+                    for (int i = 1; i < numberOfSlots; i++)
                     {
-                        for (int i = 0; i < (numberOfSlots - 1); i++)
+                        duplicatedJobs.Add(new Job()
                         {
-                            duplicatedJobs.Add(new Job()
-                            {
-                                HealthCritical = j.HealthCritical,
-                                DueDateType = j.DueDateType,
-                                SupportActivity = j.SupportActivity,
-                                StartDate = j.StartDate,
-                                EndDate = j.EndDate,
-                                Questions = j.Questions,
-                                DueDays = j.DueDays,
-                                NumberOfRepeats = j.NumberOfRepeats,
-                                RepeatFrequency = j.RepeatFrequency,
-                                NotBeforeDate = j.NotBeforeDate
-                            });
-                        }
+                            HealthCritical = j.HealthCritical,
+                            DueDateType = j.DueDateType,
+                            SupportActivity = j.SupportActivity,
+                            StartDate = j.StartDate,
+                            EndDate = j.EndDate,
+                            Questions = j.Questions,
+                            DueDays = j.DueDays,
+                            NumberOfRepeats = j.NumberOfRepeats,
+                            RepeatFrequency = j.RepeatFrequency,
+                            NotBeforeDate = j.NotBeforeDate
+                        });
                     }
                 }
             }
@@ -58,8 +53,6 @@ namespace RequestService.Handlers.BusinessLogic
 
             foreach (Job j in request.Jobs)
             {
-                j.NotBeforeDate = DateTime.UtcNow.AddDays(j.DueDays);
-
                 for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
                 {
                     int dueDays = j.DueDays + (j.RepeatFrequency.FrequencyDays() * loopCount);

@@ -79,7 +79,14 @@ namespace RequestService.Handlers
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
-                j.NotBeforeDate = DateTime.UtcNow.AddDays(j.DueDays);
+                if(j.DueDateType == DueDateType.On)
+                {
+                    j.NotBeforeDate = DateTime.UtcNow.Date.AddDays(j.DueDays);
+                }
+                else if(j.DueDateType == DueDateType.Before)
+                {
+                    j.NotBeforeDate = DateTime.UtcNow.Date;
+                }                
             }
 
             _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
