@@ -31,8 +31,7 @@ namespace RequestService.Handlers.BusinessLogic
                             SupportActivity = j.SupportActivity,
                             StartDate = j.StartDate,
                             EndDate = j.EndDate,
-                            Questions = j.Questions,
-                            DueDays = j.DueDays,
+                            Questions = j.Questions,                            
                             NumberOfRepeats = j.NumberOfRepeats,
                             RepeatFrequency = j.RepeatFrequency,
                             NotBeforeDate = j.NotBeforeDate
@@ -53,27 +52,24 @@ namespace RequestService.Handlers.BusinessLogic
 
             foreach (Job j in request.Jobs)
             {
+                int diffBetweenDueAndNotBefore = (j.NotBeforeDate.Value.Date - j.StartDate.Value.Date).Days;
+
                 for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
                 {
-                    int dueDays = j.DueDays + (j.RepeatFrequency.FrequencyDays() * loopCount);
-                    DateTime? notBeforeDate = DateTime.UtcNow.AddDays(dueDays);
-                    if (j.DueDateType == DueDateType.Before)
-                    {
-                        notBeforeDate = DateTime.UtcNow.AddDays(dueDays - j.DueDays);
-                    }
+                    DateTime? startDate = j.StartDate.HasValue ? j.StartDate.Value.AddDays((j.RepeatFrequency.FrequencyDays() * loopCount)) : (DateTime?)null;
+                    DateTime? endDate = j.EndDate.HasValue ? j.EndDate.Value.AddDays((j.RepeatFrequency.FrequencyDays() * loopCount)) : (DateTime?)null;                    
 
                     repeatJobs.Add(new Job()
                     {
                         HealthCritical = j.HealthCritical,
                         DueDateType = j.DueDateType,
                         SupportActivity = j.SupportActivity,
-                        StartDate = j.StartDate,
-                        EndDate = j.EndDate,
+                        StartDate = startDate,
+                        EndDate = endDate,
                         Questions = j.Questions,
-                        DueDays = dueDays,
                         NumberOfRepeats = j.NumberOfRepeats,
                         RepeatFrequency = j.RepeatFrequency,
-                        NotBeforeDate = notBeforeDate
+                        NotBeforeDate = startDate.Value.AddDays(diffBetweenDueAndNotBefore)
                     });
                 }
             }

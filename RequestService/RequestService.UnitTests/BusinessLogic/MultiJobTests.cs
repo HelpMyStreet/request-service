@@ -4,6 +4,7 @@ using HelpMyStreet.Utils.Extensions;
 using HelpMyStreet.Utils.Models;
 using NUnit.Framework;
 using RequestService.Handlers.BusinessLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +33,8 @@ namespace RequestService.UnitTests.BusinessLogic
                 {
                    new Job()
                    {
-                       DueDays = 3,
+                       StartDate = DateTime.Now,
+                       NotBeforeDate = DateTime.Now,
                        HealthCritical = false,
                        SupportActivity = SupportActivities.Shopping,
                        Questions = new List<Question>()
@@ -58,7 +60,6 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 new Job()
                 {
-                    DueDays = 3,
                     HealthCritical = false,
                     SupportActivity = SupportActivities.Shopping
                 }
@@ -74,18 +75,45 @@ namespace RequestService.UnitTests.BusinessLogic
         }
 
         [Test]
-        [TestCase(3, 2, Frequency.Weekly)]
-        [TestCase(3, 2, Frequency.Fortnightly)]
-        [TestCase(3, 2, Frequency.EveryFourWeeks)]       
-        [TestCase(3, 2, Frequency.Daily)]
-        [TestCase(3, 5, Frequency.Weekly)]
-        public void WhenRepeatFrequencyPassedIn_MultiJobsAdded(int dueDays, int numberOfRepeats, Frequency frequency)
+        [TestCase(2, Frequency.Weekly)]
+        [TestCase(2, Frequency.Fortnightly)]
+        [TestCase(2, Frequency.EveryFourWeeks)]
+        [TestCase(2, Frequency.Daily)]
+        [TestCase(5, Frequency.Weekly)]
+        public void WhenRepeatFrequencyPassedIn_MultiJobsAdded(int numberOfRepeats, Frequency frequency)
         {
             List<Job> jobs = new List<Job>()
             {
                 new Job()
                 {
-                    DueDays = dueDays,
+                    StartDate = DateTime.Now,
+                    NotBeforeDate = DateTime.Now,
+                    HealthCritical = false,
+                    SupportActivity = SupportActivities.Shopping,
+                    RepeatFrequency = frequency,
+                    NumberOfRepeats = numberOfRepeats
+                }
+            };
+            int jobCount = jobs.Count;
+
+            NewJobsRequest request = new NewJobsRequest()
+            {
+                Jobs = jobs
+            };
+            _classUnderTest.AddRepeats(request);
+            Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);            
+            Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
+        }
+
+        [TestCase(5, Frequency.Weekly)]
+        public void WhenRepeatFrequencyPassedIn_MultiJobsAdded2(int numberOfRepeats, Frequency frequency)
+        {
+            List<Job> jobs = new List<Job>()
+            {
+                new Job()
+                {
+                    StartDate = DateTime.Now,
+                    NotBeforeDate = DateTime.Now.AddDays(-3),
                     HealthCritical = false,
                     SupportActivity = SupportActivities.Shopping,
                     RepeatFrequency = frequency,
@@ -100,12 +128,7 @@ namespace RequestService.UnitTests.BusinessLogic
             };
             _classUnderTest.AddRepeats(request);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);
-            Assert.AreEqual(jobCount, request.Jobs.Count(x => x.DueDays == dueDays));
-            for (int loopCount = 1; loopCount < numberOfRepeats; loopCount++)
-            {
-                int pDueDays = dueDays + (frequency.FrequencyDays() * loopCount);
-                Assert.AreEqual(jobCount, request.Jobs.Count(x => x.DueDays == pDueDays));
-            }
+            Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
         }
 
     }

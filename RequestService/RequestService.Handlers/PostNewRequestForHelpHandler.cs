@@ -77,18 +77,6 @@ namespace RequestService.Handlers
                 };
             }
 
-            foreach (Job j in request.NewJobsRequest.Jobs)
-            {
-                if(j.DueDateType == DueDateType.On)
-                {
-                    j.NotBeforeDate = DateTime.UtcNow.Date.AddDays(j.DueDays);
-                }
-                else if(j.DueDateType == DueDateType.Before)
-                {
-                    j.NotBeforeDate = DateTime.UtcNow.Date;
-                }                
-            }
-
             _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
             _multiJobs.AddRepeats(request.NewJobsRequest);
 
