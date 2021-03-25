@@ -750,7 +750,8 @@ namespace RequestService.Repo
                     DueDateType = (DueDateType)j.DueDateTypeId,
                     RequestID = j.RequestID,
                     RequestType = (RequestType) j.RequestType,
-                    RequestorDefinedByGroup = j.RequestorDefinedByGroup                    
+                    RequestorDefinedByGroup = j.RequestorDefinedByGroup,
+                    NotBeforeDate = j.NotBeforeDate
                 });
             }
             return response;
@@ -793,7 +794,8 @@ namespace RequestService.Repo
                     RequestorDefinedByGroup = j.RequestorDefinedByGroup,
                     Location = j.LocationId.HasValue ? (Location?)j.LocationId.Value : null,
                     StartDate = j.StartDate,
-                    ShiftLength = j.ShiftLength
+                    ShiftLength = j.ShiftLength,
+                    NotBeforeDate = j.NotBeforeDate
                 });
             }
 
@@ -824,7 +826,8 @@ namespace RequestService.Repo
                 DueDateType = (DueDateType)job.DueDateTypeId,
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
-                RequestType = (RequestType)job.NewRequest.RequestType
+                RequestType = (RequestType)job.NewRequest.RequestType,
+                NotBeforeDate = job.NotBeforeDate
             };
         }
 
@@ -873,7 +876,8 @@ namespace RequestService.Repo
                             DueDateType = (DueDateType)job.DueDateTypeId,
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
-                            RequestType = (RequestType)job.NewRequest.RequestType
+                            RequestType = (RequestType)job.NewRequest.RequestType,
+                            NotBeforeDate = job.NotBeforeDate
                         }).ToList();
                         break;
                     case RequestType.Shift:
@@ -890,6 +894,7 @@ namespace RequestService.Repo
                             StartDate = request.Shift.StartDate,
                             ShiftLength = request.Shift.ShiftLength,
                             DueDate = request.Shift.StartDate,
+                            NotBeforeDate = job.NotBeforeDate
                         }).ToList();
                         break;
                     default:

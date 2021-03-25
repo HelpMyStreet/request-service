@@ -188,7 +188,8 @@ namespace RequestService.Handlers
                 DueDateType = job.DueDateType,
                 RequestID = job.RequestID,
                 RequestType = job.RequestType,
-                RequestorDefinedByGroup = job.RequestorDefinedByGroup
+                RequestorDefinedByGroup = job.RequestorDefinedByGroup,
+                NotBeforeDate = job.NotBeforeDate
             }));
 
             List<ShiftJob> shiftJobs = new List<ShiftJob>();
