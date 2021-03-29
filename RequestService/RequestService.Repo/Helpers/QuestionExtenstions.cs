@@ -165,7 +165,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.RecipientAge,
-                Name = "Your / Their age",
+                Name = "Age of the person needing help",
                 QuestionType = (int)QuestionType.Text,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
@@ -441,6 +441,7 @@ namespace RequestService.Repo.Helpers
                     }
 
                     if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
+                        || form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham
                         || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
                     {
