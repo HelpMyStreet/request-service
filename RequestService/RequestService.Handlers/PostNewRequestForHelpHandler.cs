@@ -77,8 +77,8 @@ namespace RequestService.Handlers
                 };
             }
 
-            _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
-            _multiJobs.AddRepeats(request.NewJobsRequest);
+            bool multiVolunteers = _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
+            bool repeat = _multiJobs.AddRepeats(request.NewJobsRequest);
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
@@ -182,7 +182,7 @@ namespace RequestService.Handlers
 
             try
             {
-                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup, multiVolunteers, repeat);
                 response.RequestID = requestId;
 
                 if (response.RequestID == 0)

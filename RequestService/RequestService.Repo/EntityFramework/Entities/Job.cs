@@ -24,8 +24,6 @@ namespace RequestService.Repo.EntityFramework.Entities
         public string Reference { get; set; }
         public byte DueDateTypeId { get; set; }
         public DateTime? NotBeforeDate { get; set; }
-        public bool? Multi { get; set; }
-        public bool? Repeat { get; set; }
 
         public virtual Request NewRequest { get; set; }
         public virtual ICollection<JobQuestions> JobQuestions { get; set; }

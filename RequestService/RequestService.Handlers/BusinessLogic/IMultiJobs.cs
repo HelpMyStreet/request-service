@@ -4,7 +4,7 @@ namespace RequestService.Handlers.BusinessLogic
 {
     public interface IMultiJobs
     {
-        public void AddMultiVolunteers(NewJobsRequest request);
-        public void AddRepeats(NewJobsRequest request);
+        public bool AddMultiVolunteers(NewJobsRequest request);
+        public bool AddRepeats(NewJobsRequest request);
     }
 }

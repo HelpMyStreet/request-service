@@ -49,9 +49,9 @@ namespace RequestService.UnitTests.BusinessLogic
                    }
                 }
             };
-            _classUnderTest.AddMultiVolunteers(request);
+            bool multiVolunteers = _classUnderTest.AddMultiVolunteers(request);
             Assert.AreEqual(numberOfVolunteers, request.Jobs.Count);
-            Assert.AreEqual(numberOfVolunteers-1, request.Jobs.Count(x=> x.Multi==true));
+            Assert.AreEqual(true, multiVolunteers);
         }
 
         [Test]
@@ -71,9 +71,9 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            _classUnderTest.AddMultiVolunteers(request);
+            bool multiVolunteers = _classUnderTest.AddMultiVolunteers(request);
             Assert.AreEqual(jobCount, request.Jobs.Count);
-            Assert.AreEqual(0, request.Jobs.Count(x => x.Multi == true));
+            Assert.AreEqual(false, multiVolunteers);
         }
 
         [Test]
@@ -102,10 +102,10 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            _classUnderTest.AddRepeats(request);
+            bool repeats = _classUnderTest.AddRepeats(request);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);            
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
-            Assert.AreEqual((jobCount * numberOfRepeats) - jobCount, request.Jobs.Count(x => x.Repeat == true));
+            Assert.AreEqual(true, repeats);
         }
 
         [TestCase(5, Frequency.Weekly)]
@@ -129,10 +129,10 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            _classUnderTest.AddRepeats(request);
+            bool repeats = _classUnderTest.AddRepeats(request);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
-            Assert.AreEqual((jobCount * numberOfRepeats)- jobCount, request.Jobs.Count(x => x.Repeat == true));
+            Assert.AreEqual(true, repeats);
         }
 
     }
