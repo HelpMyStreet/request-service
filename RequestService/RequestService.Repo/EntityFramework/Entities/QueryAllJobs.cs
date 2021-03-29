@@ -25,5 +25,6 @@ namespace RequestService.Repo.EntityFramework.Entities
         public  int? LocationId { get; set; }
         public int? ShiftLength { get; set; }
         public DateTime? StartDate { get; set; }
+        public DateTime? NotBeforeDate { get; set; }
     }
 }
