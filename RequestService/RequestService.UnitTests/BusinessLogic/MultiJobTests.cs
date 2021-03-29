@@ -51,6 +51,7 @@ namespace RequestService.UnitTests.BusinessLogic
             };
             _classUnderTest.AddMultiVolunteers(request);
             Assert.AreEqual(numberOfVolunteers, request.Jobs.Count);
+            Assert.AreEqual(numberOfVolunteers-1, request.Jobs.Count(x=> x.Multi==true));
         }
 
         [Test]
@@ -72,6 +73,7 @@ namespace RequestService.UnitTests.BusinessLogic
             };
             _classUnderTest.AddMultiVolunteers(request);
             Assert.AreEqual(jobCount, request.Jobs.Count);
+            Assert.AreEqual(0, request.Jobs.Count(x => x.Multi == true));
         }
 
         [Test]
@@ -103,6 +105,7 @@ namespace RequestService.UnitTests.BusinessLogic
             _classUnderTest.AddRepeats(request);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);            
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
+            Assert.AreEqual((jobCount * numberOfRepeats) - jobCount, request.Jobs.Count(x => x.Repeat == true));
         }
 
         [TestCase(5, Frequency.Weekly)]
@@ -129,6 +132,7 @@ namespace RequestService.UnitTests.BusinessLogic
             _classUnderTest.AddRepeats(request);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
+            Assert.AreEqual((jobCount * numberOfRepeats)- jobCount, request.Jobs.Count(x => x.Repeat == true));
         }
 
     }

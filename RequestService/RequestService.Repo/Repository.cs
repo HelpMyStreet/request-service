@@ -245,6 +245,8 @@ namespace RequestService.Repo
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
+                            Multi = job.Multi ?? false,
+                            Repeat = job.Repeat ?? false,
                             Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);

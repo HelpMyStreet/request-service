@@ -34,7 +34,9 @@ namespace RequestService.Handlers.BusinessLogic
                             Questions = j.Questions,                            
                             NumberOfRepeats = j.NumberOfRepeats,
                             RepeatFrequency = j.RepeatFrequency,
-                            NotBeforeDate = j.NotBeforeDate
+                            NotBeforeDate = j.NotBeforeDate,
+                            Multi = true,
+                            Repeat = j.Repeat
                         });
                     }
                 }
@@ -69,7 +71,9 @@ namespace RequestService.Handlers.BusinessLogic
                         Questions = j.Questions,
                         NumberOfRepeats = j.NumberOfRepeats,
                         RepeatFrequency = j.RepeatFrequency,
-                        NotBeforeDate = startDate.Value.AddDays(diffBetweenDueAndNotBefore)
+                        NotBeforeDate = startDate.Value.AddDays(diffBetweenDueAndNotBefore),
+                        Multi = j.Multi,
+                        Repeat = true
                     });
                 }
             }
