@@ -455,7 +455,7 @@ namespace RequestService.Repo.Helpers
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
                     {
-                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.RecipientAge, Location = "details1", Order = 2, RequestFormVariantId = (int)form, Required = false });
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.RecipientAge, Location = "details1", Order = 2, RequestFormVariantId = (int)form, Required = false,Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer." });
                     }
 
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });
