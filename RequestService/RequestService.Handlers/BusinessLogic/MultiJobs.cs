@@ -10,7 +10,7 @@ namespace RequestService.Handlers.BusinessLogic
 {
     public class MultiJobs : IMultiJobs
     {
-        public void AddMultiVolunteers(NewJobsRequest request)
+        public bool AddMultiVolunteers(NewJobsRequest request)
         {
             List<Job> duplicatedJobs = new List<Job>();
 
@@ -43,10 +43,15 @@ namespace RequestService.Handlers.BusinessLogic
             if (duplicatedJobs.Count > 0)
             {
                 request.Jobs.AddRange(duplicatedJobs);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public void AddRepeats(NewJobsRequest request)
+        public bool AddRepeats(NewJobsRequest request)
         {
             List<Job> repeatJobs = new List<Job>();
 
@@ -77,6 +82,11 @@ namespace RequestService.Handlers.BusinessLogic
             if (repeatJobs.Count > 0)
             {
                 request.Jobs.AddRange(repeatJobs);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

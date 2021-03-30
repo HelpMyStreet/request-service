@@ -67,7 +67,10 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.NewHelpRequestAsync(
                 It.IsAny<PostNewRequestForHelpRequest>(),
                 It.IsAny<Fulfillable>(),
-                It.IsAny<bool>()))
+                It.IsAny<bool>(),
+                It.IsAny<bool>(),
+                It.IsAny<bool>()
+                ))
                 .ReturnsAsync(() => requestId);
             _repository.Setup(x => x.UpdateCommunicationSentAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
 

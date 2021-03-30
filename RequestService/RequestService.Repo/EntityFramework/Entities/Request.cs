@@ -37,6 +37,9 @@ namespace RequestService.Repo.EntityFramework.Entities
 
         public byte RequestType { get; set; }
 
+        public bool MultiVolunteer { get; set; }
+        public bool Repeat { get; set; }
+
         public bool RequestorDefinedByGroup { get; set; }
         public Guid Guid { get; set; }
         public virtual Person PersonIdRecipientNavigation { get; set; }
