@@ -152,7 +152,7 @@ namespace RequestService.Handlers
 
                         if (parentGroupId.HasValue && userRoles.UserGroupRoles.ContainsKey(parentGroupId.Value))
                         {
-                            failedChecks = !(userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.RequestSubmitter));                            
+                            failedChecks = !(userRoles.UserGroupRoles[parentGroupId.Value].Contains((int)GroupRoles.RequestSubmitter));
                         }
                     }
                 }
@@ -223,6 +223,18 @@ namespace RequestService.Handlers
 
                     switch (newTaskAction)
                     {
+                        case NewTaskAction.NotifyMatchingVolunteers:
+                            foreach (int groupId in actionAppliesToIds)
+                            {
+                                bool commsSent = await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                                {
+                                    GroupID = groupId,
+                                    CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
+                                    RequestID = requestId,
+                                }, cancellationToken);
+                                await _repository.UpdateCommunicationSentAsync(response.RequestID, commsSent, cancellationToken);
+                            }
+                            break;
                         case NewTaskAction.MakeAvailableToGroups:
                             foreach (int i in actionAppliesToIds)
                             {
@@ -270,19 +282,6 @@ namespace RequestService.Handlers
 
                         switch (newTaskAction)
                         {
-                            case NewTaskAction.NotifyMatchingVolunteers:
-                                foreach (int groupId in actionAppliesToIds)
-                                {
-                                    bool commsSent = await _communicationService.RequestCommunication(new RequestCommunicationRequest()
-                                    {
-                                        GroupID = groupId,
-                                        CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
-                                        JobID = jobID
-                                    }, cancellationToken);
-                                    await _repository.UpdateCommunicationSentAsync(response.RequestID, commsSent, cancellationToken);
-                                }
-                                break;
-
                             case NewTaskAction.AssignToVolunteer:
                                 foreach (int userId in actionAppliesToIds)
                                 {
