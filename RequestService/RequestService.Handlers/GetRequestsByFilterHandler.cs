@@ -11,6 +11,9 @@ using HelpMyStreet.Utils.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using RequestService.Core.Exceptions;
+using HelpMyStreet.Utils.Enums;
 
 namespace RequestService.Handlers
 {
@@ -18,16 +21,55 @@ namespace RequestService.Handlers
     {
         private readonly IRepository _repository;
         private readonly IGroupService _groupService;
+        private readonly IAddressService _addressService;
 
-        public GetRequestsByFilterHandler(IRepository repository, IGroupService groupService)
+        public GetRequestsByFilterHandler(IRepository repository, IGroupService groupService, IAddressService addressService)
         {
             _repository = repository;
             _groupService = groupService;
+            _addressService = addressService;
         }
 
         public async Task<GetRequestsByFilterResponse> Handle(GetRequestsByFilterRequest request, CancellationToken cancellationToken)
         {
             GetRequestsByFilterResponse response = null;
+
+            if (!string.IsNullOrEmpty(request.Postcode))
+            {
+                request.Postcode = HelpMyStreet.Utils.Utils.PostcodeFormatter.FormatPostcode(request.Postcode);
+
+                try
+                {
+                    var postcodeValid = await _addressService.IsValidPostcode(request.Postcode, cancellationToken);
+                }
+                catch (HttpRequestException)
+                {
+                    throw new PostCodeException();
+                }
+            }
+
+            if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
+            {
+                if (!(request.JobStatuses?.JobStatuses.Count() == 1 && request.JobStatuses?.JobStatuses.First() == JobStatuses.Open))
+                {
+                    throw new InvalidFilterException();
+                }
+            }
+
+            if (request.AllocatedToUserId.HasValue && request.JobStatuses?.JobStatuses.Count() > 0)
+            {
+                List<JobStatuses> invalidStatuses = new List<JobStatuses>()
+                {
+                    JobStatuses.Cancelled,
+                    JobStatuses.New,
+                    JobStatuses.Open
+                };
+
+                if (request.JobStatuses.JobStatuses.Any(status => invalidStatuses.Contains(status)))
+                {
+                    throw new InvalidFilterException();
+                }
+            }
 
             List<int> referringGroups = new List<int>();
 

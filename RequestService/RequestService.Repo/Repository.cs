@@ -879,7 +879,8 @@ namespace RequestService.Repo
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
                             RequestType = (RequestType)job.NewRequest.RequestType,
-                            NotBeforeDate = job.NotBeforeDate
+                            NotBeforeDate = job.NotBeforeDate,
+                            Reference
                         }).ToList();
                         break;
                     case RequestType.Shift:

@@ -41,6 +41,16 @@ namespace RequestService.AzureFunction
                 GetRequestsByFilterResponse response = await _mediator.Send(req, cancellationToken); 
                 return new OkObjectResult(ResponseWrapper<GetRequestsByFilterResponse, RequestServiceErrorCode>.CreateSuccessfulResponse(response));
             }
+            catch (PostCodeException exc)
+            {
+                _logger.LogErrorAndNotifyNewRelic($"{req.Postcode} is an invalid postcode", exc);
+                return new ObjectResult(ResponseWrapper<GetRequestsByFilterResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.ValidationError, "Invalid Postcode")) { StatusCode = StatusCodes.Status400BadRequest };
+            }
+            catch (InvalidFilterException exc)
+            {
+                _logger.LogErrorAndNotifyNewRelic($"invalid filter", exc);
+                return new ObjectResult(ResponseWrapper<GetRequestsByFilterResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.ValidationError, "Invalid filter combination")) { StatusCode = StatusCodes.Status400BadRequest };
+            }
             catch (Exception exc)
             {
                 _logger.LogErrorAndNotifyNewRelic("Exception occured in GetRequestsByFilter", exc);
