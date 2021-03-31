@@ -891,7 +891,7 @@ namespace RequestService.Repo
                             SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,
                             JobStatus = (JobStatuses)job.JobStatusId,
                             RequestType = (RequestType)request.RequestType,
-                            RequestID = request.Id,
+                            RequestID = request.Id,                            
                             Location = (Location)request.Shift.LocationId,
                             StartDate = request.Shift.StartDate,
                             ShiftLength = request.Shift.ShiftLength,
@@ -909,6 +909,8 @@ namespace RequestService.Repo
                     ReferringGroupID = request.ReferringGroupId,
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
+                    MultiVolunteer = request.MultiVolunteer,
+                    Repeat = request.Repeat,
                     DateRequested = request.DateRequested,
                     PostCode = request.PostCode,
                     JobSummaries = jobSummaries,
@@ -1789,15 +1791,15 @@ namespace RequestService.Repo
                 requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
-            if (request.DateFrom.HasValue)
-            {
-                requests = requests.Where(x => x.Shift.StartDate.AddMinutes(x.Shift.ShiftLength) >= request.DateFrom.Value);
-            }
+            //if (request.DateFrom.HasValue)
+            //{
+            //    requests = requests.Where(x => x.Shift.StartDate.AddMinutes(x.Shift.ShiftLength) >= request.DateFrom.Value);
+            //}
 
-            if (request.DateTo.HasValue)
-            {
-                requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
-            }
+            //if (request.DateTo.HasValue)
+            //{
+            //    requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
+            //}
 
             if (request.RequestType?.RequestTypes.Count > 0)
             {
