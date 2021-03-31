@@ -14,6 +14,8 @@ using System.Linq;
 using System.Net.Http;
 using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Contracts.AddressService.Request;
+using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Handlers
 {
@@ -22,12 +24,16 @@ namespace RequestService.Handlers
         private readonly IRepository _repository;
         private readonly IGroupService _groupService;
         private readonly IAddressService _addressService;
+        private readonly IJobFilteringService _jobFilteringService;
+        private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
 
-        public GetRequestsByFilterHandler(IRepository repository, IGroupService groupService, IAddressService addressService)
+        public GetRequestsByFilterHandler(IRepository repository, IGroupService groupService, IAddressService addressService, IJobFilteringService jobFilteringService)
         {
             _repository = repository;
             _groupService = groupService;
             _addressService = addressService;
+            _jobFilteringService = jobFilteringService;
+            _jobBasicDedupeWithDate_EqualityComparer = new JobBasicDedupeWithDate_EqualityComparer();
         }
 
         public async Task<GetRequestsByFilterResponse> Handle(GetRequestsByFilterRequest request, CancellationToken cancellationToken)
@@ -91,6 +97,31 @@ namespace RequestService.Handlers
 
             var requestSummaries = _repository.GetRequestsByFilter(request, referringGroups);
 
+            if (requestSummaries.Count>0)
+            {
+                await AddPostCodeForLocations(requestSummaries);
+
+                await _jobFilteringService.FilterAllRequests(
+                requestSummaries,
+                request.Postcode,
+                request.DistanceInMiles,
+                request.ActivitySpecificSupportDistancesInMiles,
+                cancellationToken);
+
+                if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
+                {
+                    var allocatedJobsToUsers = _repository.GetUserJobs(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
+                    if (allocatedJobsToUsers != null && allocatedJobsToUsers.Count() > 0)
+                    {
+                        foreach (RequestSummary rs in requestSummaries)
+                        {
+                            rs.JobSummaries = rs.JobSummaries.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer)).ToList();
+                            rs.ShiftJobs = rs.ShiftJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer)).ToList();
+                        }
+                    }
+                }
+            }
+
             if (requestSummaries != null)
             {
                 response = new GetRequestsByFilterResponse()
@@ -103,6 +134,47 @@ namespace RequestService.Handlers
                 throw new Exception("Get requests should never return a null. In the case where no requests are relevant to the filter, an empty list should be returned");
             }
             return response;
+        }
+
+        private async Task AddPostCodeForLocations(List<RequestSummary> allRequests)
+        {
+            //add postcode for locations if locations exist
+            List<Location> distinctLocations = allRequests
+                .Where(x => x.Shift?.Location != null)
+                .Select(x => x.Shift.Location)
+                .Distinct().ToList();
+
+            List<LocationDetails> locationDetails = new List<LocationDetails>();
+
+            if (distinctLocations.Count > 0)
+            {
+                GetLocationsRequest locationRequest = new GetLocationsRequest()
+                {
+                    LocationsRequests = new HelpMyStreet.Contracts.AddressService.Request.LocationsRequest()
+                    {
+                        Locations = distinctLocations.ToList()
+                    }
+                };
+                var details = await _addressService.GetLocations(locationRequest);
+
+                if (details != null)
+                {
+                    locationDetails = details.LocationDetails;
+                }
+            }
+
+            if (locationDetails.Count > 0)
+            {
+                foreach (RequestSummary rs in allRequests.Where(x => x.Shift?.Location != null))
+                {
+                    var location = locationDetails.First(x => x.Location == rs.Shift.Location);
+
+                    if (location != null)
+                    {
+                        rs.PostCode = location.Address.Postcode;
+                    }
+                }
+            }
         }
     }
 }

@@ -267,5 +267,57 @@ namespace RequestService.Core.Services
             
             return false;
         }
+
+        public async Task AttachedDistanceToAllRequests(string volunteerPostCode, List<RequestSummary> allRequests, CancellationToken cancellationToken)
+        {
+            if (allRequests.Count == 0)
+            {
+                return;
+            }
+
+            volunteerPostCode = PostcodeFormatter.FormatPostcode(volunteerPostCode);
+
+            foreach (RequestSummary request in allRequests)
+            {
+                request.PostCode = PostcodeFormatter.FormatPostcode(request.PostCode);
+            }
+
+            List<string> distinctPostCodes = allRequests.Select(d => d.PostCode).Distinct().ToList();
+
+            if (!distinctPostCodes.Contains(volunteerPostCode))
+            {
+                distinctPostCodes.Add(volunteerPostCode);
+            }
+
+            var postcodeCoordinatesResponse = await _repository.GetLatitudeAndLongitudes(distinctPostCodes, cancellationToken);
+
+            if (postcodeCoordinatesResponse == null)
+            {
+                return;
+            }
+
+            var volunteerPostcodeCoordinates = postcodeCoordinatesResponse.Where(w => w.Postcode == volunteerPostCode).FirstOrDefault();
+            if (volunteerPostcodeCoordinates == null)
+            {
+                return;
+            }
+
+            foreach (RequestSummary rs in allRequests)
+            {
+                var jobPostcodeCoordinates = postcodeCoordinatesResponse.Where(w => w.Postcode == rs.PostCode).FirstOrDefault();
+
+                double distanceInMiles = double.MaxValue;
+
+                if (jobPostcodeCoordinates != null)
+                {
+                    distanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
+                    //rs.DistanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
+                }
+                rs.DistanceInMiles = distanceInMiles;
+
+                rs.JobSummaries.ForEach(js => js.DistanceInMiles = distanceInMiles);
+                rs.ShiftJobs.ForEach(js => js.DistanceInMiles = distanceInMiles);
+            }            
+        }
     }
 }
