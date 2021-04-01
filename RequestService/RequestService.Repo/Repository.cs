@@ -1770,9 +1770,7 @@ namespace RequestService.Repo
         {
             IQueryable<EntityFramework.Entities.Job> jobs = _context.Job
                 .Include(i => i.NewRequest)
-                .ThenInclude(i => i.Shift)
-                .Include(i => i.JobAvailableToGroup)
-                .Include(i => i.RequestJobStatus);                
+                .ThenInclude(i => i.Shift);
 
             if (jobs == null || jobs.Count() == 0)
             {
@@ -1784,14 +1782,21 @@ namespace RequestService.Repo
                 jobs = jobs.Where(x => referringGroups.Contains(x.NewRequest.ReferringGroupId));
             }
 
-            if(request.SupportActivities?.SupportActivities.Count>0)
+            if (request.AllocatedToUserId.HasValue)
+            {
+                jobs = jobs.Where(x => x.VolunteerUserId == request.AllocatedToUserId.Value);
+            }
+
+            if (request.SupportActivities?.SupportActivities.Count>0)
             {
                 jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId));
             }
 
             if (request.Groups?.Groups.Count > 0)
             {
-                jobs = jobs.Where(x => x.JobAvailableToGroup.Any(a => request.Groups.Groups.Contains(a.GroupId)));
+                jobs = jobs
+                    .Include(x => x.JobAvailableToGroup)
+                    .Where(x => x.JobAvailableToGroup.Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
             if (request.RequestType?.RequestTypes.Count > 0)
@@ -1801,7 +1806,9 @@ namespace RequestService.Repo
 
             if (request.JobStatuses?.JobStatuses.Count > 0)
             {
-                jobs = jobs.Where(x => request.JobStatuses.JobStatuses.Contains((JobStatuses)x.JobStatusId));
+                jobs = jobs
+                    .Include(i => i.RequestJobStatus)
+                    .Where(x => request.JobStatuses.JobStatuses.Contains((JobStatuses)x.JobStatusId));
             };
 
             var distinctRequests = jobs.Select(x => x.RequestId).Distinct().ToList();

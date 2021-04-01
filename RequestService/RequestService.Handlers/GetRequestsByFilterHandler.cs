@@ -115,8 +115,8 @@ namespace RequestService.Handlers
                     {
                         foreach (RequestSummary rs in requestSummaries.ToList())
                         {
-                            int jobSummaryMatch = rs.JobSummaries.Count(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
-                            int shiftJobMatch = rs.ShiftJobs.Count(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
+                            int jobSummaryMatch = rs.JobSummaries.Count(s => allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
+                            int shiftJobMatch = rs.ShiftJobs.Count(s => allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
 
                             if(jobSummaryMatch == rs.JobSummaries.Count && shiftJobMatch == rs.ShiftJobs.Count)
                             {
