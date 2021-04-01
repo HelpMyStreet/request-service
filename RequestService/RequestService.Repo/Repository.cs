@@ -1768,37 +1768,60 @@ namespace RequestService.Repo
 
         public List<RequestSummary> GetRequestsByFilter(GetRequestsByFilterRequest request, List<int> referringGroups)
         {
-            IQueryable<Request> requests = _context.Request
-               .Include(i => i.Shift)
-               .Include(i => i.Job)
-               .ThenInclude(i => i.JobAvailableToGroup)
-               .Include(i => i.Job)
-               .ThenInclude(i => i.RequestJobStatus);
-               
+            IQueryable<EntityFramework.Entities.Job> jobs = _context.Job
+                .Include(i => i.NewRequest)
+                .ThenInclude(i => i.Shift);
 
-            if (requests == null || requests.Count() == 0)
+            if (jobs == null || jobs.Count() == 0)
             {
                 return new List<RequestSummary>();
             }
 
             if (referringGroups.Count > 0)
             {
-                requests = requests.Where(x => referringGroups.Contains(x.ReferringGroupId));
+                jobs = jobs.Where(x => referringGroups.Contains(x.NewRequest.ReferringGroupId));
+            }
+
+            if (request.AllocatedToUserId.HasValue)
+            {
+                jobs = jobs.Where(x => x.VolunteerUserId == request.AllocatedToUserId.Value);
+            }
+
+            if (request.SupportActivities?.SupportActivities.Count>0)
+            {
+                jobs = jobs.Where(x => request.SupportActivities.SupportActivities.Contains((HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId));
             }
 
             if (request.Groups?.Groups.Count > 0)
             {
-                requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
+                jobs = jobs
+                    .Include(x => x.JobAvailableToGroup)
+                    .Where(x => x.JobAvailableToGroup.Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
             if (request.RequestType?.RequestTypes.Count > 0)
             {
-                requests = requests.Where(x => request.RequestType.RequestTypes.Contains((RequestType)x.RequestType));
+                jobs = jobs.Where(x => request.RequestType.RequestTypes.Contains((RequestType) x.NewRequest.RequestType));                
             };
 
-            var results = requests.ToList();
+            if (request.JobStatuses?.JobStatuses.Count > 0)
+            {
+                jobs = jobs
+                    .Include(i => i.RequestJobStatus)
+                    .Where(x => request.JobStatuses.JobStatuses.Contains((JobStatuses)x.JobStatusId));
+            };
 
-            return results.Select(x => MapEFRequestToSummary(x)).ToList();
+            var distinctRequests = jobs.Select(x => x.RequestId).Distinct().ToList();
+
+            var allRequests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.JobAvailableToGroup)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.RequestJobStatus)
+                .Where(w => distinctRequests.Contains(w.Id)).ToList();
+
+            return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
         }
     }
 }
