@@ -1804,9 +1804,17 @@ namespace RequestService.Repo
                 jobs = jobs.Where(x => request.JobStatuses.JobStatuses.Contains((JobStatuses)x.JobStatusId));
             };
 
-            var results = jobs.ToList();
+            var distinctRequests = jobs.Select(x => x.RequestId).Distinct().ToList();
 
-            return results.Select(x => MapEFRequestToSummary(x.NewRequest)).ToList();
+            var allRequests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.JobAvailableToGroup)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.RequestJobStatus)
+                .Where(w => distinctRequests.Contains(w.Id)).ToList();
+
+            return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
         }
     }
 }

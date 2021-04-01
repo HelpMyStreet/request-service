@@ -113,10 +113,16 @@ namespace RequestService.Handlers
                     var allocatedJobsToUsers = _repository.GetUserJobs(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
                     if (allocatedJobsToUsers != null && allocatedJobsToUsers.Count() > 0)
                     {
-                        foreach (RequestSummary rs in requestSummaries)
+                        foreach (RequestSummary rs in requestSummaries.ToList())
                         {
-                            rs.JobSummaries = rs.JobSummaries.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer)).ToList();
-                            rs.ShiftJobs = rs.ShiftJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer)).ToList();
+                            int jobSummaryMatch = rs.JobSummaries.Count(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
+                            int shiftJobMatch = rs.ShiftJobs.Count(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer));
+
+                            if(jobSummaryMatch == rs.JobSummaries.Count && shiftJobMatch == rs.ShiftJobs.Count)
+                            {
+                                requestSummaries.Remove(rs);
+                            }
+                        
                         }
                     }
                 }
