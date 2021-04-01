@@ -77,6 +77,29 @@ namespace RequestService.Handlers
                 };
             }
 
+            foreach (Job j in request.NewJobsRequest.Jobs.Where(x=> x.DueDateType == DueDateType.ASAP))
+            {
+                DateTime now = DateTime.UtcNow;
+                j.NotBeforeDate = now;
+                switch (j.RepeatFrequency)
+                {
+                    case Frequency.Once:
+                        j.StartDate = now.AddDays(3);
+                        break;
+                    case Frequency.Daily:
+                        j.StartDate = now;
+                        break;
+                    case Frequency.Weekly:
+                    case Frequency.Fortnightly:
+                    case Frequency.EveryFourWeeks:
+                        j.StartDate = now.AddDays(3);
+                        break;
+                    default:
+                        throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
+                }
+            };
+
+
             bool multiVolunteers = _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
             bool repeat = _multiJobs.AddRepeats(request.NewJobsRequest);
 
