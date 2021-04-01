@@ -101,11 +101,12 @@ namespace RequestService.Core.Services
 
                 foreach(RequestSummary rs in requests.ToList())
                 {
-                    rs.JobSummaries = rs.JobSummaries.Where(w => rs.DistanceInMiles <= GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles)).ToList();
-                    rs.ShiftJobs = rs.ShiftJobs.Where(w => rs.DistanceInMiles <= GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles)).ToList();
-                    
-                    if(rs.JobSummaries.Count==0 && rs.ShiftJobs.Count==0)
+                    int jobsExceedingDistance = rs.JobSummaries.Count(w => rs.DistanceInMiles > GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles));
+                    int shiftsExceedingDistance = rs.ShiftJobs.Count(w => rs.DistanceInMiles > GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles));
+
+                    if (jobsExceedingDistance == rs.JobSummaries.Count && shiftsExceedingDistance == rs.ShiftJobs.Count)
                     {
+                        //Either all jobs or shifts exceed the distance for given requests.Therefore remove request from list
                         requests.Remove(rs);
                     }
                 }

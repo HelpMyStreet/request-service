@@ -311,7 +311,6 @@ namespace RequestService.Core.Services
                 if (jobPostcodeCoordinates != null)
                 {
                     distanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
-                    //rs.DistanceInMiles = _distanceCalculator.GetDistanceInMiles(volunteerPostcodeCoordinates.Latitude, volunteerPostcodeCoordinates.Longitude, jobPostcodeCoordinates.Latitude, jobPostcodeCoordinates.Longitude);
                 }
                 rs.DistanceInMiles = distanceInMiles;
 
