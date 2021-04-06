@@ -1823,5 +1823,17 @@ namespace RequestService.Repo
 
             return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
         }
+        public List<RequestSummary> GetAllRequests(List<int> RequestIDs)
+        {
+            var allRequests = _context.Request
+                .Include(i => i.Shift)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.JobAvailableToGroup)
+                .Include(i => i.Job)
+                .ThenInclude(i => i.RequestJobStatus)
+                .Where(w => RequestIDs.Contains(w.Id)).ToList();
+
+            return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
+        }
     }
 }
