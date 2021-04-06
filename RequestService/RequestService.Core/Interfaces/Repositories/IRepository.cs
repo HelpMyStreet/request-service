@@ -22,7 +22,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<List<int>> UpdateRequestStatusToDoneAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);
-        List<RequestSummary> GetRequestsByFilter(GetRequestsByFilterRequest request, List<int> referringGroups);
+        List<RequestSummary> GetRequestsByFilter(GetRequestsByFilterRequest request, List<int> referringGroups);        
         List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request, List<int> referringGroups);
         List<ShiftJob> GetUserShiftJobsByFilter(GetUserShiftJobsByFilterRequest request);
         int UpdateRequestStatusToAccepted(int requestID, SupportActivities activity, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
@@ -66,5 +66,6 @@ namespace RequestService.Core.Interfaces.Repositories
         bool JobHasStatus(int jobID, JobStatuses status);
         bool JobIsInProgressWithSameVolunteerUserId(int jobID, int? volunteerUserID);
         Task<List<Question>> GetQuestionsForActivity(SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken);
+        List<RequestSummary> GetAllRequests(List<int> RequestIDs);
     }
 }
