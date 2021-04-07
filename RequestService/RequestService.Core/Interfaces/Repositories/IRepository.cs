@@ -67,6 +67,6 @@ namespace RequestService.Core.Interfaces.Repositories
         bool JobIsInProgressWithSameVolunteerUserId(int jobID, int? volunteerUserID);
         Task<List<Question>> GetQuestionsForActivity(SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken);
         List<RequestSummary> GetAllRequests(List<int> RequestIDs);
-        bool VolunteerHasAlreadyAcceptedJob(int jobId, int volunteerUserId);
+        bool VolunteerHasAlreadyJobForThisRequestWithThisStatus(int jobId, int volunteerUserId, JobStatuses status);
     }
 }

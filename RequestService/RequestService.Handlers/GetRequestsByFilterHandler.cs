@@ -24,9 +24,10 @@ namespace RequestService.Handlers
         private readonly IRepository _repository;
         private readonly IGroupService _groupService;
 
-        public GetRequestsByFilterHandler(IRepository repository)
+        public GetRequestsByFilterHandler(IRepository repository, IGroupService groupService)
         {
             _repository = repository;
+            _groupService = groupService;
         }
 
         public async Task<GetRequestsByFilterResponse> Handle(GetRequestsByFilterRequest request, CancellationToken cancellationToken)

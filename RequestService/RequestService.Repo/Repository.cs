@@ -24,16 +24,19 @@ using RequestService.Core.Domains.Entities;
 using Polly.Caching;
 using HelpMyStreet.Utils.Extensions;
 using AutoMapper.Configuration.Conventions;
+using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Repo
 {
     public class Repository : IRepository
     {
         private readonly ApplicationDbContext _context;
+        private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
 
         public Repository(ApplicationDbContext context)
         {
             _context = context;
+            _jobBasicDedupeWithDate_EqualityComparer = new JobBasicDedupeWithDate_EqualityComparer();
         }
 
         public async Task<string> GetRequestPostCodeAsync(int requestId, CancellationToken cancellationToken)
@@ -1813,15 +1816,54 @@ namespace RequestService.Repo
             return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
         }
 
-        public bool VolunteerHasAlreadyAcceptedJob(int jobId, int volunteerUserId)
+        /// <summary>
+        /// Return true if volunteeer has already a similar job defined by JobBasicDedupeWithDate_EqualityComparer 
+        /// with the status that we are trying to allocate this job to
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <param name="volunteerUserId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public bool VolunteerHasAlreadyJobForThisRequestWithThisStatus(int jobId, int volunteerUserId, JobStatuses status)
         {
-            int requestId = _context.Job.Where(x => x.Id == jobId).FirstOrDefault().RequestId;
+            var job = _context.Job.Where(x => x.Id == jobId)
+                .Select(x => new JobBasic()
+                {
+                    JobID = x.Id,
+                    RequestID = x.RequestId,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                    DueDateType = (DueDateType)x.DueDateTypeId,
+                    DueDate = x.DueDate,
+                    NotBeforeDate = x.NotBeforeDate
+                })
+                .First();
 
-            byte jobStatusAccepted = (byte)JobStatuses.Accepted;
+            if(job==null)
+            {
+                throw new Exception($"Unable to retrieve details for job {jobId}");
+            }
 
-            var userJobs = _context.Job.Where(x => x.RequestId == requestId && x.VolunteerUserId == volunteerUserId);
+            byte jobStatus = (byte)status;
 
-            .Contains()
+            var userJobs = _context.Job.Where(x => x.RequestId == job.RequestID && x.VolunteerUserId == volunteerUserId && x.JobStatusId == jobStatus)
+                .Select(x => new JobBasic()
+                {
+                    JobID = x.Id,
+                    RequestID = x.RequestId,
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)x.SupportActivityId,
+                    DueDateType = (DueDateType)x.DueDateTypeId,
+                    DueDate = x.DueDate,
+                    NotBeforeDate = x.NotBeforeDate
+                }).ToList();
+
+            if(userJobs.Contains(job, _jobBasicDedupeWithDate_EqualityComparer))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
