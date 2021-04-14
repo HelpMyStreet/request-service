@@ -1271,7 +1271,7 @@ namespace RequestService.Repo
                     .ThenInclude(i => i.JobQuestions)
                     .ThenInclude(rq => rq.Question)
                 .Where(x => x.Id == requestID)
-                .First();
+                .FirstOrDefault();
 
             if (request == null)
             {

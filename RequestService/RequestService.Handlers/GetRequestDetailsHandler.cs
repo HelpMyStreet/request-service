@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using RequestService.Core.Config;
 using HelpMyStreet.Contracts.RequestService.Response;
 using RequestService.Core.Services;
+using System.Linq;
+using System;
 
 namespace RequestService.Handlers
 {
@@ -22,12 +24,24 @@ namespace RequestService.Handlers
 
         public async Task<GetRequestDetailsResponse> Handle(GetRequestDetailsRequest request, CancellationToken cancellationToken)
         {
+            var requestDetails = _repository.GetRequestDetails(request.RequestID);
+
+            if(requestDetails.RequestSummary==null)
+            {
+                throw new Exception($"Unable to find request details for {request.RequestID}");
+            }
+
+            var volunteers = requestDetails.RequestSummary.JobBasics
+                .Where(x => x.VolunteerUserID.HasValue)
+                .Select(x => x.VolunteerUserID)
+                .Distinct().ToList();
+
             bool hasPermission = await _jobService.HasPermissionToChangeRequestAsync(request.RequestID, request.AuthorisedByUserID, cancellationToken);
             GetRequestDetailsResponse response = null;
             
-            if (hasPermission)
+            if (hasPermission || volunteers.Contains(request.AuthorisedByUserID))
             {
-                response = _repository.GetRequestDetails(request.RequestID);
+                response = requestDetails;
             }
             return response;
         }
