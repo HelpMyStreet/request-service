@@ -175,8 +175,8 @@ namespace RequestService.Repo.Helpers
           entity.HasData(new Question
             {
                 Id = (int)Questions.RecipientAge,
-                Name = "Your / Their age",
-                QuestionType = (int)QuestionType.Number,
+                Name = "Age of the person needing help",
+                QuestionType = (int)QuestionType.Text,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
             });
@@ -468,6 +468,7 @@ namespace RequestService.Repo.Helpers
                     }
 
                     if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
+                        || form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham
                         || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
                     {
@@ -486,7 +487,7 @@ namespace RequestService.Repo.Helpers
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
                     {
-                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.RecipientAge, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false });
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.RecipientAge, Location = "details1", Order = 2, RequestFormVariantId = (int)form, Required = false,Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer." });
                     }
 
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });

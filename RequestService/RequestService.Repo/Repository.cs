@@ -873,7 +873,8 @@ namespace RequestService.Repo
                             DueDateType = (DueDateType)job.DueDateTypeId,
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
-                            RequestType = (RequestType)job.NewRequest.RequestType
+                            RequestType = (RequestType)job.NewRequest.RequestType,
+                            Reference = job.Reference
                         }).ToList();
                         break;
                     case RequestType.Shift:
