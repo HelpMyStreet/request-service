@@ -1871,12 +1871,16 @@ namespace RequestService.Repo
             List<int> response = new List<int>();
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
+            byte dueDateTypeASAP = (byte)DueDateType.ASAP;
 
             DateTime now = DateTime.UtcNow;
 
             response = _context.Job
                 .Include(x => x.NewRequest)
-                .Where(x => x.NewRequest.Repeat == true && x.DueDate< now && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen) )
+                .Where(x => x.NewRequest.Repeat == true 
+                            && x.DueDate< now 
+                            && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen) 
+                            && x.DueDateTypeId!= dueDateTypeASAP )
                 .Select(x => x.Id)
                 .ToList();
 
