@@ -166,7 +166,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SuppressRecipientPersonalDetails,
-                Name = "Would you like the volunteer to contact your organisation directly to obtain the personal details for this request?",
+                Name = "Would you like to hide personal details of the person in need of help and require volunteers to contact the organisation/person who requested the help first?",
                 QuestionType = (int)QuestionType.Radio,
                 AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
                 AnswerContainsSensitiveData = false,
@@ -213,12 +213,12 @@ namespace RequestService.Repo.Helpers
                         new AdditonalQuestionData
                         {
                             Key = "Yes",
-                            Value = "Yes, the volunteer should use our ‘requester’ details and we will provide the necessary personal information"
+                            Value = "Yes, the volunteer will see details of the person or organisation who requested the help and contact them first"
                         },
                         new AdditonalQuestionData
                         {
                             Key = "No",
-                            Value = "No, the volunteer can access the necessary personal information as soon as they accept the request"
+                            Value = "No, the volunteer can access the personal details of the person who needs help as soon as they accept the request"
                         },
                     };
                     break;
