@@ -216,7 +216,7 @@ namespace RequestService.Handlers
 
                 if(suppressRecipientPersonalDetailsQuestion != null)
                 {
-                    suppressRecipientPersonalDetails = Convert.ToBoolean(suppressRecipientPersonalDetailsQuestion.Answer);
+                    suppressRecipientPersonalDetails = suppressRecipientPersonalDetailsQuestion.Answer.First().ToString() == "Y";
                 }
 
                 if(!suppressRecipientPersonalDetails.HasValue)
