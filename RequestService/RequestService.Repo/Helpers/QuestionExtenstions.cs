@@ -166,7 +166,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SuppressRecipientPersonalDetails,
-                Name = "Would you like to hide personal details of the person in need of help and require volunteers to contact the organisation/person who requested the help first?",
+                Name = "Would you like to hide the name and contact details of the person in need of help from prospective volunteers?",
                 QuestionType = (int)QuestionType.Radio,
                 AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
                 AnswerContainsSensitiveData = false,
@@ -213,12 +213,12 @@ namespace RequestService.Repo.Helpers
                         new AdditonalQuestionData
                         {
                             Key = "Yes",
-                            Value = "Yes, the volunteer will see details of the person or organisation who requested the help and contact them first"
+                            Value = "Yes, hide the personal details"
                         },
                         new AdditonalQuestionData
                         {
                             Key = "No",
-                            Value = "No, the volunteer can access the personal details of the person who needs help as soon as they accept the request"
+                            Value = "No, make the personal details visible to volunteers who accept the request"
                         },
                     };
                     break;
@@ -482,7 +482,7 @@ namespace RequestService.Repo.Helpers
 
                     if (!form.IsPublic())
                     {
-                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "details1", Order = 1, RequestFormVariantId = (int)form, Required = true });
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "details1", Order = 1, Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request.", RequestFormVariantId = (int)form, Required = true });
                     }
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
