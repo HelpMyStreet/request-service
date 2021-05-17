@@ -1782,15 +1782,6 @@ namespace RequestService.Repo
                 requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
-            if (request.DateFrom.HasValue)
-            {
-                requests = requests.Where(x => x.Shift.StartDate.AddMinutes(x.Shift.ShiftLength) >= request.DateFrom.Value);
-            }
-
-            if (request.DateTo.HasValue)
-            {
-                requests = requests.Where(x => x.Shift.StartDate <= request.DateTo.Value);
-            }
 
             if (request.RequestType?.RequestTypes.Count > 0)
             {
