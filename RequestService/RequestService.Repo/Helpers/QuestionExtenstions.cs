@@ -717,6 +717,11 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
+                case RequestHelpFormVariant.Mansfield_CVS:
+                    activites = new List<SupportActivities>()
+                    { SupportActivities.VaccineSupport
+                    };
+                    break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:                
                 case RequestHelpFormVariant.DIY:
