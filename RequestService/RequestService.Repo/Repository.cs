@@ -883,6 +883,7 @@ namespace RequestService.Repo
                             RequestID = job.NewRequest.Id,
                             RequestType = (RequestType)job.NewRequest.RequestType,
                             NotBeforeDate = job.NotBeforeDate
+                            Reference = job.Reference
                         }).ToList();
                         break;
                     case RequestType.Shift:

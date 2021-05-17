@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210329104611_TweakCardiffQuestions")]
+    partial class TweakCardiffQuestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5420,8 +5422,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5476,8 +5477,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5532,8 +5532,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5588,8 +5587,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5644,8 +5642,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5711,8 +5708,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5767,8 +5763,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5824,8 +5819,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5880,8 +5874,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5936,8 +5929,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -5992,8 +5984,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -6048,8 +6039,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -6104,8 +6094,7 @@ namespace RequestService.Repo.Migrations
                             Location = "details1",
                             Order = 2,
                             RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer."
+                            Required = false
                         },
                         new
                         {
@@ -7136,11 +7125,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 4,
                             Name = "SpecificStartAndEndTimes"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "ASAP"
                         });
                 });
 
@@ -7715,9 +7699,6 @@ namespace RequestService.Repo.Migrations
                         .HasColumnName("JobStatusID")
                         .HasColumnType("tinyint");
 
-                    b.Property<DateTime?>("NotBeforeDate")
-                        .HasColumnType("datetime");
-
                     b.Property<string>("Reference")
                         .HasColumnType("nvarchar(max)");
 
@@ -8102,9 +8083,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<bool>("IsFulfillable")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("MultiVolunteer")
-                        .HasColumnType("bit");
-
                     b.Property<string>("OrganisationName")
                         .HasColumnType("varchar(255)")
                         .HasMaxLength(255)
@@ -8133,9 +8111,6 @@ namespace RequestService.Repo.Migrations
 
                     b.Property<int>("ReferringGroupId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Repeat")
-                        .HasColumnType("bit");
 
                     b.Property<byte>("RequestType")
                         .HasColumnType("tinyint");
