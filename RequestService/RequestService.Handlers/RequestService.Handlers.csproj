@@ -5,14 +5,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="HelpMyStreet.CoreV3.Contracts" Version="1.1.703" />
-		<PackageReference Include="HelpMyStreet.CoreV3.Utils" Version="1.1.703" />
+		<PackageReference Include="HelpMyStreet.CoreV3.Contracts" Version="1.1.729" />
+		<PackageReference Include="HelpMyStreet.CoreV3.Utils" Version="1.1.729" />
 		<PackageReference Include="MediatR" Version="9.0.0" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Core\RequestService.Core.csproj">
-            <Name>RequestService.Core</Name>
 		</ProjectReference>
 	</ItemGroup>
 </Project>
