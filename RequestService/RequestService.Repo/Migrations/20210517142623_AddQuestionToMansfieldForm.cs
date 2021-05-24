@@ -14,12 +14,6 @@ namespace RequestService.Repo.Migrations
 
             migrationBuilder.InsertData(
                 schema: "Lookup",
-                table: "Question",
-                columns: new[] { "ID", "Name" },
-                values: new object[] { 19, "SuppressRecipientPersonalDetails" });
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
                 table: "RequestFormVariant",
                 columns: new[] { "ID", "Name" },
                 values: new object[] { 24, "Mansfield_CVS" });
@@ -43,12 +37,6 @@ namespace RequestService.Repo.Migrations
                 table: "DueDateType",
                 keyColumn: "ID",
                 keyValue: 5);
-
-            migrationBuilder.DeleteData(
-                schema: "Lookup",
-                table: "Question",
-                keyColumn: "ID",
-                keyValue: 19);
 
             migrationBuilder.DeleteData(
                 schema: "Lookup",

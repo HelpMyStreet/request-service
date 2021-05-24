@@ -7374,11 +7374,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 18,
                             Name = "RecipientAge"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "SuppressRecipientPersonalDetails"
                         });
                 });
 
