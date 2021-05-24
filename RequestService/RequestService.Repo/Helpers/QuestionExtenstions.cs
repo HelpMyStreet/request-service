@@ -377,7 +377,7 @@ namespace RequestService.Repo.Helpers
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = false,
-                            PlaceholderText = "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
+                            PlaceholderText = "For example, let us know if the prescription needs to be paid for or if it won’t be ready straight away. You should also let us know if there are any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
                             Subtext = subText_anythingElse
                         });
                     }
@@ -470,7 +470,7 @@ namespace RequestService.Repo.Helpers
                     if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
                         || form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham
-                        || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
+                        || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter || form == RequestHelpFormVariant.Soutwell_Public) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -725,6 +725,13 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.FaceMasks:                
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                case RequestHelpFormVariant.Soutwell_Public:
+                    activites = new List<SupportActivities>() {
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Other
+                    };
                     break;
                 default:
                     activites = new List<SupportActivities>();
