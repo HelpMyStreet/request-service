@@ -64,7 +64,8 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.NewHelpRequestAsync(
                 It.IsAny<PostNewRequestForHelpRequest>(),
                 It.IsAny<Fulfillable>(),
-                It.IsAny<bool>()))
+                It.IsAny<bool>(),
+                It.IsAny<bool?>()))
                 .ReturnsAsync(() => requestId);
             _repository.Setup(x => x.UpdateCommunicationSentAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
 
@@ -125,7 +126,8 @@ namespace RequestService.UnitTests
                 AccessRestrictedByRole = false,
                 RequestorDefinedByGroup = false,
                 RequestHelpFormVariant = RequestHelpFormVariant.Default,
-                TargetGroups = TargetGroups.GenericGroup
+                TargetGroups = TargetGroups.GenericGroup,
+                SuppressRecipientPersonalDetails = true
             };
 
             _groupService.Setup(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -380,7 +382,8 @@ namespace RequestService.UnitTests
                     EmailAddress = "Email",
                     MobileNumber = "Mobile",
                     OtherNumber = "Other"
-                }
+                },
+                SuppressRecipientPersonalDetails = true
             };
 
            
@@ -455,7 +458,8 @@ namespace RequestService.UnitTests
                     EmailAddress = "Email",
                     MobileNumber = "Mobile",
                     OtherNumber = "Other"
-                }
+                },
+                SuppressRecipientPersonalDetails = true
             };
 
             _getGroupMemberResponse = new GetGroupMemberResponse()
@@ -490,5 +494,51 @@ namespace RequestService.UnitTests
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Exactly(timesGroupMemberCalled));
             Assert.AreEqual(fulfillable, response.Fulfillable);
         }
+
+        [Test]
+        public async Task WhenIPostRequest_WithMissingSuppressRecipientPersonalDetail_IGetRejected()
+        {
+            _validPostcode = true;
+
+            _formVariantResponse = new GetRequestHelpFormVariantResponse()
+            {
+                AccessRestrictedByRole = false,
+                RequestorDefinedByGroup = false,
+                RequestHelpFormVariant = RequestHelpFormVariant.Default,
+                TargetGroups = TargetGroups.GenericGroup,
+                SuppressRecipientPersonalDetails = null
+            };
+
+            var request = new PostNewRequestForHelpRequest
+            {
+                HelpRequest = new HelpRequest
+                {
+                    RequestorType = RequestorType.Myself,
+                    Requestor = new RequestPersonalDetails
+                    {
+                        Address = new Address
+                        {
+                            Postcode = "test",
+                        }
+                    }
+                },
+                NewJobsRequest = new NewJobsRequest
+                {
+                    Jobs = new List<Job>
+                    {
+                        new Job
+                        {
+                            HealthCritical = true,
+                            DueDays = 5,
+                            SupportActivity = SupportActivities.Shopping
+                        }
+                    }
+                }
+            };
+
+            var response = await _classUnderTest.Handle(request, new CancellationToken());
+            Assert.AreEqual(Fulfillable.Rejected_ConfigurationError, response.Fulfillable);
+        }
+
     }
 }
