@@ -163,7 +163,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool multiVolunteer, bool repeat)
+        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, bool multiVolunteer, bool repeat)        
         {
 
             Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
@@ -213,6 +213,7 @@ namespace RequestService.Repo
                         RequestorDefinedByGroup = requestorDefinedByGroup,
                         RequestType = (byte)requestType,
                         Archive = false,
+                        SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
                         MultiVolunteer = multiVolunteer,
                         Repeat = repeat
                     };
@@ -832,6 +833,7 @@ namespace RequestService.Repo
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
                 RequestType = (RequestType)job.NewRequest.RequestType,
+                SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
                 NotBeforeDate = job.NotBeforeDate
             };
         }
@@ -882,8 +884,9 @@ namespace RequestService.Repo
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
                             RequestType = (RequestType)job.NewRequest.RequestType,
+                            Reference = job.Reference,
+                            SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
                             NotBeforeDate = job.NotBeforeDate
-                            Reference = job.Reference
                         }).ToList();
                         break;
                     case RequestType.Shift:
@@ -918,7 +921,8 @@ namespace RequestService.Repo
                     DateRequested = request.DateRequested,
                     PostCode = request.PostCode,
                     JobSummaries = jobSummaries,
-                    ShiftJobs = shiftJobs
+                    ShiftJobs = shiftJobs,
+                    SuppressRecipientPersonalDetail = jobSummaries.Any(js => js.SuppressRecipientPersonalDetail.GetValueOrDefault(false))
                 };
                 return result;
             }

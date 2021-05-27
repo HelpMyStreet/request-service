@@ -1,6 +1,7 @@
 ﻿
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
+using HelpMyStreet.Utils.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using RequestService.Repo.EntityFramework.Entities;
@@ -164,6 +165,15 @@ namespace RequestService.Repo.Helpers
 
             entity.HasData(new Question
             {
+                Id = (int)Questions.SuppressRecipientPersonalDetails,
+                Name = "Would you like to hide the name and contact details of the person in need of help from prospective volunteers?",
+                QuestionType = (int)QuestionType.Radio,
+                AdditionalData = GetAdditionalData(Questions.SuppressRecipientPersonalDetails),
+                AnswerContainsSensitiveData = false,
+            });
+          
+          entity.HasData(new Question
+            {
                 Id = (int)Questions.RecipientAge,
                 Name = "Age of the person needing help",
                 QuestionType = (int)QuestionType.Text,
@@ -196,6 +206,23 @@ namespace RequestService.Repo.Helpers
                         },
                     };
                     break;
+                    
+                case Questions.SuppressRecipientPersonalDetails:
+                    additionalData = new List<AdditonalQuestionData>
+                    {
+                        new AdditonalQuestionData
+                        {
+                            Key = "Yes",
+                            Value = "Yes, hide the personal details"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "No",
+                            Value = "No, make the personal details visible to volunteers who accept the request"
+                        },
+                    };
+                    break;
+                    
                 case Questions.FaceMask_Cost:
                     additionalData = new List<AdditonalQuestionData>
                     {
@@ -350,7 +377,7 @@ namespace RequestService.Repo.Helpers
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = false,
-                            PlaceholderText = "For example, let us know if the prescription needs to be paid for, or if there are any mobility or communication needs or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
+                            PlaceholderText = "For example, let us know if the prescription needs to be paid for or if it won’t be ready straight away. You should also let us know if there are any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
                             Subtext = subText_anythingElse
                         });
                     }
@@ -443,7 +470,7 @@ namespace RequestService.Repo.Helpers
                     if ((form == RequestHelpFormVariant.Default || form == RequestHelpFormVariant.FaceMasks
                         || form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter
                         || form == RequestHelpFormVariant.AgeUKNottsBalderton || form == RequestHelpFormVariant.AgeUKNottsNorthMuskham
-                        || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
+                        || form == RequestHelpFormVariant.Soutwell_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_Public || form == RequestHelpFormVariant.MeadowsCommunityHelpers_RequestSubmitter) && activity != SupportActivities.FaceMask)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.IsHealthCritical, Location = "pos3", Order = 2, RequestFormVariantId = (int)form, Required = true });
                     }
@@ -451,6 +478,11 @@ namespace RequestService.Repo.Helpers
                     if (form == RequestHelpFormVariant.DIY)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
+                    }
+
+                    if (!form.IsPublic())
+                    {
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "details1", Order = 1, Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request.", RequestFormVariantId = (int)form, Required = true });
                     }
 
                     if (form == RequestHelpFormVariant.AgeConnectsCardiff_Public || form == RequestHelpFormVariant.AgeConnectsCardiff_RequestSubmitter)
@@ -684,6 +716,16 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.DogWalking,
                         SupportActivities.Other
                     };
+                    break;
+                case RequestHelpFormVariant.Mansfield_CVS:
+                    activites = new List<SupportActivities>()
+                    { SupportActivities.VaccineSupport};
+                    break;
+                case RequestHelpFormVariant.Soutwell_Public:
+                    activites = new List<SupportActivities>()
+                    { SupportActivities.Shopping,
+                      SupportActivities.CollectingPrescriptions,
+                      SupportActivities.Other};
                     break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:                
