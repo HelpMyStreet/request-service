@@ -209,7 +209,26 @@ namespace RequestService.Handlers
 
             try
             {
-                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup);
+                bool? suppressRecipientPersonalDetails = formVariant.SuppressRecipientPersonalDetails;
+
+                Job firstJob = request.NewJobsRequest.Jobs.First();
+                var suppressRecipientPersonalDetailsQuestion = firstJob.Questions?.Where(x => x.Id == (int)Questions.SuppressRecipientPersonalDetails).FirstOrDefault();
+
+                if(suppressRecipientPersonalDetailsQuestion != null)
+                {
+                    suppressRecipientPersonalDetails = suppressRecipientPersonalDetailsQuestion.Answer.First().ToString() == "Y";
+                }
+
+                if(!suppressRecipientPersonalDetails.HasValue)
+                {
+                    return new PostNewRequestForHelpResponse
+                    {
+                        RequestID = -1,
+                        Fulfillable = Fulfillable.Rejected_ConfigurationError
+                    };
+                }
+
+                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails);
                 response.RequestID = requestId;
 
                 if (response.RequestID == 0)

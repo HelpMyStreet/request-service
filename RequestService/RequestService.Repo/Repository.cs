@@ -160,7 +160,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup)
+        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails)
         {
 
             Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
@@ -209,7 +209,8 @@ namespace RequestService.Repo
                         Source = postNewRequestForHelpRequest.HelpRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup,
                         RequestType = (byte)requestType,
-                        Archive = false
+                        Archive = false,
+                        SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails
                     };
 
                     if(requestType == RequestType.Shift)
@@ -823,7 +824,8 @@ namespace RequestService.Repo
                 DueDateType = (DueDateType)job.DueDateTypeId,
                 RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                 RequestID = job.NewRequest.Id,
-                RequestType = (RequestType)job.NewRequest.RequestType
+                RequestType = (RequestType)job.NewRequest.RequestType,
+                SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail
             };
         }
 
@@ -873,7 +875,8 @@ namespace RequestService.Repo
                             RequestorDefinedByGroup = job.NewRequest.RequestorDefinedByGroup,
                             RequestID = job.NewRequest.Id,
                             RequestType = (RequestType)job.NewRequest.RequestType,
-                            Reference = job.Reference
+                            Reference = job.Reference,
+                            SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail
                         }).ToList();
                         break;
                     case RequestType.Shift:
@@ -905,7 +908,8 @@ namespace RequestService.Repo
                     DateRequested = request.DateRequested,
                     PostCode = request.PostCode,
                     JobSummaries = jobSummaries,
-                    ShiftJobs = shiftJobs
+                    ShiftJobs = shiftJobs,
+                    SuppressRecipientPersonalDetail = jobSummaries.Any(js => js.SuppressRecipientPersonalDetail.GetValueOrDefault(false))
                 };
                 return result;
             }
