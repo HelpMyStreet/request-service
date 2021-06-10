@@ -286,7 +286,7 @@ namespace RequestService.Repo.Helpers
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
-                    if (activity == SupportActivities.VaccineSupport)
+                    if (activity == SupportActivities.VaccineSupport || activity == SupportActivities.BankStaffVaccinator)
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -731,6 +731,13 @@ namespace RequestService.Repo.Helpers
                 case RequestHelpFormVariant.FaceMasks:                
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                case RequestHelpFormVariant.ApexBankStaff_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.BankStaffVaccinator,
+                        SupportActivities.Other
+                    };
                     break;
                 default:
                     activites = new List<SupportActivities>();
