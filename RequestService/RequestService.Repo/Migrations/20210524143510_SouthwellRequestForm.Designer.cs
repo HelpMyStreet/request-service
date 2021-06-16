@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210524143510_SouthwellRequestForm")]
+    partial class SouthwellRequestForm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,17 +819,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 10,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 10,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -873,17 +864,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -929,17 +909,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 5,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 5,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -981,17 +950,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 3,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1062,17 +1020,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 12,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 12,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1114,17 +1061,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 9,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1174,17 +1110,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 6,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 6,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1230,17 +1155,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 4,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 4,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1282,17 +1196,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1338,17 +1241,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 8,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1394,17 +1286,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1455,17 +1336,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 2,
                             Location = "details2",
@@ -1507,17 +1377,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 13,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -1574,17 +1433,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 2,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -3282,17 +3130,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 8,
                             Location = "details2",
@@ -3328,17 +3165,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 8,
                             Location = "details2",
@@ -3374,17 +3200,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 11,
                             QuestionId = 14,
                             RequestFormVariantId = 8,
                             Location = "details2",
@@ -3416,17 +3231,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 16,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -3466,17 +3270,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 15,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 15,
                             QuestionId = 14,
                             RequestFormVariantId = 8,
                             Location = "details2",
@@ -3519,17 +3312,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 8,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -3937,17 +3719,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 21,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -3983,17 +3754,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -4025,17 +3785,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -4086,17 +3835,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 11,
                             Location = "details2",
@@ -4128,17 +3866,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 11,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -4663,17 +4390,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4709,17 +4425,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4755,17 +4460,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4802,17 +4496,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4845,17 +4528,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -4906,17 +4578,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 14,
                             Location = "details2",
@@ -4948,17 +4609,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 14,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5140,17 +4790,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5187,17 +4826,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 23,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 23,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5230,17 +4858,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 21,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5291,17 +4908,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 16,
                             Location = "details2",
@@ -5333,17 +4939,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 16,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5510,17 +5105,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5556,17 +5140,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5602,17 +5175,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 3,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 3,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5644,17 +5206,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5701,17 +5252,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5750,17 +5290,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 24,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 24,
                             QuestionId = 14,
                             RequestFormVariantId = 19,
                             Location = "details2",
@@ -5792,17 +5321,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5849,17 +5367,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 19,
-                            RequestFormVariantId = 19,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -5910,17 +5417,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 18,
                             RequestFormVariantId = 20,
                             Location = "details1",
@@ -5977,17 +5473,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 18,
                             RequestFormVariantId = 20,
                             Location = "details1",
@@ -6040,17 +5525,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 26,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -6111,17 +5585,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 18,
                             RequestFormVariantId = 20,
                             Location = "details1",
@@ -6174,17 +5637,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 27,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -6256,17 +5708,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 18,
                             RequestFormVariantId = 20,
                             Location = "details1",
@@ -6319,17 +5760,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 20,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7190,17 +6620,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7257,17 +6676,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 12,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 12,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7309,17 +6717,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 10,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7369,17 +6766,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 2,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 2,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7421,17 +6807,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 3,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7481,17 +6856,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 29,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 29,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7537,17 +6901,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 7,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7589,17 +6942,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 30,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7645,17 +6987,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 31,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7716,17 +7047,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 22,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 22,
                             QuestionId = 14,
                             RequestFormVariantId = 23,
                             Location = "details2",
@@ -7768,17 +7088,6 @@ namespace RequestService.Repo.Migrations
                             Order = 2,
                             RequestFormStageId = 1,
                             Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 23,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -7955,75 +7264,6 @@ namespace RequestService.Repo.Migrations
                             ActivityId = 11,
                             QuestionId = 14,
                             RequestFormVariantId = 25,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 32,
-                            QuestionId = 17,
-                            RequestFormVariantId = 26,
-                            Location = "pos3",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 32,
-                            QuestionId = 16,
-                            RequestFormVariantId = 26,
-                            Location = "pos2",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 32,
-                            QuestionId = 14,
-                            RequestFormVariantId = 26,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 1,
-                            RequestFormVariantId = 26,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 10,
-                            RequestFormVariantId = 26,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 14,
-                            RequestFormVariantId = 26,
                             Location = "details2",
                             Order = 3,
                             PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
@@ -8453,11 +7693,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 25,
                             Name = "Soutwell_Public"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "ApexBankStaff_RequestSubmitter"
                         });
                 });
 
@@ -8639,11 +7874,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 31,
                             Name = "Covid19Help"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Name = "BankStaffVaccinator"
                         });
                 });
 
@@ -9008,14 +8238,6 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            Id = 19,
-                            AdditionalData = "[{\"Key\":\"Yes\",\"Value\":\"Yes, hide the personal details\"},{\"Key\":\"No\",\"Value\":\"No, make the personal details visible to volunteers who accept the request\"}]",
-                            AnswerContainsSensitiveData = false,
-                            Name = "Would you like to hide the name and contact details of the person in need of help from prospective volunteers?",
-                            QuestionType = (byte)4
-                        },
-                        new
-                        {
                             Id = 18,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = true,
@@ -9108,9 +8330,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<string>("SpecialCommunicationNeeds")
                         .HasColumnType("varchar(max)")
                         .IsUnicode(false);
-
-                    b.Property<bool?>("SuppressRecipientPersonalDetail")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

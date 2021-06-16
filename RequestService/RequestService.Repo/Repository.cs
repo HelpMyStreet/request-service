@@ -1786,6 +1786,7 @@ namespace RequestService.Repo
                 requests = requests.Where(x => x.Job.SelectMany(x => x.JobAvailableToGroup).Any(a => request.Groups.Groups.Contains(a.GroupId)));
             }
 
+
             if (request.RequestType?.RequestTypes.Count > 0)
             {
                 requests = requests.Where(x => request.RequestType.RequestTypes.Contains((RequestType)x.RequestType));
