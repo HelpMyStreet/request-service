@@ -46,5 +46,6 @@ namespace RequestService.AzureFunction
                 return new ObjectResult(ResponseWrapper<PostNewRequestForHelpResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.InternalServerError, "Internal Error")) { StatusCode = StatusCodes.Status500InternalServerError };                
             }
         }
+
     }
 }
