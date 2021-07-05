@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210705212055_LogRequestEvent")]
+    partial class LogRequestEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2760,41 +2762,6 @@ namespace RequestService.Repo.Migrations
                             ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 5,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 14,
-                            QuestionId = 1,
-                            RequestFormVariantId = 6,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 14,
-                            QuestionId = 10,
-                            RequestFormVariantId = 6,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "Is there a specific issue you would like to discuss with the Community Connector, e.g. dealing with a bereavement (please don’t include personal details here)",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 14,
-                            QuestionId = 14,
-                            RequestFormVariantId = 6,
                             Location = "details2",
                             Order = 3,
                             PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
@@ -8376,11 +8343,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 5,
                             Name = "FaceMasks"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "HLP_CommunityConnector"
                         },
                         new
                         {
