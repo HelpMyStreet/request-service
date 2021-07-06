@@ -455,7 +455,6 @@ namespace RequestService.Repo.Helpers
 
                         string anythingElseToTellUs_placeholderText = form switch
                         {
-                            RequestHelpFormVariant.HLP_CommunityConnector => "Is there a specific issue you would like to discuss with the Community Connector, e.g. dealing with a bereavement (please don’t include personal details here)",
                             RequestHelpFormVariant.Ruddington => "For example, let us know if you’re struggling to find help elsewhere.",
                             _ => "For example, any special instructions for the volunteer."
                         };
@@ -522,10 +521,6 @@ namespace RequestService.Repo.Helpers
             {
                 case RequestHelpFormVariant.FtLOS:
                     activites = new List<SupportActivities>() { SupportActivities.FaceMask };
-                    break;
-
-                case RequestHelpFormVariant.HLP_CommunityConnector:
-                    activites = new List<SupportActivities>() { SupportActivities.CommunityConnector };
                     break;
 
                 case RequestHelpFormVariant.VitalsForVeterans:
