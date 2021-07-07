@@ -73,16 +73,16 @@ namespace RequestService.Core.Services
 
             if (applyDistanceFilter)
             {
-                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity))
+                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity, cancellationToken))
                     .ToList();
             }
 
             return jobs;
         }
 
-        private double? GetSupportDistanceForActivity(int groupId, SupportActivities supportActivity)
+        private double? GetSupportDistanceForActivity(int groupId, SupportActivities supportActivity, CancellationToken cancellationToken)
         {
-            return _groupService.GetGroupSupportActivityRadius(groupId, supportActivity).Result;
+            return _groupService.GetGroupSupportActivityRadius(groupId, supportActivity, cancellationToken).Result;
         }
 
         private double GetSupportDistanceForActivity(SupportActivities supportActivity, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles)

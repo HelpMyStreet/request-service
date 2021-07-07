@@ -244,7 +244,7 @@ namespace RequestService.Core.Services
             }
         }
 
-        public async Task<double?> GetGroupSupportActivityRadius(int groupID, SupportActivities supportActivity)
+        public async Task<double?> GetGroupSupportActivityRadius(int groupID, SupportActivities supportActivity, CancellationToken cancellationToken)
         {
             return await _memDistCache.GetCachedDataAsync(async (cancellationToken) =>
             {
@@ -255,17 +255,17 @@ namespace RequestService.Core.Services
                 using (HttpResponseMessage response = await _httpClientWrapper.PostAsync(HttpClientConfigName.GroupService, "/api/GetGroupSupportActivityRadius", data, CancellationToken.None))
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
-                    var sendEmailResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetGroupSupportActivityRadiusResponse, GroupServiceErrorCode>>(jsonResponse);
-                    if (sendEmailResponse.HasContent && sendEmailResponse.IsSuccessful)
+                    var getRadiusResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetGroupSupportActivityRadiusResponse, GroupServiceErrorCode>>(jsonResponse);
+                    if (getRadiusResponse.HasContent && getRadiusResponse.IsSuccessful)
                     {
-                        return sendEmailResponse.Content.SupportRadiusMiles;
+                        return getRadiusResponse.Content.SupportRadiusMiles;
                     }
                     else
                     {
                         throw new HttpRequestException("Unable to fetch radius details");
                     }
                 }
-            }, $"{CACHE_KEY_PREFIX}-group-{groupID}-sa-{(int)supportActivity}", RefreshBehaviour.DontWaitForFreshData, CancellationToken.None);
+            }, $"{CACHE_KEY_PREFIX}-group-{groupID}-sa-{(int)supportActivity}", RefreshBehaviour.DontWaitForFreshData, cancellationToken);
         }
     }
 }
