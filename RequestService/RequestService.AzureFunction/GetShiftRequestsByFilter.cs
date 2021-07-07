@@ -43,6 +43,8 @@ namespace RequestService.AzureFunction
             }
             catch (Exception exc)
             {
+                _logger.LogError("Exception occured in GetShiftRequestsByFilter", exc);
+                _logger.LogError(exc.ToString(),exc);
                 _logger.LogErrorAndNotifyNewRelic("Exception occured in GetShiftRequestsByFilter", exc);
                 return new ObjectResult(ResponseWrapper<GetShiftRequestsByFilterResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.InternalServerError, "Internal Error")) { StatusCode = StatusCodes.Status500InternalServerError };                
             }
