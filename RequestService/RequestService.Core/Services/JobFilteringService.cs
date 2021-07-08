@@ -14,10 +14,12 @@ namespace RequestService.Core.Services
     public class JobFilteringService : IJobFilteringService
     {
         private readonly IJobService _jobService;
+        private readonly IGroupService _groupService;
 
-        public JobFilteringService(IJobService jobService)
+        public JobFilteringService(IJobService jobService, IGroupService groupService)
         {
             _jobService = jobService;
+            _groupService = groupService;
         }
 
         public async Task<List<JobHeader>> FilterJobHeaders(
@@ -53,8 +55,6 @@ namespace RequestService.Core.Services
         public async Task<List<JobDTO>> FilterAllJobs(
             List<JobDTO> jobs,
             string postcode,
-            double? distanceInMiles,
-            Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,
             CancellationToken cancellationToken)
         {
             bool applyDistanceFilter = false;
@@ -73,11 +73,16 @@ namespace RequestService.Core.Services
 
             if (applyDistanceFilter)
             {
-                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles))
-                        .ToList();
+                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity, cancellationToken))
+                    .ToList();
             }
 
             return jobs;
+        }
+
+        private double? GetSupportDistanceForActivity(int groupId, SupportActivities supportActivity, CancellationToken cancellationToken)
+        {
+            return _groupService.GetGroupSupportActivityRadius(groupId, supportActivity, cancellationToken).Result;
         }
 
         private double GetSupportDistanceForActivity(SupportActivities supportActivity, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles)

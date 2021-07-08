@@ -876,7 +876,8 @@ namespace RequestService.Repo
                             RequestID = job.NewRequest.Id,
                             RequestType = (RequestType)job.NewRequest.RequestType,
                             Reference = job.Reference,
-                            SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail
+                            SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
+                            Questions = MapToQuestions(job.JobQuestions)
                         }).ToList();
                         break;
                     case RequestType.Shift:
