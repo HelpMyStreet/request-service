@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using RequestService.Core.Config;
 using HelpMyStreet.Contracts.RequestService.Response;
 using RequestService.Core.Services;
+using HelpMyStreet.Contracts.UserService.Response;
 
 namespace RequestService.Handlers
 {
@@ -27,20 +28,20 @@ namespace RequestService.Handlers
         {
             bool hasPermission = true;
             GetJobDetailsResponse response = null;
+            GetUserByIDResponse user = null;
 
             if (request.UserID != ADMIN_USERID)
             {
                 hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.UserID, true, cancellationToken);
+                user = await _userService.GetUser(request.UserID, cancellationToken);
             }
 
             if (hasPermission)
             {
-                var user = await _userService.GetUser(request.UserID, cancellationToken);
-
+                response = _repository.GetJobDetails(request.JobID);
                 if (user != null)
                 {
                     string postCode = user.User.PostalCode;
-                    response = _repository.GetJobDetails(request.JobID);
                     await _jobService.AttachedDistanceToJobSummaries(postCode, response.RequestSummary.JobSummaries, cancellationToken);
 
                     if (response.RequestSummary.JobSummaries.Count == 1)
