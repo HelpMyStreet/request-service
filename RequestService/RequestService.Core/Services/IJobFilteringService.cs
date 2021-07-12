@@ -21,8 +21,6 @@ namespace RequestService.Core.Services
         Task<List<JobDTO>> FilterAllJobs(
             List<JobDTO> jobs,
             string postcode,
-            double? distanceInMiles,
-            Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,
             CancellationToken cancellationToken);
 
         Task FilterAllRequests(

@@ -153,8 +153,6 @@ namespace RequestService.Handlers
             allFilteredJobs = await _jobFilteringService.FilterAllJobs(
                 allFilteredJobs,
                 request.Postcode,
-                request.DistanceInMiles,
-                request.ActivitySpecificSupportDistancesInMiles,
                 cancellationToken);
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)

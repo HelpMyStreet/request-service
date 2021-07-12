@@ -23,6 +23,9 @@ using HelpMyStreet.Utils.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RequestService.Handlers.BusinessLogic;
+using HelpMyStreet.Cache.Extensions;
+using HelpMyStreet.Cache;
+using HelpMyStreet.Contracts.GroupService.Response;
 
 [assembly: FunctionsStartup(typeof(RequestService.AzureFunction.Startup))]
 namespace RequestService.AzureFunction
@@ -96,6 +99,9 @@ namespace RequestService.AzureFunction
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));
+
+            builder.Services.AddMemCache();
+            builder.Services.AddSingleton(x => x.GetService<IMemDistCacheFactory<double?>>().GetCache(new TimeSpan(30, 0, 0, 0), ResetTimeFactory.OnMidday));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     ConfigureDbContextOptionsBuilder(options, connectionStrings.RequestService),

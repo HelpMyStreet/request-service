@@ -886,7 +886,8 @@ namespace RequestService.Repo
                             RequestType = (RequestType)job.NewRequest.RequestType,
                             Reference = job.Reference,
                             SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
-                            NotBeforeDate = job.NotBeforeDate
+                            NotBeforeDate = job.NotBeforeDate,
+                            Questions = MapToQuestions(job.JobQuestions),
                         }).ToList();
                         break;
                     case RequestType.Shift:
@@ -903,7 +904,7 @@ namespace RequestService.Repo
                             StartDate = request.Shift.StartDate,
                             ShiftLength = request.Shift.ShiftLength,
                             DueDate = request.Shift.StartDate,
-                            NotBeforeDate = job.NotBeforeDate
+                            NotBeforeDate = job.NotBeforeDate,
                         }).ToList();
                         break;
                     default:
@@ -922,7 +923,7 @@ namespace RequestService.Repo
                     PostCode = request.PostCode,
                     JobSummaries = jobSummaries,
                     ShiftJobs = shiftJobs,
-                    SuppressRecipientPersonalDetail = jobSummaries.Any(js => js.SuppressRecipientPersonalDetail.GetValueOrDefault(false))
+                    SuppressRecipientPersonalDetail = jobSummaries.Any(js => js.SuppressRecipientPersonalDetail.GetValueOrDefault(false)),
                 };
                 return result;
             }

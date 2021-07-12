@@ -16,6 +16,7 @@ namespace RequestService.UnitTests
     class JobFilteringServiceTests
     {
         private Mock<IJobService> _jobService;
+        private Mock<IGroupService> _groupService;
         private List<JobHeader> _jobHeaders;
         private MockRepository _mockRepository;
         private JobFilteringService _classUnderTest;
@@ -26,6 +27,7 @@ namespace RequestService.UnitTests
             _mockRepository = new MockRepository(MockBehavior.Strict);
 
             SetUpJobService();
+            SetUpGroupService();
 
             _jobHeaders = new List<JobHeader>();
             _jobHeaders.Add(new JobHeader()
@@ -67,7 +69,7 @@ namespace RequestService.UnitTests
                 SupportActivity = SupportActivities.MealPreparation,
             });
 
-            _classUnderTest = new JobFilteringService(_jobService.Object);
+            _classUnderTest = new JobFilteringService(_jobService.Object,_groupService.Object);
         }
 
         private void SetUpJobService()
@@ -75,6 +77,11 @@ namespace RequestService.UnitTests
             _jobService = _mockRepository.Create<IJobService>();
             _jobService.Setup(x => x.AttachedDistanceToJobHeaders(It.IsAny<string>(), It.IsAny<List<JobHeader>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((string volunteerPostCode, List<JobHeader> jobSummaries, CancellationToken cancellationToken) => _jobHeaders);
+        }
+
+        private void SetUpGroupService()
+        {
+            _groupService = new Mock<IGroupService>();
         }
 
         [Test]
