@@ -15,6 +15,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent);
         Task UpdateInProgressFromAccepted();
         Task UpdateJobsToDoneFromInProgress();
         Task UpdateJobsToCancelledFromNewOrOpen();
