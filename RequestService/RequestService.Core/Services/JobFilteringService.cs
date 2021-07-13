@@ -13,6 +13,7 @@ namespace RequestService.Core.Services
 {
     public class JobFilteringService : IJobFilteringService
     {
+
         private readonly IJobService _jobService;
         private readonly IGroupService _groupService;
 
