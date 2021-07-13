@@ -40,6 +40,8 @@ namespace RequestService.AzureFunction
             }        
             catch (Exception exc)
             {
+                _logger.LogError("Exception occured in GetQuestionsByActivity", exc);
+                _logger.LogError(exc.ToString(), exc);
                 _logger.LogErrorAndNotifyNewRelic("Exception occured in GetQuestionsByActivity", exc);
                 return new ObjectResult(ResponseWrapper<GetQuestionsByActivtiesResponse, RequestServiceErrorCode>.CreateUnsuccessfulResponse(RequestServiceErrorCode.InternalServerError, "Internal Error")) { StatusCode = StatusCodes.Status500InternalServerError };                
             }
