@@ -101,7 +101,7 @@ namespace RequestService.Handlers
 
 
             bool multiVolunteers = _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
-            bool repeat = _multiJobs.AddRepeats(request.NewJobsRequest);
+            bool repeat = _multiJobs.AddRepeats(request.NewJobsRequest, DateTime.UtcNow);
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {

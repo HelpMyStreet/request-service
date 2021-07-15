@@ -5,6 +5,8 @@ using HelpMyStreet.Utils.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 
 namespace RequestService.Handlers.BusinessLogic
 {
@@ -51,11 +53,16 @@ namespace RequestService.Handlers.BusinessLogic
             }
         }
 
-        public bool AddRepeats(NewJobsRequest request)
+        public bool AddMultiVolunteers(List<HelpRequestDetail> helpRequestDetails)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddRepeats(NewJobsRequest request, DateTime startDateTime)
         {
             List<Job> repeatJobs = new List<Job>();
 
-            DateTime now = DateTime.UtcNow;
+            //DateTime now = DateTime.UtcNow;
 
             foreach (Job j in request.Jobs)
             {
@@ -73,15 +80,15 @@ namespace RequestService.Handlers.BusinessLogic
                         {
                             case Frequency.Daily:
                                 dueDateType = DueDateType.On;
-                                notBeforeDate = now.AddDays(loopCount);
-                                startDate = now.AddDays(loopCount);                                    
+                                notBeforeDate = startDateTime.AddDays(loopCount);
+                                startDate = startDateTime.AddDays(loopCount);                                    
                                 break;
                             case Frequency.Weekly:
                             case Frequency.Fortnightly:
                             case Frequency.EveryFourWeeks:
                                 dueDateType = DueDateType.Before;
-                                notBeforeDate = now.AddDays(daysToAdd);
-                                startDate = now.AddDays(daysToAdd+3);
+                                notBeforeDate = startDateTime.AddDays(daysToAdd);
+                                startDate = startDateTime.AddDays(daysToAdd+3);
                                 break;
                             default:
                                 throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
@@ -113,6 +120,71 @@ namespace RequestService.Handlers.BusinessLogic
             {
                 return false;
             }
+        }
+
+        public bool AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
+        {
+            HelpRequestDetail first = helpRequestDetails.First();
+            AddMultiVolunteers(first.NewJobsRequest);
+
+            DateTime startDateTime = DateTime.UtcNow;
+
+            for (int loopCount = 1; loopCount < repeatCount; loopCount++)
+            {
+                helpRequestDetails.Add(new HelpRequestDetail()
+                {
+                    HelpRequest = new HelpRequest()
+                    {
+                        ConsentForContact = first.HelpRequest.ConsentForContact,
+                        AcceptedTerms = first.HelpRequest.AcceptedTerms,
+                        CreatedByUserId = first.HelpRequest.CreatedByUserId,
+                        OrganisationName = first.HelpRequest.OrganisationName,
+                        OtherDetails = first.HelpRequest.OtherDetails,
+                        ReadPrivacyNotice = first.HelpRequest.ReadPrivacyNotice,
+                        Recipient = first.HelpRequest.Recipient,
+                        ReferringGroupId = first.HelpRequest.ReferringGroupId,
+                        Requestor = first.HelpRequest.Requestor,
+                        RequestorType = first.HelpRequest.RequestorType,
+                        Source = first.HelpRequest.Source,
+                        SpecialCommunicationNeeds = first.HelpRequest.SpecialCommunicationNeeds,
+                        VolunteerUserId = first.HelpRequest.VolunteerUserId,
+                        Guid = Guid.NewGuid()
+                    }
+                });
+
+                foreach (Job j in first.NewJobsRequest.Jobs)
+                {
+                    var daysToAdd = j.RepeatFrequency.FrequencyDays() * loopCount;
+                    DueDateType dueDateType = j.DueDateType;
+                    DateTime? startDate = j.StartDate.HasValue ? j.StartDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+                    DateTime? endDate = j.EndDate.HasValue ? j.EndDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+                    DateTime? notBeforeDate = j.NotBeforeDate.HasValue ? j.NotBeforeDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+
+                    if (j.DueDateType == DueDateType.ASAP)
+                    {
+                        switch (j.RepeatFrequency)
+                        {
+                            case Frequency.Daily:
+                                dueDateType = DueDateType.On;
+                                notBeforeDate = startDateTime.AddDays(loopCount);
+                                startDate = startDateTime.AddDays(loopCount);
+                                break;
+                            case Frequency.Weekly:
+                            case Frequency.Fortnightly:
+                            case Frequency.EveryFourWeeks:
+                                dueDateType = DueDateType.Before;
+                                notBeforeDate = startDateTime.AddDays(daysToAdd);
+                                startDate = startDateTime.AddDays(daysToAdd + 3);
+                                break;
+                            default:
+                                throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
+                        }
+                        endDate = startDate;
+                    }
+                }
+            }    
+
+            return true;
         }
     }
 }
