@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class PutUpdateShiftStatusToAccepted
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<PutUpdateShiftStatusToAcceptedRequest> _logger;
+        private readonly ILoggerWrapper<PutUpdateShiftStatusToAccepted> _logger;
 
-        public PutUpdateShiftStatusToAccepted(IMediator mediator, ILoggerWrapper<PutUpdateShiftStatusToAcceptedRequest> logger)
+        public PutUpdateShiftStatusToAccepted(IMediator mediator, ILoggerWrapper<PutUpdateShiftStatusToAccepted> logger)
         {
             _mediator = mediator;
             _logger = logger;

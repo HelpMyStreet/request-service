@@ -20,9 +20,9 @@ namespace RequestService.AzureFunction
     public class GetRequestsByFilter
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetRequestsByFilterRequest> _logger;
+        private readonly ILoggerWrapper<GetRequestsByFilter> _logger;
 
-        public GetRequestsByFilter(IMediator mediator, ILoggerWrapper<GetRequestsByFilterRequest> logger)
+        public GetRequestsByFilter(IMediator mediator, ILoggerWrapper<GetRequestsByFilter> logger)
         {
             _mediator = mediator;
             _logger = logger;
