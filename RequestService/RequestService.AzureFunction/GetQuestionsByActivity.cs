@@ -18,9 +18,9 @@ namespace RequestService.AzureFunction
     public class GetQuestionsByActivity
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetQuestionsByActivitiesRequest> _logger;
+        private readonly ILoggerWrapper<GetQuestionsByActivity> _logger;
 
-        public GetQuestionsByActivity(IMediator mediator, ILoggerWrapper<GetQuestionsByActivitiesRequest> logger)
+        public GetQuestionsByActivity(IMediator mediator, ILoggerWrapper<GetQuestionsByActivity> logger)
         {
             _mediator = mediator;
             _logger = logger;
