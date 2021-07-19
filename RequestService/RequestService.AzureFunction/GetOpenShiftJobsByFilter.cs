@@ -20,9 +20,9 @@ namespace RequestService.AzureFunction
     public class GetOpenShiftJobsByFilter
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetUserShiftJobsByFilterRequest> _logger;
+        private readonly ILoggerWrapper<GetUserShiftJobsByFilter> _logger;
 
-        public GetOpenShiftJobsByFilter(IMediator mediator, ILoggerWrapper<GetUserShiftJobsByFilterRequest> logger)
+        public GetOpenShiftJobsByFilter(IMediator mediator, ILoggerWrapper<GetUserShiftJobsByFilter> logger)
         {
             _mediator = mediator;
             _logger = logger;
