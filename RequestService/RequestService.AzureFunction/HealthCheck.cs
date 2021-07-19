@@ -21,7 +21,7 @@ namespace RequestService.AzureFunction
             {
                 log.LogInformation("C# HTTP trigger function processed health check request.");
 
-                return new OkObjectResult("I'm alive! 2021-07-19 11:05:00");
+                return new OkObjectResult("I'm alive! 2021-07-19 12:24:00");
             }
             catch (Exception exc)
             {
