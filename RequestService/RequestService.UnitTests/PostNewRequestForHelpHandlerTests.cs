@@ -154,10 +154,10 @@ namespace RequestService.UnitTests
         {
             _multiJobs = new Mock<IMultiJobs>();
 
-            _multiJobs.Setup(x => x.AddMultiVolunteers(It.IsAny<NewJobsRequest>()));
+            //_multiJobs.Setup(x => x.AddMultiVolunteers(It.IsAny<NewJobsRequest>()));
             //.Returns((PostNewRequestForHelpRequest r) => r);
 
-            _multiJobs.Setup(x => x.AddRepeats(It.IsAny<NewJobsRequest>()));
+            _multiJobs.Setup(x => x.AddRepeats(It.IsAny<NewJobsRequest>(), It.IsAny<DateTime>()));
                 //.Returns((PostNewRequestForHelpRequest r) => r);
         }
 

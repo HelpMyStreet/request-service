@@ -8,8 +8,6 @@ namespace RequestService.Handlers.BusinessLogic
     {
         public bool AddMultiVolunteers(NewJobsRequest request);
         public bool AddRepeats(NewJobsRequest request, DateTime startDateTime);
-
-        public bool AddMultiVolunteers(List<HelpRequestDetail> helpRequestDetails);
         public bool AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount);
 
     }

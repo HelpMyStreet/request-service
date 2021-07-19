@@ -102,7 +102,7 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            bool repeats = _classUnderTest.AddRepeats(request);
+            bool repeats = _classUnderTest.AddRepeats(request, DateTime.UtcNow);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);            
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
             Assert.AreEqual(true, repeats);
@@ -129,7 +129,7 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            bool repeats = _classUnderTest.AddRepeats(request);
+            bool repeats = _classUnderTest.AddRepeats(request, DateTime.UtcNow);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
             Assert.AreEqual(true, repeats);

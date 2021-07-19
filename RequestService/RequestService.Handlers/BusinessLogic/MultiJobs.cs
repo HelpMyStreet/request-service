@@ -53,11 +53,6 @@ namespace RequestService.Handlers.BusinessLogic
             }
         }
 
-        public bool AddMultiVolunteers(List<HelpRequestDetail> helpRequestDetails)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool AddRepeats(NewJobsRequest request, DateTime startDateTime)
         {
             List<Job> repeatJobs = new List<Job>();
@@ -125,13 +120,14 @@ namespace RequestService.Handlers.BusinessLogic
         public bool AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
         {
             HelpRequestDetail first = helpRequestDetails.First();
-            AddMultiVolunteers(first.NewJobsRequest);
+            bool returnValue = AddMultiVolunteers(first.NewJobsRequest);
 
             DateTime startDateTime = DateTime.UtcNow;
 
             for (int loopCount = 1; loopCount < repeatCount; loopCount++)
             {
-                helpRequestDetails.Add(new HelpRequestDetail()
+                List<Job> repeatJobs = new List<Job>();
+                HelpRequestDetail helpRequestDetail = new HelpRequestDetail()
                 {
                     HelpRequest = new HelpRequest()
                     {
@@ -149,8 +145,9 @@ namespace RequestService.Handlers.BusinessLogic
                         SpecialCommunicationNeeds = first.HelpRequest.SpecialCommunicationNeeds,
                         VolunteerUserId = first.HelpRequest.VolunteerUserId,
                         Guid = Guid.NewGuid()
-                    }
-                });
+                    },
+                    NewJobsRequest = new NewJobsRequest()
+                };
 
                 foreach (Job j in first.NewJobsRequest.Jobs)
                 {
@@ -181,10 +178,25 @@ namespace RequestService.Handlers.BusinessLogic
                         }
                         endDate = startDate;
                     }
+
+                    repeatJobs.Add(new Job()
+                    {
+                        HealthCritical = j.HealthCritical,
+                        DueDateType = dueDateType,
+                        SupportActivity = j.SupportActivity,
+                        StartDate = startDate,
+                        EndDate = endDate,
+                        Questions = j.Questions,
+                        NumberOfRepeats = j.NumberOfRepeats,
+                        RepeatFrequency = j.RepeatFrequency,
+                        NotBeforeDate = notBeforeDate
+                    });
                 }
+                helpRequestDetail.NewJobsRequest.Jobs = repeatJobs;
+                helpRequestDetails.Add(helpRequestDetail);
             }    
 
-            return true;
+            return returnValue;
         }
     }
 }
