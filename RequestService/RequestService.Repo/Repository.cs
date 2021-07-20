@@ -163,19 +163,18 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, bool multiVolunteer, bool repeat)        
+        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails)
         {
-
-            Person requester = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Requestor);
+            Person requester = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Requestor);
             Person recipient;
 
-            if (postNewRequestForHelpRequest.HelpRequest.RequestorType == RequestorType.Myself)
+            if (helpRequestDetail.HelpRequest.RequestorType == RequestorType.Myself)
             {
                 recipient = requester;
             }
             else
             {
-                recipient = GetPersonFromPersonalDetails(postNewRequestForHelpRequest.HelpRequest.Recipient);
+                recipient = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Recipient);
             }
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -192,35 +191,35 @@ namespace RequestService.Repo
                         _context.Person.Add(recipient);
                     }
 
-                    RequestType requestType = postNewRequestForHelpRequest.NewJobsRequest.Jobs.First().SupportActivity.RequestType();
+                    RequestType requestType = helpRequestDetail.NewJobsRequest.Jobs.First().SupportActivity.RequestType();
 
                     Request newRequest = new Request()
                     {
-                        Guid = postNewRequestForHelpRequest.HelpRequest.Guid,
-                        ReadPrivacyNotice = postNewRequestForHelpRequest.HelpRequest.ReadPrivacyNotice,
-                        SpecialCommunicationNeeds = postNewRequestForHelpRequest.HelpRequest.SpecialCommunicationNeeds,
-                        AcceptedTerms = postNewRequestForHelpRequest.HelpRequest.AcceptedTerms,
-                        OtherDetails = postNewRequestForHelpRequest.HelpRequest.OtherDetails,
-                        OrganisationName = postNewRequestForHelpRequest.HelpRequest.OrganisationName,
-                        PostCode = PostcodeFormatter.FormatPostcode(postNewRequestForHelpRequest.HelpRequest.Recipient?.Address?.Postcode ?? string.Empty),
+                        Guid = helpRequestDetail.HelpRequest.Guid,
+                        ReadPrivacyNotice = helpRequestDetail.HelpRequest.ReadPrivacyNotice,
+                        SpecialCommunicationNeeds = helpRequestDetail.HelpRequest.SpecialCommunicationNeeds,
+                        AcceptedTerms = helpRequestDetail.HelpRequest.AcceptedTerms,
+                        OtherDetails = helpRequestDetail.HelpRequest.OtherDetails,
+                        OrganisationName = helpRequestDetail.HelpRequest.OrganisationName,
+                        PostCode = PostcodeFormatter.FormatPostcode(helpRequestDetail.HelpRequest.Recipient?.Address?.Postcode ?? string.Empty),
                         PersonIdRecipientNavigation = recipient,
                         PersonIdRequesterNavigation = requester,
-                        RequestorType = (byte)postNewRequestForHelpRequest.HelpRequest.RequestorType,
+                        RequestorType = (byte)helpRequestDetail.HelpRequest.RequestorType,
                         FulfillableStatus = (byte)fulfillable,
-                        CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
-                        ReferringGroupId = postNewRequestForHelpRequest.HelpRequest.ReferringGroupId,
-                        Source = postNewRequestForHelpRequest.HelpRequest.Source,
+                        CreatedByUserId = helpRequestDetail.HelpRequest.CreatedByUserId,
+                        ReferringGroupId = helpRequestDetail.HelpRequest.ReferringGroupId,
+                        Source = helpRequestDetail.HelpRequest.Source,
                         RequestorDefinedByGroup = requestorDefinedByGroup,
                         RequestType = (byte)requestType,
                         Archive = false,
                         SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
-                        MultiVolunteer = multiVolunteer,
-                        Repeat = repeat
+                        MultiVolunteer = helpRequestDetail.VolunteerCount>1,
+                        Repeat = helpRequestDetail.Repeat
                     };
 
                     if (requestType == RequestType.Shift)
                     {
-                        HelpMyStreet.Utils.Models.Job shiftJob = postNewRequestForHelpRequest.NewJobsRequest.Jobs.First();
+                        HelpMyStreet.Utils.Models.Job shiftJob = helpRequestDetail.NewJobsRequest.Jobs.First();
 
                         var locationQuestion = shiftJob.Questions.Where(x => x.Id == (int)Questions.Location).First();
 
@@ -240,7 +239,7 @@ namespace RequestService.Repo
                         });
                     }
 
-                    foreach (HelpMyStreet.Utils.Models.Job job in postNewRequestForHelpRequest.NewJobsRequest.Jobs)
+                    foreach (HelpMyStreet.Utils.Models.Job job in helpRequestDetail.NewJobsRequest.Jobs)
                     {
                         EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
                         {
@@ -272,7 +271,7 @@ namespace RequestService.Repo
                             DateCreated = DateTime.Now,
                             JobStatusId = (byte)JobStatuses.New,
                             Job = EFcoreJob,
-                            CreatedByUserId = postNewRequestForHelpRequest.HelpRequest.CreatedByUserId,
+                            CreatedByUserId = helpRequestDetail.HelpRequest.CreatedByUserId,
                         });
                     }
 
