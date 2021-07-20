@@ -147,5 +147,49 @@ namespace RequestService.UnitTests.BusinessLogic
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
         }
 
+        [TestCase(5, Frequency.Weekly)]
+        [TestCase(2, Frequency.EveryFourWeeks)]
+        public void WhenShiftRepeatFrequencyPassedIn_MultiRequestsAdded(int numberOfRepeats, Frequency frequency)
+        {
+            List<Job> jobs = new List<Job>()
+            {
+                new Job()
+                {
+                    StartDate = DateTime.Now,
+                    NotBeforeDate = DateTime.Now.AddDays(-3),
+                    HealthCritical = false,
+                    SupportActivity = SupportActivities.VaccineSupport,
+                    RepeatFrequency = frequency,
+                    NumberOfRepeats = numberOfRepeats
+                },
+                new Job()
+                {
+                    StartDate = DateTime.Now,
+                    NotBeforeDate = DateTime.Now.AddDays(-3),
+                    HealthCritical = false,
+                    SupportActivity = SupportActivities.VaccineSupport,
+                    RepeatFrequency = frequency,
+                    NumberOfRepeats = numberOfRepeats
+                }
+            };
+            int jobCount = jobs.Count;
+
+            List<HelpRequestDetail> helpRequestDetails = new List<HelpRequestDetail>()
+            {
+                new HelpRequestDetail()
+                {
+                    HelpRequest = new HelpRequest(),
+                    NewJobsRequest = new NewJobsRequest()
+                    {
+                       Jobs = jobs
+                    }
+                }
+            };
+            
+            _classUnderTest.AddShiftRepeats(helpRequestDetails, numberOfRepeats);
+            Assert.AreEqual(numberOfRepeats, helpRequestDetails.Count);
+            Assert.AreEqual(jobCount * numberOfRepeats, helpRequestDetails.Sum(x => x.NewJobsRequest.Jobs.Count));
+        }
+
     }
 }
