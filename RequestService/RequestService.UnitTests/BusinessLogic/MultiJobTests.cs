@@ -189,6 +189,13 @@ namespace RequestService.UnitTests.BusinessLogic
             _classUnderTest.AddShiftRepeats(helpRequestDetails, numberOfRepeats);
             Assert.AreEqual(numberOfRepeats, helpRequestDetails.Count);
             Assert.AreEqual(jobCount * numberOfRepeats, helpRequestDetails.Sum(x => x.NewJobsRequest.Jobs.Count));
+
+            for (int loopCount = 1; loopCount < numberOfRepeats; loopCount++)
+            {
+                DateTime dt = DateTime.Now.Date.AddDays(loopCount * frequency.FrequencyDays());
+                Assert.AreEqual(jobCount, helpRequestDetails[loopCount].NewJobsRequest.Jobs.Count(x=> x.StartDate.Value.Date  == dt));
+            }
+
         }
 
     }
