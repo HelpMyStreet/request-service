@@ -46,46 +46,7 @@ namespace RequestService.Handlers.BusinessLogic
             {
                 for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
                 {
-                    var daysToAdd = j.RepeatFrequency.FrequencyDays() * loopCount;
-                    DueDateType dueDateType = j.DueDateType;                    
-                    DateTime? startDate = j.StartDate.HasValue ? j.StartDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-                    DateTime? endDate = j.EndDate.HasValue ? j.EndDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-                    DateTime? notBeforeDate = j.NotBeforeDate.HasValue ? j.NotBeforeDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-
-                    if (j.DueDateType == DueDateType.ASAP)
-                    {                        
-                        switch (j.RepeatFrequency)
-                        {
-                            case Frequency.Daily:
-                                dueDateType = DueDateType.On;
-                                notBeforeDate = startDateTime.AddDays(loopCount);
-                                startDate = startDateTime.AddDays(loopCount);                                    
-                                break;
-                            case Frequency.Weekly:
-                            case Frequency.Fortnightly:
-                            case Frequency.EveryFourWeeks:
-                                dueDateType = DueDateType.Before;
-                                notBeforeDate = startDateTime.AddDays(daysToAdd);
-                                startDate = startDateTime.AddDays(daysToAdd+3);
-                                break;
-                            default:
-                                throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
-                        }
-                        endDate = startDate;
-                    }
-                    
-                    repeatJobs.Add(new Job()
-                    {
-                        HealthCritical = j.HealthCritical,
-                        DueDateType = dueDateType,
-                        SupportActivity = j.SupportActivity,
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        Questions = j.Questions,
-                        NumberOfRepeats = j.NumberOfRepeats,
-                        RepeatFrequency = j.RepeatFrequency,
-                        NotBeforeDate = notBeforeDate
-                    });
+                    repeatJobs.Add(AddJob(loopCount, j, startDateTime));
                 }
             }
 
@@ -93,6 +54,50 @@ namespace RequestService.Handlers.BusinessLogic
             {
                 request.Jobs.AddRange(repeatJobs);
             }
+        }
+
+        private Job AddJob(int loopCount, Job job, DateTime startDateTime)
+        {
+            var daysToAdd = job.RepeatFrequency.FrequencyDays() * loopCount;
+            DueDateType dueDateType = job.DueDateType;
+            DateTime? startDate = job.StartDate.HasValue ? job.StartDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+            DateTime? endDate = job.EndDate.HasValue ? job.EndDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+            DateTime? notBeforeDate = job.NotBeforeDate.HasValue ? job.NotBeforeDate.Value.AddDays(daysToAdd) : (DateTime?)null;
+
+            if (job.DueDateType == DueDateType.ASAP)
+            {
+                switch (job.RepeatFrequency)
+                {
+                    case Frequency.Daily:
+                        dueDateType = DueDateType.On;
+                        notBeforeDate = startDateTime.AddDays(loopCount);
+                        startDate = startDateTime.AddDays(loopCount);
+                        break;
+                    case Frequency.Weekly:
+                    case Frequency.Fortnightly:
+                    case Frequency.EveryFourWeeks:
+                        dueDateType = DueDateType.Before;
+                        notBeforeDate = startDateTime.AddDays(daysToAdd);
+                        startDate = startDateTime.AddDays(daysToAdd + 3);
+                        break;
+                    default:
+                        throw new Exception($"Invalid Frequency for DueDate.ASAP {job.RepeatFrequency}");
+                }
+                endDate = startDate;
+            }
+
+            return new Job()
+            {
+                HealthCritical = job.HealthCritical,
+                DueDateType = dueDateType,
+                SupportActivity = job.SupportActivity,
+                StartDate = startDate,
+                EndDate = endDate,
+                Questions = job.Questions,
+                NumberOfRepeats = job.NumberOfRepeats,
+                RepeatFrequency = job.RepeatFrequency,
+                NotBeforeDate = notBeforeDate
+            };
         }
 
         public void AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
@@ -128,46 +133,7 @@ namespace RequestService.Handlers.BusinessLogic
 
                 foreach (Job j in first.NewJobsRequest.Jobs)
                 {
-                    var daysToAdd = j.RepeatFrequency.FrequencyDays() * loopCount;
-                    DueDateType dueDateType = j.DueDateType;
-                    DateTime? startDate = j.StartDate.HasValue ? j.StartDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-                    DateTime? endDate = j.EndDate.HasValue ? j.EndDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-                    DateTime? notBeforeDate = j.NotBeforeDate.HasValue ? j.NotBeforeDate.Value.AddDays(daysToAdd) : (DateTime?)null;
-
-                    if (j.DueDateType == DueDateType.ASAP)
-                    {
-                        switch (j.RepeatFrequency)
-                        {
-                            case Frequency.Daily:
-                                dueDateType = DueDateType.On;
-                                notBeforeDate = startDateTime.AddDays(loopCount);
-                                startDate = startDateTime.AddDays(loopCount);
-                                break;
-                            case Frequency.Weekly:
-                            case Frequency.Fortnightly:
-                            case Frequency.EveryFourWeeks:
-                                dueDateType = DueDateType.Before;
-                                notBeforeDate = startDateTime.AddDays(daysToAdd);
-                                startDate = startDateTime.AddDays(daysToAdd + 3);
-                                break;
-                            default:
-                                throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
-                        }
-                        endDate = startDate;
-                    }
-
-                    repeatJobs.Add(new Job()
-                    {
-                        HealthCritical = j.HealthCritical,
-                        DueDateType = dueDateType,
-                        SupportActivity = j.SupportActivity,
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        Questions = j.Questions,
-                        NumberOfRepeats = j.NumberOfRepeats,
-                        RepeatFrequency = j.RepeatFrequency,
-                        NotBeforeDate = notBeforeDate
-                    });
+                    repeatJobs.Add(AddJob(loopCount, j, startDateTime));
                 }
                 helpRequestDetail.NewJobsRequest.Jobs = repeatJobs;
                 helpRequestDetails.Add(helpRequestDetail);
