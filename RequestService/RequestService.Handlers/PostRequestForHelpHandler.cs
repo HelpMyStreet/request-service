@@ -19,6 +19,8 @@ using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
 using RequestService.Handlers.BusinessLogic;
 using System.Text;
+using HelpMyStreet.Contracts.GroupService.Request;
+using HelpMyStreet.Contracts.GroupService.Response;
 
 namespace RequestService.Handlers
 {
@@ -55,20 +57,16 @@ namespace RequestService.Handlers
             var firstJob = firstHelpRequestDetail.NewJobsRequest.Jobs.First();
             var requestType = firstJob.SupportActivity.RequestType();
 
-            bool multiVolunteers = false;
-            bool repeat = false;
-
             if (requestType == RequestType.Shift &&
                 firstJob.NumberOfRepeats > 1 &&
                 firstJob.RepeatFrequency != Frequency.Once)
             {
-                repeat = true;
-                multiVolunteers = _multiJobs.AddShiftRepeats(request.HelpRequestDetails, firstJob.NumberOfRepeats);
+                _multiJobs.AddShiftRepeats(request.HelpRequestDetails, firstJob.NumberOfRepeats);
             }
             else
             {
-                multiVolunteers = _multiJobs.AddMultiVolunteers(firstHelpRequestDetail.NewJobsRequest);
-                repeat = _multiJobs.AddRepeats(firstHelpRequestDetail.NewJobsRequest, DateTime.UtcNow);
+                _multiJobs.AddMultiVolunteers(firstHelpRequestDetail.NewJobsRequest);
+                _multiJobs.AddRepeats(firstHelpRequestDetail.NewJobsRequest, DateTime.UtcNow);
             }
 
             foreach (HelpRequestDetail helpRequestDetail in request.HelpRequestDetails)
@@ -194,9 +192,52 @@ namespace RequestService.Handlers
             };
         }
 
+        private async Task<bool?> SuppressRecipientPersonalDetails(HelpRequestDetail helpRequestDetail,  GetRequestHelpFormVariantResponse formVariant)
+        {
+            bool? suppressRecipientPersonalDetails = formVariant.SuppressRecipientPersonalDetails;
+
+            Job firstJob = helpRequestDetail.NewJobsRequest.Jobs.First();
+            var suppressRecipientPersonalDetailsQuestion = firstJob.Questions?.Where(x => x.Id == (int)Questions.SuppressRecipientPersonalDetails).FirstOrDefault();
+
+            if (suppressRecipientPersonalDetailsQuestion != null)
+            {
+                suppressRecipientPersonalDetails = suppressRecipientPersonalDetailsQuestion.Answer.First().ToString() == "Y";
+            }
+
+            return suppressRecipientPersonalDetails;
+        }
+
+        private async Task<int> ProcessRequest(HelpRequestDetail helpRequestDetail, 
+            GetRequestHelpFormVariantResponse formVariant, 
+            Fulfillable fulfillable,
+            bool suppressRecipientPersonalDetails, 
+            bool multiVolunteers,
+            bool repeat, CancellationToken cancellationToken)
+        {
+            var actions = _groupService.GetNewRequestActions(new GetNewRequestActionsRequest()
+            {
+                HelpRequest = helpRequestDetail.HelpRequest,
+                NewJobsRequest = helpRequestDetail.NewJobsRequest
+            }, cancellationToken).Result;
+
+            if (actions == null)
+            {
+                throw new Exception("No new request actions returned");
+            }
+
+            return  await _repository.NewHelpRequestAsync(new PostNewRequestForHelpRequest()
+            {
+                HelpRequest = helpRequestDetail.HelpRequest,
+                NewJobsRequest = helpRequestDetail.NewJobsRequest
+            }, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails, multiVolunteers, repeat);
+        }
+
         public async Task<PostRequestForHelpResponse> Handle(PostRequestForHelpRequest request, CancellationToken cancellationToken)
         {
-            PostRequestForHelpResponse response = new PostRequestForHelpResponse();
+            PostRequestForHelpResponse response = new PostRequestForHelpResponse()
+            {
+                RequestIDs = new List<int>()
+            };
             var firstHelpRequestDetail = request.HelpRequestDetails.First();
             bool invalidPostCode = await InvalidPostCode(firstHelpRequestDetail.HelpRequest, cancellationToken);
 
@@ -204,6 +245,9 @@ namespace RequestService.Handlers
             {
                 return GetPostRequestForHelpResponse(new List<int> { -1 }, Fulfillable.Rejected_InvalidPostcode);
             }
+
+            bool multiVolunteers = firstHelpRequestDetail.MultiVolunteer;
+            bool repeat = firstHelpRequestDetail.Repeat;
 
             HandleASAP(request);
             AddMultiAndRepeats(request);
@@ -237,16 +281,18 @@ namespace RequestService.Handlers
             // Currently indicates standard "passed to volunteers" result
             response.Fulfillable = Fulfillable.Accepted_ManualReferral;
 
-            var actions = _groupService.GetNewRequestActions(new HelpMyStreet.Contracts.GroupService.Request.GetNewRequestActionsRequest()
-            {
-                HelpRequest = firstHelpRequestDetail.HelpRequest,
-                NewJobsRequest = firstHelpRequestDetail.NewJobsRequest
-            }, cancellationToken).Result;
+            bool? suppressRecipientPersonalDetails = await SuppressRecipientPersonalDetails(firstHelpRequestDetail, formVariant);
 
-            if (actions == null)
+            if (!suppressRecipientPersonalDetails.HasValue)
             {
-                throw new Exception("No new request actions returned");
+                return GetPostRequestForHelpResponse(new List<int> { -1 }, Fulfillable.Rejected_ConfigurationError);
             }
+
+            foreach (HelpRequestDetail helpRequestDetail in request.HelpRequestDetails)
+            {
+               response.RequestIDs.Add(await ProcessRequest(helpRequestDetail, formVariant, response.Fulfillable, suppressRecipientPersonalDetails.Value, multiVolunteers, repeat, cancellationToken));
+            }
+            
 
             return response;
         }
