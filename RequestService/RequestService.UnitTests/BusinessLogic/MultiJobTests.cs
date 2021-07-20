@@ -27,31 +27,37 @@ namespace RequestService.UnitTests.BusinessLogic
         {
             int numberOfVolunteers = 5;
 
-            NewJobsRequest request = new NewJobsRequest()
+            HelpRequestDetail helpRequestDetail = new HelpRequestDetail()
             {
-                Jobs = new List<Job>()
+                HelpRequest = new HelpRequest()
                 {
-                   new Job()
-                   {
-                       StartDate = DateTime.Now,
-                       NotBeforeDate = DateTime.Now,
-                       HealthCritical = false,
-                       SupportActivity = SupportActivities.Shopping,
-                       Questions = new List<Question>()
-                       {
-                           new Question()
-                           {
-                               Id = 17,
-                               Name = "How many volunteers are required?",
-                               Answer = numberOfVolunteers.ToString()
-                           }
-                       }
-                   }
+
+                },
+                NewJobsRequest = new NewJobsRequest()
+                {
+                    Jobs = new List<Job>()
+                    {
+                        new Job()
+                        {
+                            StartDate = DateTime.Now,
+                            NotBeforeDate = DateTime.Now,
+                            HealthCritical = false,
+                            SupportActivity = SupportActivities.Shopping,
+                            Questions = new List<Question>()
+                            {
+                                new Question()
+                                {
+                                    Id = 17,
+                                    Name = "How many volunteers are required?",
+                                   Answer = numberOfVolunteers.ToString()
+                                }
+                            }
+                        }
+                    }
                 }
             };
-            bool multiVolunteers = _classUnderTest.AddMultiVolunteers(request);
-            Assert.AreEqual(numberOfVolunteers, request.Jobs.Count);
-            Assert.AreEqual(true, multiVolunteers);
+            _classUnderTest.AddMultiVolunteers(helpRequestDetail);
+            Assert.AreEqual(numberOfVolunteers, helpRequestDetail.NewJobsRequest.Jobs.Count);
         }
 
         [Test]
@@ -67,13 +73,21 @@ namespace RequestService.UnitTests.BusinessLogic
             };
 
             int jobCount = jobs.Count;
-            NewJobsRequest request = new NewJobsRequest()
+
+            HelpRequestDetail helpRequestDetail = new HelpRequestDetail()
             {
-                Jobs = jobs
+                HelpRequest = new HelpRequest()
+                {
+
+                },
+                NewJobsRequest = new NewJobsRequest()
+                {
+                    Jobs = jobs
+                }
             };
-            bool multiVolunteers = _classUnderTest.AddMultiVolunteers(request);
-            Assert.AreEqual(jobCount, request.Jobs.Count);
-            Assert.AreEqual(false, multiVolunteers);
+
+            _classUnderTest.AddMultiVolunteers(helpRequestDetail);
+            Assert.AreEqual(jobCount, helpRequestDetail.NewJobsRequest.Jobs.Count);
         }
 
         [Test]
@@ -102,10 +116,9 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            bool repeats = _classUnderTest.AddRepeats(request, DateTime.UtcNow);
+            _classUnderTest.AddRepeats(request, DateTime.UtcNow);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);            
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
-            Assert.AreEqual(true, repeats);
         }
 
         [TestCase(5, Frequency.Weekly)]
@@ -129,10 +142,9 @@ namespace RequestService.UnitTests.BusinessLogic
             {
                 Jobs = jobs
             };
-            bool repeats = _classUnderTest.AddRepeats(request, DateTime.UtcNow);
+            _classUnderTest.AddRepeats(request, DateTime.UtcNow);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Count);
             Assert.AreEqual(jobCount * numberOfRepeats, request.Jobs.Select(x => x.StartDate).Distinct().Count());
-            Assert.AreEqual(true, repeats);
         }
 
     }

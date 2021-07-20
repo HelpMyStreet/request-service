@@ -57,7 +57,7 @@ namespace RequestService.Handlers
             var firstJob = firstHelpRequestDetail.NewJobsRequest.Jobs.First();
             var requestType = firstJob.SupportActivity.RequestType();
 
-            _multiJobs.AddMultiVolunteers(firstHelpRequestDetail.NewJobsRequest);
+            _multiJobs.AddMultiVolunteers(firstHelpRequestDetail);
 
             if (requestType == RequestType.Shift &&
                 firstJob.RepeatFrequency != Frequency.Once)
@@ -269,9 +269,8 @@ namespace RequestService.Handlers
         private async Task<int> ProcessRequest(HelpRequestDetail helpRequestDetail, 
             GetRequestHelpFormVariantResponse formVariant, 
             Fulfillable fulfillable,
-            bool suppressRecipientPersonalDetails, 
-            bool multiVolunteers,
-            bool repeat, CancellationToken cancellationToken)
+            bool suppressRecipientPersonalDetails,
+            CancellationToken cancellationToken)
         {
             var actions = _groupService.GetNewRequestActions(new GetNewRequestActionsRequest()
             {
@@ -284,11 +283,7 @@ namespace RequestService.Handlers
                 throw new Exception("No new request actions returned");
             }
 
-            int requestId = await _repository.NewHelpRequestAsync(new PostNewRequestForHelpRequest()
-            {
-                HelpRequest = helpRequestDetail.HelpRequest,
-                NewJobsRequest = helpRequestDetail.NewJobsRequest
-            }, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails, multiVolunteers, repeat);
+            int requestId = await _repository.AddHelpRequestDetailsAsync(helpRequestDetail, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails);
 
             if (requestId == 0)
             {
@@ -335,9 +330,6 @@ namespace RequestService.Handlers
                 return GetPostRequestForHelpResponse(new List<int> { -1 }, Fulfillable.Rejected_Unauthorised);
             }
 
-            bool multiVolunteers = firstHelpRequestDetail.MultiVolunteer;
-            bool repeat = firstHelpRequestDetail.Repeat;
-
             HandleASAP(request);
             AddMultiAndRepeats(request);
             CopyRequestorAsRecipient(firstHelpRequestDetail.HelpRequest, formVariant.RequestorDefinedByGroup, formVariant.RequestorPersonalDetails);
@@ -354,7 +346,7 @@ namespace RequestService.Handlers
 
             foreach (HelpRequestDetail helpRequestDetail in request.HelpRequestDetails)
             {
-               response.RequestIDs.Add(await ProcessRequest(helpRequestDetail, formVariant, response.Fulfillable, suppressRecipientPersonalDetails.Value, multiVolunteers, repeat, cancellationToken));
+               response.RequestIDs.Add(await ProcessRequest(helpRequestDetail, formVariant, response.Fulfillable, suppressRecipientPersonalDetails.Value, cancellationToken));
             }
             
 

@@ -12,48 +12,34 @@ namespace RequestService.Handlers.BusinessLogic
 {
     public class MultiJobs : IMultiJobs
     {
-        public bool AddMultiVolunteers(NewJobsRequest request)
+        public void AddMultiVolunteers(HelpRequestDetail helpRequestDetail)
         {
             List<Job> duplicatedJobs = new List<Job>();
+            Job job = helpRequestDetail.NewJobsRequest.Jobs.First();
 
-            foreach (Job j in request.Jobs)
+            for (int i = 1; i < helpRequestDetail.VolunteerCount; i++)
             {
-                //check if number of volunteer question has been asked
-                var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
-
-                if (numberOfSlotsQuestion != null)
+                duplicatedJobs.Add(new Job()
                 {
-                    int numberOfSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
-                    for (int i = 1; i < numberOfSlots; i++)
-                    {
-                        duplicatedJobs.Add(new Job()
-                        {
-                            HealthCritical = j.HealthCritical,
-                            DueDateType = j.DueDateType,
-                            SupportActivity = j.SupportActivity,
-                            StartDate = j.StartDate,
-                            EndDate = j.EndDate,
-                            Questions = j.Questions,                            
-                            NumberOfRepeats = j.NumberOfRepeats,
-                            RepeatFrequency = j.RepeatFrequency,
-                            NotBeforeDate = j.NotBeforeDate
-                        });
-                    }
-                }
+                    HealthCritical = job.HealthCritical,
+                    DueDateType = job.DueDateType,
+                    SupportActivity = job.SupportActivity,
+                    StartDate = job.StartDate,
+                    EndDate = job.EndDate,
+                    Questions = job.Questions,
+                    NumberOfRepeats = job.NumberOfRepeats,
+                    RepeatFrequency = job.RepeatFrequency,
+                    NotBeforeDate = job.NotBeforeDate
+                });
             }
 
             if (duplicatedJobs.Count > 0)
             {
-                request.Jobs.AddRange(duplicatedJobs);
-                return true;
-            }
-            else
-            {
-                return false;
+                helpRequestDetail.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
             }
         }
 
-        public bool AddRepeats(NewJobsRequest request, DateTime startDateTime)
+        public void AddRepeats(NewJobsRequest request, DateTime startDateTime)
         {
             List<Job> repeatJobs = new List<Job>();
             foreach (Job j in request.Jobs)
@@ -106,18 +92,12 @@ namespace RequestService.Handlers.BusinessLogic
             if (repeatJobs.Count > 0)
             {
                 request.Jobs.AddRange(repeatJobs);
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 
         public void AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
         {
             HelpRequestDetail first = helpRequestDetails.First();
-            AddMultiVolunteers(first.NewJobsRequest);
 
             DateTime startDateTime = DateTime.UtcNow;
 
