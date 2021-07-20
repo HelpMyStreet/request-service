@@ -207,6 +207,65 @@ namespace RequestService.Handlers
             return suppressRecipientPersonalDetails;
         }
 
+        private async Task ProcessRequestActions(GetNewRequestActionsResponse actions, int requestId, CancellationToken cancellationToken)
+        {
+            foreach (NewTaskAction newTaskAction in actions.RequestTaskActions.Keys)
+            {
+                List<int> actionAppliesToIds = actions.RequestTaskActions[newTaskAction];
+
+                switch (newTaskAction)
+                {
+                    case NewTaskAction.NotifyMatchingVolunteers:
+                        foreach (int groupId in actionAppliesToIds)
+                        {
+                            bool commsSent = await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                            {
+                                GroupID = groupId,
+                                CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.SendNewTaskNotification },
+                                RequestID = requestId,
+                            }, cancellationToken);
+                            await _repository.UpdateCommunicationSentAsync(requestId, commsSent, cancellationToken);
+                        }
+                        break;
+                    case NewTaskAction.MakeAvailableToGroups:
+                        foreach (int i in actionAppliesToIds)
+                        {
+                            await _repository.AddRequestAvailableToGroupAsync(requestId, i, cancellationToken);
+                        }
+                        break;
+                    case NewTaskAction.NotifyGroupAdmins:
+                        foreach (int groupId in actionAppliesToIds)
+                        {
+                            await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                            {
+                                GroupID = groupId,
+                                CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.NewTaskPendingApprovalNotification },
+                                JobID = null,
+                                RequestID = requestId
+                            }, cancellationToken);
+                        }
+                        break;
+                    case NewTaskAction.SendRequestorConfirmation:
+                        Dictionary<string, string> additionalParameters = new Dictionary<string, string>
+                                {
+                                    { "PendingApproval", (!actions.RequestTaskActions.ContainsKey(NewTaskAction.SetStatusToOpen)).ToString() }
+                                };
+                        await _communicationService.RequestCommunication(new RequestCommunicationRequest()
+                        {
+                            CommunicationJob = new CommunicationJob { CommunicationJobType = CommunicationJobTypes.RequestorTaskConfirmation },
+                            JobID = null,
+                            AdditionalParameters = additionalParameters,
+                            RequestID = requestId
+                        }, cancellationToken);
+                        break;
+                    case NewTaskAction.SetStatusToOpen:
+                        await _repository.UpdateAllJobStatusToOpenForRequestAsync(requestId, -1, cancellationToken);
+                        break;
+                }
+
+            }
+        }
+
         private async Task<int> ProcessRequest(HelpRequestDetail helpRequestDetail, 
             GetRequestHelpFormVariantResponse formVariant, 
             Fulfillable fulfillable,
@@ -225,11 +284,20 @@ namespace RequestService.Handlers
                 throw new Exception("No new request actions returned");
             }
 
-            return  await _repository.NewHelpRequestAsync(new PostNewRequestForHelpRequest()
+            int requestId = await _repository.NewHelpRequestAsync(new PostNewRequestForHelpRequest()
             {
                 HelpRequest = helpRequestDetail.HelpRequest,
                 NewJobsRequest = helpRequestDetail.NewJobsRequest
             }, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails, multiVolunteers, repeat);
+
+            if (requestId == 0)
+            {
+                throw new Exception("Error in saving request");
+            }
+
+            await ProcessRequestActions(actions, requestId, cancellationToken);
+
+            return requestId;
         }
 
         public async Task<PostRequestForHelpResponse> Handle(PostRequestForHelpRequest request, CancellationToken cancellationToken)
