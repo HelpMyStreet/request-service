@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class PutUpdateJobStatusToCancelled
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<PutUpdateJobStatusToCancelledRequest> _logger;
+        private readonly ILoggerWrapper<PutUpdateJobStatusToCancelled> _logger;
 
-        public PutUpdateJobStatusToCancelled(IMediator mediator, ILoggerWrapper<PutUpdateJobStatusToCancelledRequest> logger)
+        public PutUpdateJobStatusToCancelled(IMediator mediator, ILoggerWrapper<PutUpdateJobStatusToCancelled> logger)
         {
             _mediator = mediator;
             _logger = logger;

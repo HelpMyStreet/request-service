@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class GetJobStatusHistory
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetJobStatusHistoryRequest> _logger;
+        private readonly ILoggerWrapper<GetJobStatusHistory> _logger;
 
-        public GetJobStatusHistory(IMediator mediator, ILoggerWrapper<GetJobStatusHistoryRequest> logger)
+        public GetJobStatusHistory(IMediator mediator, ILoggerWrapper<GetJobStatusHistory> logger)
         {
             _mediator = mediator;
             _logger = logger;

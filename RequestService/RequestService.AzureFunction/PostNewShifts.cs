@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class PostNewShifts
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<PostNewShiftsRequest> _logger;
+        private readonly ILoggerWrapper<PostNewShifts> _logger;
 
-        public PostNewShifts(IMediator mediator, ILoggerWrapper<PostNewShiftsRequest> logger)
+        public PostNewShifts(IMediator mediator, ILoggerWrapper<PostNewShifts> logger)
         {
             _mediator = mediator;
             _logger = logger;

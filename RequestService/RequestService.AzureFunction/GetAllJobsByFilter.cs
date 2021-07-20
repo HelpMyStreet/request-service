@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class GetAllJobsByFilter
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetAllJobsByFilterRequest> _logger;
+        private readonly ILoggerWrapper<GetAllJobsByFilter> _logger;
 
-        public GetAllJobsByFilter(IMediator mediator, ILoggerWrapper<GetAllJobsByFilterRequest> logger)
+        public GetAllJobsByFilter(IMediator mediator, ILoggerWrapper<GetAllJobsByFilter> logger)
         {
             _mediator = mediator;
             _logger = logger;

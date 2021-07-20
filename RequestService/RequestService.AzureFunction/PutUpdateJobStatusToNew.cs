@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class PutUpdateJobStatusToNew
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<PutUpdateJobStatusToNewRequest> _logger;
+        private readonly ILoggerWrapper<PutUpdateJobStatusToNew> _logger;
 
-        public PutUpdateJobStatusToNew(IMediator mediator, ILoggerWrapper<PutUpdateJobStatusToNewRequest> logger)
+        public PutUpdateJobStatusToNew(IMediator mediator, ILoggerWrapper<PutUpdateJobStatusToNew> logger)
         {
             _mediator = mediator;
             _logger = logger;
