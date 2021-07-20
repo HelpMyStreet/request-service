@@ -49,8 +49,6 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
         Task<int> NewHelpRequestAsync(PostNewRequestForHelpRequest postNewRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, bool multiVolunteer, bool repeat);
-        //Task<List<int>> PostRequestForHelpAsync(PostRequestForHelpRequest postRequestForHelpRequest, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, bool multiVolunteer, bool repeat);
-
         Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
         List<ReportItem> GetDailyReport();

@@ -56,9 +56,6 @@ namespace RequestService.Handlers.BusinessLogic
         public bool AddRepeats(NewJobsRequest request, DateTime startDateTime)
         {
             List<Job> repeatJobs = new List<Job>();
-
-            //DateTime now = DateTime.UtcNow;
-
             foreach (Job j in request.Jobs)
             {
                 for (int loopCount = 1; loopCount < j.NumberOfRepeats; loopCount++)
@@ -117,10 +114,10 @@ namespace RequestService.Handlers.BusinessLogic
             }
         }
 
-        public bool AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
+        public void AddShiftRepeats(List<HelpRequestDetail> helpRequestDetails, int repeatCount)
         {
             HelpRequestDetail first = helpRequestDetails.First();
-            bool returnValue = AddMultiVolunteers(first.NewJobsRequest);
+            AddMultiVolunteers(first.NewJobsRequest);
 
             DateTime startDateTime = DateTime.UtcNow;
 
@@ -194,9 +191,7 @@ namespace RequestService.Handlers.BusinessLogic
                 }
                 helpRequestDetail.NewJobsRequest.Jobs = repeatJobs;
                 helpRequestDetails.Add(helpRequestDetail);
-            }    
-
-            return returnValue;
+            }
         }
     }
 }

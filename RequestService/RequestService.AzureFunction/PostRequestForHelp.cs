@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class PostRequestForHelp
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<PostRequestForHelpRequest> _logger;
+        private readonly ILoggerWrapper<PostRequestForHelp> _logger;
 
-        public PostRequestForHelp(IMediator mediator, ILoggerWrapper<PostRequestForHelpRequest> logger)
+        public PostRequestForHelp(IMediator mediator, ILoggerWrapper<PostRequestForHelp> logger)
         {
             _mediator = mediator;
             _logger = logger;

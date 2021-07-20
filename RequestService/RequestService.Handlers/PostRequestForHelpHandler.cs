@@ -57,15 +57,15 @@ namespace RequestService.Handlers
             var firstJob = firstHelpRequestDetail.NewJobsRequest.Jobs.First();
             var requestType = firstJob.SupportActivity.RequestType();
 
+            _multiJobs.AddMultiVolunteers(firstHelpRequestDetail.NewJobsRequest);
+
             if (requestType == RequestType.Shift &&
-                firstJob.NumberOfRepeats > 1 &&
                 firstJob.RepeatFrequency != Frequency.Once)
             {
                 _multiJobs.AddShiftRepeats(request.HelpRequestDetails, firstJob.NumberOfRepeats);
             }
             else
             {
-                _multiJobs.AddMultiVolunteers(firstHelpRequestDetail.NewJobsRequest);
                 _multiJobs.AddRepeats(firstHelpRequestDetail.NewJobsRequest, DateTime.UtcNow);
             }
 
@@ -314,15 +314,6 @@ namespace RequestService.Handlers
                 return GetPostRequestForHelpResponse(new List<int> { -1 }, Fulfillable.Rejected_InvalidPostcode);
             }
 
-            bool multiVolunteers = firstHelpRequestDetail.MultiVolunteer;
-            bool repeat = firstHelpRequestDetail.Repeat;
-
-            HandleASAP(request);
-            AddMultiAndRepeats(request);
-           
-
-            var json = JsonConvert.SerializeObject(request);
-
             var requestId = await _repository.GetRequestIDFromGuid(firstHelpRequestDetail.HelpRequest.Guid);
 
             if (requestId > 0)
@@ -339,11 +330,16 @@ namespace RequestService.Handlers
 
             var failedChecks = await FailedChecks(formVariant.AccessRestrictedByRole, firstHelpRequestDetail.HelpRequest, cancellationToken);
 
-            if(failedChecks)
+            if (failedChecks)
             {
                 return GetPostRequestForHelpResponse(new List<int> { -1 }, Fulfillable.Rejected_Unauthorised);
             }
 
+            bool multiVolunteers = firstHelpRequestDetail.MultiVolunteer;
+            bool repeat = firstHelpRequestDetail.Repeat;
+
+            HandleASAP(request);
+            AddMultiAndRepeats(request);
             CopyRequestorAsRecipient(firstHelpRequestDetail.HelpRequest, formVariant.RequestorDefinedByGroup, formVariant.RequestorPersonalDetails);
 
             // Currently indicates standard "passed to volunteers" result
