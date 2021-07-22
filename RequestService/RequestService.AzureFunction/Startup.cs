@@ -90,12 +90,12 @@ namespace RequestService.AzureFunction
             builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
             builder.Services.AddSingleton<IGroupService, GroupService>();
 
-            builder.Services.AddSingleton<IRepository, Repository>();
+            builder.Services.AddTransient<IRepository, Repository>();
             builder.Services.AddTransient<IDistanceCalculator, DistanceCalculator>();            
-            builder.Services.AddSingleton<IJobService, JobService>();
-            builder.Services.AddSingleton<IJobFilteringService, JobFilteringService>();
-            builder.Services.AddSingleton<IArchiveService, ArchiveService>();
-            builder.Services.AddSingleton<IManageRequestsService, ManageRequestsService>();
+            builder.Services.AddTransient<IJobService, JobService>();
+            builder.Services.AddTransient<IJobFilteringService, JobFilteringService>();
+            builder.Services.AddTransient<IArchiveService, ArchiveService>();
+            builder.Services.AddTransient<IManageRequestsService, ManageRequestsService>();
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));
