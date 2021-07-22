@@ -16,6 +16,8 @@ namespace RequestService.Core.Services
 
         Task<List<JobDTO>> AttachedDistanceToAllJobs(string volunteerPostCode, List<JobDTO> allJobs, CancellationToken cancellationToken);
 
+        Task AttachedDistanceToAllRequests(string volunteerPostCode, List<RequestSummary> allRequests, CancellationToken cancellationToken);
+
         Task<bool> HasPermissionToChangeStatusAsync(int jobID, int createdByUserID, bool allowVolunteerUserId, CancellationToken cancellationToken);
         Task<bool> HasPermissionToChangeJobAsync(int jobID, int authorisedByUserID, CancellationToken cancellationToken);
         Task<bool> HasPermissionToChangeRequestAsync(int requestID, int authorisedByUserID, CancellationToken cancellationToken);

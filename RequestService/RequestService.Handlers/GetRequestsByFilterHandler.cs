@@ -11,6 +11,11 @@ using HelpMyStreet.Utils.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using RequestService.Core.Exceptions;
+using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Contracts.AddressService.Request;
+using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Handlers
 {

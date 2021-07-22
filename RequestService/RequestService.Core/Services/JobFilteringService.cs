@@ -110,5 +110,26 @@ namespace RequestService.Core.Services
                 return distanceInMiles ?? int.MaxValue;
             }
         }
+
+        public async Task FilterAllRequests(List<RequestSummary> requests, string postcode, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles, CancellationToken cancellationToken)
+        {
+            //if postcode has been pased calculate distance between volunteer postcode and jobs
+            if (!string.IsNullOrEmpty(postcode))
+            {
+                await _jobService.AttachedDistanceToAllRequests(postcode, requests, cancellationToken);
+
+                foreach(RequestSummary rs in requests.ToList())
+                {
+                    int jobsExceedingDistance = rs.JobSummaries.Count(w => rs.DistanceInMiles > GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles));
+                    int shiftsExceedingDistance = rs.ShiftJobs.Count(w => rs.DistanceInMiles > GetSupportDistanceForActivity(w.SupportActivity, distanceInMiles, activitySpecificSupportDistancesInMiles));
+
+                    if (jobsExceedingDistance == rs.JobSummaries.Count && shiftsExceedingDistance == rs.ShiftJobs.Count)
+                    {
+                        //Either all jobs or shifts exceed the distance for given requests.Therefore remove request from list
+                        requests.Remove(rs);
+                    }
+                }
+            }
+        }
     }
 }

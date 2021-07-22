@@ -13,6 +13,7 @@ using RequestService.Core.Config;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
+using RequestService.Handlers.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,6 +28,7 @@ namespace RequestService.UnitTests
         private Mock<ICommunicationService> _communicationService;
         private Mock<IAddressService> _adddressService;
         private Mock<IGroupService> _groupService;
+        private Mock<IMultiJobs> _multiJobs;
         private PostNewRequestForHelpHandler _classUnderTest;
         private Mock<IOptionsSnapshot<ApplicationConfig>> _applicationConfig;
         private int requestId;
@@ -50,7 +52,8 @@ namespace RequestService.UnitTests
             SetupApplicationConfig();
             SetupUserService();
             SetupGroupService();
-            _classUnderTest = new PostNewRequestForHelpHandler(_repository.Object, _userService.Object, _adddressService.Object, _communicationService.Object, _groupService.Object, _applicationConfig.Object);
+            SetupMultiObjects();
+            _classUnderTest = new PostNewRequestForHelpHandler(_repository.Object, _userService.Object, _adddressService.Object, _communicationService.Object, _groupService.Object, _applicationConfig.Object, _multiJobs.Object);
         }
         private void SetupCommunicationService()
         {
@@ -65,7 +68,10 @@ namespace RequestService.UnitTests
                 It.IsAny<PostNewRequestForHelpRequest>(),
                 It.IsAny<Fulfillable>(),
                 It.IsAny<bool>(),
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                It.IsAny<bool>(),
+                It.IsAny<bool>()
+                ))
                 .ReturnsAsync(() => requestId);
             _repository.Setup(x => x.UpdateCommunicationSentAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
 
@@ -142,6 +148,17 @@ namespace RequestService.UnitTests
             _groupService.Setup(x => x.GetGroup(It.IsAny<int>()))
                 .ReturnsAsync(() => _getGroupResponse);
                 
+        }
+
+        private void SetupMultiObjects()
+        {
+            _multiJobs = new Mock<IMultiJobs>();
+
+            _multiJobs.Setup(x => x.AddMultiVolunteers(It.IsAny<NewJobsRequest>()));
+            //.Returns((PostNewRequestForHelpRequest r) => r);
+
+            _multiJobs.Setup(x => x.AddRepeats(It.IsAny<NewJobsRequest>()));
+                //.Returns((PostNewRequestForHelpRequest r) => r);
         }
 
         [Test]

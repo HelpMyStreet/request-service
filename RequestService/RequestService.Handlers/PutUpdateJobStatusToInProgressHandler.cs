@@ -44,7 +44,8 @@ namespace RequestService.Handlers
                 return response;
             }
 
-            if (_repository.JobIsInProgressWithSameVolunteerUserId(request.JobID, request.VolunteerUserID))
+            if (_repository.JobIsInProgressWithSameVolunteerUserId(request.JobID, request.VolunteerUserID) || 
+                (_repository.VolunteerHasAlreadyJobForThisRequestWithThisStatus(request.JobID, request.VolunteerUserID, JobStatuses.InProgress)))
             {
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
                 return response;
@@ -103,7 +104,7 @@ namespace RequestService.Handlers
                 response.Outcome = UpdateJobStatusOutcome.BadRequest;
                 return response;
             }
-            
+
             var result = await _repository.UpdateJobStatusInProgressAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
             response.Outcome = result;
 

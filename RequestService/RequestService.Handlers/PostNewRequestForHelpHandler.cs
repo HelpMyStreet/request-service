@@ -16,6 +16,8 @@ using Newtonsoft.Json;
 using System;
 using HelpMyStreet.Utils.Models;
 using RequestService.Core.Exceptions;
+using HelpMyStreet.Utils.Extensions;
+using RequestService.Handlers.BusinessLogic;
 
 namespace RequestService.Handlers
 {
@@ -27,13 +29,15 @@ namespace RequestService.Handlers
         private readonly IAddressService _addressService;
         private readonly IGroupService _groupService;
         private readonly IOptionsSnapshot<ApplicationConfig> _applicationConfig;
+        private readonly IMultiJobs _multiJobs;
         public PostNewRequestForHelpHandler(
             IRepository repository,
             IUserService userService,
             IAddressService addressService,
             ICommunicationService communicationService,
             IGroupService groupService,
-            IOptionsSnapshot<ApplicationConfig> applicationConfig)
+            IOptionsSnapshot<ApplicationConfig> applicationConfig,
+            IMultiJobs multiJobs)
         {
             _repository = repository;
             _userService = userService;
@@ -41,6 +45,7 @@ namespace RequestService.Handlers
             _communicationService = communicationService;
             _groupService = groupService;
             _applicationConfig = applicationConfig;
+            _multiJobs = multiJobs;
         }
 
         private void CopyRequestorAsRecipient(PostNewRequestForHelpRequest request)
@@ -72,40 +77,31 @@ namespace RequestService.Handlers
                 };
             }
 
-            List<Job> duplicatedJobs = new List<Job>();
-
-            foreach (Job j in request.NewJobsRequest.Jobs)
+            foreach (Job j in request.NewJobsRequest.Jobs.Where(x=> x.DueDateType == DueDateType.ASAP))
             {
-                //check if number of volunteer question has been asked
-                var numberOfSlotsQuestion = j.Questions?.Where(x => x.Id == (int)Questions.NumberOfSlots).FirstOrDefault();
-
-                if (numberOfSlotsQuestion != null)
+                DateTime now = DateTime.UtcNow;
+                j.NotBeforeDate = now;
+                switch (j.RepeatFrequency)
                 {
-                    int numberOfSlots = Convert.ToInt32(numberOfSlotsQuestion.Answer);
-                    if (numberOfSlots > 1)
-                    {
-                        for (int i = 0; i < (numberOfSlots - 1); i++)
-                        {
-                            duplicatedJobs.Add(new Job()
-                            {
-                                HealthCritical = j.HealthCritical,
-                                DueDateType = j.DueDateType,
-                                SupportActivity = j.SupportActivity,
-                                StartDate = j.StartDate,
-                                EndDate = j.EndDate,
-                                Questions = j.Questions,
-                                DueDays = j.DueDays,
-                            });
-                        }
-                    }
+                    case Frequency.Once:
+                        j.StartDate = now.AddDays(3);
+                        break;
+                    case Frequency.Daily:
+                        j.StartDate = now;
+                        break;
+                    case Frequency.Weekly:
+                    case Frequency.Fortnightly:
+                    case Frequency.EveryFourWeeks:
+                        j.StartDate = now.AddDays(3);
+                        break;
+                    default:
+                        throw new Exception($"Invalid Frequency for DueDate.ASAP {j.RepeatFrequency}");
                 }
-            }
+            };
 
-            if(duplicatedJobs.Count>0)
-            {
-                request.NewJobsRequest.Jobs.AddRange(duplicatedJobs);
-            }
 
+            bool multiVolunteers = _multiJobs.AddMultiVolunteers(request.NewJobsRequest);
+            bool repeat = _multiJobs.AddRepeats(request.NewJobsRequest);
 
             foreach (Job j in request.NewJobsRequest.Jobs)
             {
@@ -228,7 +224,7 @@ namespace RequestService.Handlers
                     };
                 }
 
-                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails);
+                requestId = await _repository.NewHelpRequestAsync(request, response.Fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails, multiVolunteers, repeat);
                 response.RequestID = requestId;
 
                 if (response.RequestID == 0)
