@@ -27,6 +27,7 @@ using HelpMyStreet.Cache;
 using HelpMyStreet.Contracts.GroupService.Response;
 using HelpMyStreet.Utils.CoordinatedResetCache;
 using Microsoft.Extensions.Internal;
+using HelpMyStreet.Utils.Models;
 
 [assembly: FunctionsStartup(typeof(RequestService.AzureFunction.Startup))]
 namespace RequestService.AzureFunction
@@ -104,7 +105,7 @@ namespace RequestService.AzureFunction
             builder.Services.AddTransient<ISystemClock, MockableDateTime>();
             builder.Services.AddSingleton<ICoordinatedResetCache, CoordinatedResetCache>();
             builder.Services.AddMemCache();
-            builder.Services.AddSingleton(x => x.GetService<IMemDistCacheFactory<double?>>().GetCache(new TimeSpan(30, 0, 0, 0), ResetTimeFactory.OnMidday));
+            builder.Services.AddSingleton(x => x.GetService<IMemDistCacheFactory<List<GroupSupportActivityRadius>>>().GetCache(new TimeSpan(30, 0, 0, 0), ResetTimeFactory.OnMidday));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     ConfigureDbContextOptionsBuilder(options, connectionStrings.RequestService),

@@ -1,6 +1,8 @@
 ﻿using HelpMyStreet.Contracts.GroupService.Request;
 using HelpMyStreet.Contracts.GroupService.Response;
 using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Utils.Models;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +23,8 @@ namespace RequestService.Core.Services
         Task<GetNewShiftActionsResponse> GetNewShiftActions(GetNewShiftActionsRequest request, CancellationToken cancellationToken);
         Task<GetGroupResponse> GetGroup(int groupID);
         Task<GetChildGroupsResponse> GetChildGroups(int groupID);
-        Task<double?> GetGroupSupportActivityRadius(int groupID, SupportActivities supportActivity, CancellationToken cancellationToken);
+        Task<double?> GetGroupSupportActivityRadius(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken);
+        Task<List<GroupSupportActivityRadius>> GetAllGroupSupportActivityRadii(CancellationToken cancellationToken);
     }
 
 }

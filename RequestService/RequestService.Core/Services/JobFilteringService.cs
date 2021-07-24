@@ -74,29 +74,22 @@ namespace RequestService.Core.Services
             if (applyDistanceFilter)
             {
                 // First, ensure cache is fresh in an orderly fashion
-                var groups = jobs.Select(j => j.ReferringGroupID).Distinct();
+                var group = (Groups) jobs.First().ReferringGroupID;
+                var activity = jobs.First().SupportActivity;
 
-                foreach (int groupId in groups)
-                {
-                    var activities = jobs.Where(j => j.ReferringGroupID.Equals(groupId)).Select(j => j.SupportActivity).Distinct();
-
-                    foreach (SupportActivities activity in activities)
-                    {
-                        _ = GetSupportDistanceForActivity(groupId, activity, cancellationToken);
-                    }
-                }
+                _ = GetSupportDistanceForActivity(group, activity, cancellationToken);
 
                 // Then hammer the cache, not the Group Service
-                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity, cancellationToken))
+                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity((Groups) w.ReferringGroupID, w.SupportActivity, cancellationToken))
                     .ToList();
             }
 
             return jobs;
         }
 
-        private double? GetSupportDistanceForActivity(int groupId, SupportActivities supportActivity, CancellationToken cancellationToken)
+        private double? GetSupportDistanceForActivity(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken)
         {
-            return _groupService.GetGroupSupportActivityRadius(groupId, supportActivity, cancellationToken).Result;
+            return _groupService.GetGroupSupportActivityRadius(group, supportActivity, cancellationToken).Result;
         }
 
         private double GetSupportDistanceForActivity(SupportActivities supportActivity, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles)
