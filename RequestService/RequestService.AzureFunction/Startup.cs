@@ -26,6 +26,8 @@ using RequestService.Handlers.BusinessLogic;
 using HelpMyStreet.Cache.Extensions;
 using HelpMyStreet.Cache;
 using HelpMyStreet.Contracts.GroupService.Response;
+using HelpMyStreet.Utils.CoordinatedResetCache;
+using Microsoft.Extensions.Internal;
 
 [assembly: FunctionsStartup(typeof(RequestService.AzureFunction.Startup))]
 namespace RequestService.AzureFunction
@@ -83,11 +85,11 @@ namespace RequestService.AzureFunction
 
             builder.Services.AddMediatR(typeof(PostRequestForHelpHandler).Assembly);
             builder.Services.AddAutoMapper(typeof(AddressDetailsProfile).Assembly);
-            builder.Services.AddTransient<IHttpClientWrapper, HttpClientWrapper>();
-            builder.Services.AddTransient<IUserService, Core.Services.UserService>();
-            builder.Services.AddTransient<IAddressService, AddressService>();
-            builder.Services.AddTransient<ICommunicationService, CommunicationService>();
-            builder.Services.AddTransient<IGroupService, GroupService>();
+            builder.Services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
+            builder.Services.AddSingleton<IUserService, Core.Services.UserService>();
+            builder.Services.AddSingleton<IAddressService, AddressService>();
+            builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
+            builder.Services.AddSingleton<IGroupService, GroupService>();
 
             builder.Services.AddTransient<IRepository, Repository>();
             builder.Services.AddTransient<IDistanceCalculator, DistanceCalculator>();            
@@ -100,6 +102,9 @@ namespace RequestService.AzureFunction
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));
 
+            builder.Services.AddSingleton<IPollyMemoryCacheProvider, PollyMemoryCacheProvider>();
+            builder.Services.AddTransient<ISystemClock, MockableDateTime>();
+            builder.Services.AddSingleton<ICoordinatedResetCache, CoordinatedResetCache>();
             builder.Services.AddMemCache();
             builder.Services.AddSingleton(x => x.GetService<IMemDistCacheFactory<double?>>().GetCache(new TimeSpan(30, 0, 0, 0), ResetTimeFactory.OnMidday));
 

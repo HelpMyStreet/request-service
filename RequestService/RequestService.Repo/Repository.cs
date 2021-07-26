@@ -1891,5 +1891,15 @@ namespace RequestService.Repo
 
             return response;
         }
+
+        public async Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs)
+        {
+            Dictionary<int, int> ids = new Dictionary<int, int>();
+            _context.Job.Where(x => JobIDs.Contains(x.Id))
+                .ToList()
+                .ForEach(value => ids.Add(value.Id, value.RequestId));
+
+            return ids;              
+        }
     }
 }
