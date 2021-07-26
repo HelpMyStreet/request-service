@@ -23,7 +23,6 @@ namespace RequestService.Core.Services
         Task<GetNewShiftActionsResponse> GetNewShiftActions(GetNewShiftActionsRequest request, CancellationToken cancellationToken);
         Task<GetGroupResponse> GetGroup(int groupID);
         Task<GetChildGroupsResponse> GetChildGroups(int groupID);
-        Task<double?> GetGroupSupportActivityRadius(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken);
         Task<List<GroupSupportActivityRadius>> GetAllGroupSupportActivityRadii(CancellationToken cancellationToken);
     }
 

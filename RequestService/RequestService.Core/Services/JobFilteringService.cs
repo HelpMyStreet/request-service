@@ -16,10 +16,18 @@ namespace RequestService.Core.Services
         private readonly IJobService _jobService;
         private readonly IGroupService _groupService;
 
+        private static List<GroupSupportActivityRadius> _groupSupportActivityRadii;
+        //private List<GroupSupportActivityRadius> _groupSupportActivityRadii;
+
         public JobFilteringService(IJobService jobService, IGroupService groupService)
         {
             _jobService = jobService;
             _groupService = groupService;
+
+            if(_groupSupportActivityRadii == null)
+            {
+                _groupSupportActivityRadii = _groupService.GetAllGroupSupportActivityRadii(CancellationToken.None).Result;
+            }
         }
 
         public async Task<List<JobHeader>> FilterJobHeaders(
@@ -73,23 +81,27 @@ namespace RequestService.Core.Services
 
             if (applyDistanceFilter)
             {
-                // First, ensure cache is fresh in an orderly fashion
-                var group = (Groups) jobs.First().ReferringGroupID;
-                var activity = jobs.First().SupportActivity;
-
-                _ = GetSupportDistanceForActivity(group, activity, cancellationToken);
-
-                // Then hammer the cache, not the Group Service
-                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity((Groups) w.ReferringGroupID, w.SupportActivity, cancellationToken))
+                jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportRadiusForActivity((Groups) w.ReferringGroupID, w.SupportActivity, cancellationToken))
                     .ToList();
             }
 
             return jobs;
         }
 
-        private double? GetSupportDistanceForActivity(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken)
+        private double? GetSupportRadiusForActivity(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken)
         {
-            return _groupService.GetGroupSupportActivityRadius(group, supportActivity, cancellationToken).Result;
+            double? result = 20d;
+
+            if (_groupSupportActivityRadii != null)
+            {
+                var radius = _groupSupportActivityRadii.FirstOrDefault(x => x.Group == group && x.SupportActivity == supportActivity);
+
+                if (radius != null)
+                {
+                    result = radius.SupportRadiusMiles;
+                }
+            }
+            return result;
         }
 
         private double GetSupportDistanceForActivity(SupportActivities supportActivity, double? distanceInMiles, Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles)

@@ -20,12 +20,9 @@ namespace RequestService.Core.Services
     public class GroupService : IGroupService
     {
         private readonly IHttpClientWrapper _httpClientWrapper;
-        private readonly IMemDistCache<List<GroupSupportActivityRadius>> _memDistCacheRadii;
-        private const string CACHE_KEY_PREFIX = "group-service-";
-        public GroupService(IHttpClientWrapper httpClientWrapper, IMemDistCache<List<GroupSupportActivityRadius>> memDistCacheRadii)
+        public GroupService(IHttpClientWrapper httpClientWrapper)
         {
             _httpClientWrapper = httpClientWrapper;
-            _memDistCacheRadii = memDistCacheRadii;
         }
 
         public async Task<GetGroupActivityCredentialsResponse> GetGroupActivityCredentials(GetGroupActivityCredentialsRequest request)
@@ -247,45 +244,24 @@ namespace RequestService.Core.Services
             }
         }
 
-        public async Task<double?> GetGroupSupportActivityRadius(Groups group, SupportActivities supportActivity, CancellationToken cancellationToken)
-        {
-            var radii = await GetAllGroupSupportActivityRadii(cancellationToken);
-            double? result = 20d;
-
-            if(radii != null)
-            {
-                var radius = radii.FirstOrDefault(x => x.Group == group && x.SupportActivity == supportActivity);
-
-                if(radius != null)
-                {
-                    result = radius.SupportRadiusMiles;
-                }
-            }
-            return result;
-        }
-
         public async Task<List<GroupSupportActivityRadius>> GetAllGroupSupportActivityRadii(CancellationToken cancellationToken)
         {
-            return await _memDistCacheRadii.GetCachedDataAsync(async (cancellationToken) =>
+            string path = $"/api/GetAllGroupSupportActivityRadii";
+            string absolutePath = $"{path}";
+
+            using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, absolutePath, cancellationToken))
             {
-                string path = $"/api/GetAllGroupSupportActivityRadii";
-                string absolutePath = $"{path}";
-
-                using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, absolutePath, cancellationToken))
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var getRadiusResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetAllGroupSupportActivityRadiiResponse, GroupServiceErrorCode>>(jsonResponse);
+                if (getRadiusResponse.HasContent && getRadiusResponse.IsSuccessful)
                 {
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-                    var getRadiusResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetAllGroupSupportActivityRadiiResponse, GroupServiceErrorCode>>(jsonResponse);
-                    if (getRadiusResponse.HasContent && getRadiusResponse.IsSuccessful)
-                    {
-                        return getRadiusResponse.Content.GroupSupportActivityRadii;
-                    }
-                    else
-                    {
-                        throw new HttpRequestException("Unable to fetch radius details");
-                    }
+                    return getRadiusResponse.Content.GroupSupportActivityRadii;
                 }
-            }, $"{CACHE_KEY_PREFIX}", RefreshBehaviour.DontWaitForFreshData, cancellationToken);
-
+                else
+                {
+                    throw new HttpRequestException("Unable to fetch radius details");
+                }
+            };
         }
     }
 }
