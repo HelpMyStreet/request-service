@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestService.Mappers", "R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestService.Repo", "RequestService\RequestService.Repo\RequestService.Repo.csproj", "{19F3F3B3-248A-47B9-86CF-7943F3031C54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestService.UnitTests", "RequestService\RequestService.UnitTests\RequestService.UnitTests.csproj", "{C82D84E0-2ADF-4CCE-9399-6D62EE81A0D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestService.UnitTests", "RequestService\RequestService.UnitTests\RequestService.UnitTests.csproj", "{C82D84E0-2ADF-4CCE-9399-6D62EE81A0D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
