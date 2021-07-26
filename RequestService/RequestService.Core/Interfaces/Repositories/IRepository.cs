@@ -69,5 +69,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<RequestSummary> GetAllRequests(List<int> RequestIDs);
         bool VolunteerHasAlreadyJobForThisRequestWithThisStatus(int jobId, int volunteerUserId, JobStatuses status);
         List<int> GetOverdueRepeatJobs();
+
+        Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs);
     }
 }
