@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class GetJobsAllocatedToUser
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetJobsAllocatedToUserRequest> _logger;
+        private readonly ILoggerWrapper<GetJobsAllocatedToUser> _logger;
 
-        public GetJobsAllocatedToUser(IMediator mediator, ILoggerWrapper<GetJobsAllocatedToUserRequest> logger)
+        public GetJobsAllocatedToUser(IMediator mediator, ILoggerWrapper<GetJobsAllocatedToUser> logger)
         {
             _mediator = mediator;
             _logger = logger;

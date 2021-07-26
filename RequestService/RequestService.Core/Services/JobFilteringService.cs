@@ -73,6 +73,20 @@ namespace RequestService.Core.Services
 
             if (applyDistanceFilter)
             {
+                // First, ensure cache is fresh in an orderly fashion
+                var groups = jobs.Select(j => j.ReferringGroupID).Distinct();
+
+                foreach (int groupId in groups)
+                {
+                    var activities = jobs.Where(j => j.ReferringGroupID.Equals(groupId)).Select(j => j.SupportActivity).Distinct();
+
+                    foreach (SupportActivities activity in activities)
+                    {
+                        _ = GetSupportDistanceForActivity(groupId, activity, cancellationToken);
+                    }
+                }
+
+                // Then hammer the cache, not the Group Service
                 jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity, cancellationToken))
                     .ToList();
             }

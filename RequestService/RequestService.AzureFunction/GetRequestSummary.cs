@@ -19,9 +19,9 @@ namespace RequestService.AzureFunction
     public class GetRequestSummary
     {
         private readonly IMediator _mediator;
-        private readonly ILoggerWrapper<GetRequestSummaryRequest> _logger;
+        private readonly ILoggerWrapper<GetRequestSummary> _logger;
 
-        public GetRequestSummary(IMediator mediator, ILoggerWrapper<GetRequestSummaryRequest> logger)
+        public GetRequestSummary(IMediator mediator, ILoggerWrapper<GetRequestSummary> logger)
         {
             _mediator = mediator;
             _logger = logger;
