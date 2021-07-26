@@ -265,7 +265,7 @@ namespace RequestService.Core.Services
                         throw new HttpRequestException("Unable to fetch radius details");
                     }
                 }
-            }, $"{CACHE_KEY_PREFIX}-group-{groupID}-sa-{(int)supportActivity}", RefreshBehaviour.DontWaitForFreshData, cancellationToken);
+            }, $"{CACHE_KEY_PREFIX}-group-{groupID}-sa-{(int)supportActivity}", RefreshBehaviour.WaitForFreshData, cancellationToken);
         }
     }
 }
