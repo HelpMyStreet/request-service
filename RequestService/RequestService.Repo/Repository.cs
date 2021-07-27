@@ -1807,6 +1807,7 @@ namespace RequestService.Repo
                 RequestId = requestId,
                 JobId = jobId,
                 UserId = userId,
+                RequestEventId = (byte) requestEvent
             });
             var result = await _context.SaveChangesAsync();
 
