@@ -12,7 +12,7 @@ ALTER PROCEDURE [Request].[GetAllJobsByFilter]
 	@UserID int,
 	@SupportActivities varchar(500),
 	@ReferringGroups  varchar(500),
-	@JobStatuses varchar(100),
+	@JobStatuses varchar(500),
 	@Groups varchar(500),
 	@RequestTypes varchar(100)
 )
