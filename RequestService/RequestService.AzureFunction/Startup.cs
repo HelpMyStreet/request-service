@@ -83,7 +83,7 @@ namespace RequestService.AzureFunction
             connectionStringSettings.Bind(connectionStrings);
 
 
-            builder.Services.AddMediatR(typeof(PostNewRequestForHelpHandler).Assembly);
+            builder.Services.AddMediatR(typeof(PostRequestForHelpHandler).Assembly);
             builder.Services.AddAutoMapper(typeof(AddressDetailsProfile).Assembly);
             builder.Services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
             builder.Services.AddSingleton<IUserService, Core.Services.UserService>();
