@@ -113,6 +113,7 @@ namespace RequestService.AzureFunction
                 ServiceLifetime.Transient
             );            
 
+
             // automatically apply EF migrations
             // DbContext is being created manually instead of through DI as it throws an exception and I've not managed to find a way to solve it yet: 
             // 'Unable to resolve service for type 'Microsoft.Azure.WebJobs.Script.IFileLoggingStatusManager' while attempting to activate 'Microsoft.Azure.WebJobs.Script.Diagnostics.HostFileLoggerProvider'.'
