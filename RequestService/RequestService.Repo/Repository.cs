@@ -1884,8 +1884,8 @@ namespace RequestService.Repo
                 .Include(x => x.NewRequest)
                 .Where(x => x.NewRequest.Repeat == true 
                             && x.DueDate< now 
-                            && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen) 
-                            && x.DueDateTypeId!= dueDateTypeASAP )
+                            && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
+                        )
                 .Select(x => x.Id)
                 .ToList();
 
