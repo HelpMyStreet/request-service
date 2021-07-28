@@ -1797,5 +1797,26 @@ namespace RequestService.Repo
 
             return results.Select(x => MapEFRequestToSummary(x)).ToList();
         }
+
+        public async Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent)
+        {
+            bool success = false;
+
+            _context.LogRequestEvent.Add(new LogRequestEvent()
+            {
+                RequestId = requestId,
+                JobId = jobId,
+                UserId = userId,
+                RequestEventId = (byte) requestEvent
+            });
+            var result = await _context.SaveChangesAsync();
+
+            if(result == 1)
+            {
+                success = true;
+            }
+
+            return success;
+        }
     }
 }
