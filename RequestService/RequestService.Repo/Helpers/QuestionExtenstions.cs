@@ -734,6 +734,27 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Other
                     };
                     break;
+                case RequestHelpFormVariant.AgeUKMidMersey_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.WellbeingPackage,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.DogWalking,
+                        SupportActivities.BinDayAssistance,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.InPersonBefriending,
+                        SupportActivities.Covid19Help,
+                        SupportActivities.VolunteerSupport,
+                        SupportActivities.ColdWeatherArmy,
+                        SupportActivities.SkillShare,
+                        SupportActivities.Other
+                    };
+                    break;
                 default:
                     activites = new List<SupportActivities>();
                     break;
