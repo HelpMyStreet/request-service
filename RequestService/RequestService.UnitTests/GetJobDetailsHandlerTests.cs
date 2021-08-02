@@ -1,5 +1,7 @@
 using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
+using HelpMyStreet.Contracts.UserService.Response;
+using HelpMyStreet.Utils.Models;
 using Moq;
 using NUnit.Framework;
 using RequestService.Core.Interfaces.Repositories;
@@ -14,10 +16,12 @@ namespace RequestService.UnitTests
     {
         private Mock<IRepository> _repository;
         private Mock<IJobService> _jobService;
+        private Mock<IUserService> _userService;
 
         private GetJobDetailsHandler _classUnderTest;
         private GetJobDetailsRequest _request;
         private GetJobDetailsResponse _response;
+        private GetUserByIDResponse _user;
 
         private bool _permission;
 
@@ -26,13 +30,24 @@ namespace RequestService.UnitTests
         {
             SetupRepository();
             SetupJobService();
-            _classUnderTest = new GetJobDetailsHandler(_repository.Object,_jobService.Object);
+            SetupUserService();
+            _classUnderTest = new GetJobDetailsHandler(_repository.Object,_jobService.Object, _userService.Object);
             _response = new GetJobDetailsResponse()
             {
                  JobSummary = new HelpMyStreet.Utils.Models.JobSummary()
                  {
                      Details = "DETAILS",
                      JobID = 1,
+                 },
+                 RequestSummary = new RequestSummary()
+                 {
+                     JobSummaries = new System.Collections.Generic.List<JobSummary>()
+                     {
+                         new JobSummary()
+                         {
+                             JobID = 1
+                         }
+                     },
                  }
             };
         }
@@ -50,6 +65,13 @@ namespace RequestService.UnitTests
                 .ReturnsAsync(() => _permission);
         }
 
+        private void SetupUserService()
+        {
+            _userService = new Mock<IUserService>();
+            _userService.Setup(x => x.GetUser(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => _user);
+        }
+
         [Test]
         public async Task WhenPassesInKnownJobID_ReturnsDetails()
         {
@@ -57,6 +79,13 @@ namespace RequestService.UnitTests
             _request = new GetJobDetailsRequest
             {
                 JobID = 1
+            };
+            _user = new GetUserByIDResponse()
+            { 
+                User = new User()
+                {
+                    PostalCode = "PostCode"
+                }
             };
 
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
