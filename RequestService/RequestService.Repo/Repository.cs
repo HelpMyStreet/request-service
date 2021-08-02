@@ -1899,7 +1899,8 @@ namespace RequestService.Repo
                 .ToList()
                 .ForEach(value => ids.Add(value.Id, value.RequestId));
 
-            return ids;              
+            return ids;
+        }
 
         public async Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent)
         {
