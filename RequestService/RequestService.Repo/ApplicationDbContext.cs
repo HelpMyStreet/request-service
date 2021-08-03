@@ -42,6 +42,7 @@ namespace RequestService.Repo
         public virtual DbSet<EnumQuestionTypes> EnumQuestionTypes { get; set; }
         public virtual DbSet<EnumRequestFormStages> EnumRequestFormStages { get; set; }
         public virtual DbSet<EnumQuestions> EnumQuestions { get; set; }
+        public virtual DbSet<EnumRequestorTypes> EnumRequestorTypes { get; set; }
         public virtual DbSet<EnumRequestTypes> EnumRequestTypes { get; set; }
         public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
         public virtual DbSet<EnumRequestEvents> EnumRequestEvents { get; set; }
@@ -104,6 +105,15 @@ namespace RequestService.Repo
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.SetEnumRequestTypeData();
+            });
+
+            modelBuilder.Entity<EnumRequestorTypes>(entity =>
+            {
+                entity.ToTable("RequestorType", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumRequestorTypeData();
             });
 
             modelBuilder.Entity<EnumJobStatuses>(entity =>
