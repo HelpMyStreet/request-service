@@ -40,8 +40,7 @@ BEGIN
 				r.RequestorDefinedByGroup as RequestorDefinedByGroup,
 				s.LocationId as LocationId,
 				s.ShiftLength as ShiftLength,
-				s.StartDate,
-				j.NotBeforeDate
+				s.StartDate
 	from		Request.Job j 
 				inner join Request.Request r on j.RequestId = r.ID
 				left outer join Request.JobAvailableToGroup ja on j.ID = ja.JobID
@@ -92,8 +91,7 @@ BEGIN
 				r.RequestorDefinedByGroup as RequestorDefinedByGroup,
 				s.LocationId as LocationId,
 				s.ShiftLength as ShiftLength,
-				s.StartDate,
-				j.NotBeforeDate
+				s.StartDate
 	from		Request.Job j 
 				inner join Request.Request r on j.RequestId = r.ID
 				left outer join Request.JobAvailableToGroup ja on j.ID = ja.JobID
