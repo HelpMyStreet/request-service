@@ -31,48 +31,14 @@ namespace RequestService.Repo.Migrations
                     { 30, "Weekly" },
                     { 40, "Fortnightly" },
                     { 50, "EveryFourWeeks" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
-                table: "RequestFormVariant",
-                columns: new[] { "ID", "Name" },
-                values: new object[,]
-                {
-                    { 27, "AgeUKMidMersey_Public" },
-                    { 28, "AgeUKMidMersey_RequestSubmitter" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
-                table: "SupportActivity",
-                columns: new[] { "ID", "Name" },
-                values: new object[] { 33, "SkillShare" });
+                });            
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Frequency",
-                schema: "Lookup");
-
-            migrationBuilder.DeleteData(
-                schema: "Lookup",
-                table: "RequestFormVariant",
-                keyColumn: "ID",
-                keyValue: 27);
-
-            migrationBuilder.DeleteData(
-                schema: "Lookup",
-                table: "RequestFormVariant",
-                keyColumn: "ID",
-                keyValue: 28);
-
-            migrationBuilder.DeleteData(
-                schema: "Lookup",
-                table: "SupportActivity",
-                keyColumn: "ID",
-                keyValue: 33);
+                schema: "Lookup");                        
         }
     }
 }
