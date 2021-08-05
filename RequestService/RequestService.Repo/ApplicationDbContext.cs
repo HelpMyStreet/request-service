@@ -42,12 +42,15 @@ namespace RequestService.Repo
         public virtual DbSet<EnumQuestionTypes> EnumQuestionTypes { get; set; }
         public virtual DbSet<EnumRequestFormStages> EnumRequestFormStages { get; set; }
         public virtual DbSet<EnumQuestions> EnumQuestions { get; set; }
+        public virtual DbSet<EnumRequestorTypes> EnumRequestorTypes { get; set; }
         public virtual DbSet<EnumRequestTypes> EnumRequestTypes { get; set; }
         public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
+        public virtual DbSet<EnumRequestEvents> EnumRequestEvents { get; set; }
         public virtual DbSet<EnumFrequency> EnumFrequency { get; set; }
         public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<QueryJobHeader> JobHeader { get; set; }
         public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
+        public virtual DbSet<LogRequestEvent> LogRequestEvent { get; set; }
         public virtual DbSet<RequestSubmission> RequestSubmission { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -115,6 +118,15 @@ namespace RequestService.Repo
                 entity.SetEnumRequestTypeData();
             });
 
+            modelBuilder.Entity<EnumRequestorTypes>(entity =>
+            {
+                entity.ToTable("RequestorType", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumRequestorTypeData();
+            });
+
             modelBuilder.Entity<EnumJobStatuses>(entity =>
             {
                 entity.ToTable("JobStatus", "Lookup");
@@ -158,6 +170,15 @@ namespace RequestService.Repo
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.SetEnumQuestionsData();
+            });
+
+            modelBuilder.Entity<EnumRequestEvents>(entity =>
+            {
+                entity.ToTable("RequestEvent", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumRequestEventsData();
             });
 
 
@@ -450,6 +471,23 @@ namespace RequestService.Repo
                     .HasConstraintName("FK_JobAvailableToGroup_JobID");
             });
 
+            modelBuilder.Entity<LogRequestEvent>(entity =>
+            {
+                entity.HasKey(e => new { e.RequestId, e.RequestEventId, e.DateRequested });
+
+                entity.ToTable("LogRequestEvent", "Request");
+
+                entity.Property(e => e.DateRequested)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.Request)
+                    .WithMany(p => p.LogRequestEvent)
+                    .HasForeignKey(d => d.RequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LogRequestEvent_RequestID");
+            });
+
             modelBuilder.Entity<RequestSubmission>(entity =>
             {
                 entity.HasKey(e => e.RequestId);
@@ -472,6 +510,8 @@ namespace RequestService.Repo
             modelBuilder.SetupPostcodeCoordinateTables();
             modelBuilder.SetupPostcodeCoordinateDefaultIndexes();
         }
+
+
       
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210728132557_MerseyConfig")]
+    partial class MerseyConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8789,49 +8791,6 @@ namespace RequestService.Repo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumFrequency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Frequency","Lookup");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 10,
-                            Name = "Once"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Daily"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Name = "Weekly"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Name = "Fortnightly"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            Name = "EveryFourWeeks"
-                        });
-                });
-
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumJobStatuses", b =>
                 {
                     b.Property<int>("Id")
@@ -9273,39 +9232,6 @@ namespace RequestService.Repo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumRequestorTypes", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RequestorType","Lookup");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "OnBehalf"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Myself"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Organisation"
-                        });
-                });
-
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumSupportActivities", b =>
                 {
                     b.Property<int>("Id")
@@ -9493,9 +9419,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<byte?>("JobStatusId")
                         .HasColumnName("JobStatusID")
                         .HasColumnType("tinyint");
-
-                    b.Property<DateTime?>("NotBeforeDate")
-                        .HasColumnType("datetime");
 
                     b.Property<string>("Reference")
                         .HasColumnType("nvarchar(max)");
@@ -9913,9 +9836,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<bool>("IsFulfillable")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("MultiVolunteer")
-                        .HasColumnType("bit");
-
                     b.Property<string>("OrganisationName")
                         .HasColumnType("varchar(255)")
                         .HasMaxLength(255)
@@ -9924,9 +9844,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<string>("OtherDetails")
                         .HasColumnType("varchar(max)")
                         .IsUnicode(false);
-
-                    b.Property<Guid?>("ParentGuid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("PersonIdRecipient")
                         .HasColumnName("PersonID_Recipient")
@@ -9947,9 +9864,6 @@ namespace RequestService.Repo.Migrations
 
                     b.Property<int>("ReferringGroupId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Repeat")
-                        .HasColumnType("bit");
 
                     b.Property<byte>("RequestType")
                         .HasColumnType("tinyint");
@@ -10009,24 +9923,6 @@ namespace RequestService.Repo.Migrations
                     b.HasKey("JobId", "DateCreated", "JobStatusId");
 
                     b.ToTable("RequestJobStatus","Request");
-                });
-
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.RequestSubmission", b =>
-                {
-                    b.Property<int>("RequestId")
-                        .HasColumnName("RequestID")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("FreqencyId")
-                        .HasColumnName("FreqencyID")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int?>("NumberOfRepeats")
-                        .HasColumnType("int");
-
-                    b.HasKey("RequestId");
-
-                    b.ToTable("RequestSubmission","Request");
                 });
 
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.Shift", b =>
@@ -10139,15 +10035,6 @@ namespace RequestService.Repo.Migrations
                         .WithMany("RequestJobStatus")
                         .HasForeignKey("JobId")
                         .HasConstraintName("FK_Job_JobID")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.RequestSubmission", b =>
-                {
-                    b.HasOne("RequestService.Repo.EntityFramework.Entities.Request", "Request")
-                        .WithOne("RequestSubmission")
-                        .HasForeignKey("RequestService.Repo.EntityFramework.Entities.RequestSubmission", "RequestId")
-                        .HasConstraintName("FK_RequestSubmission_RequestID")
                         .IsRequired();
                 });
 
