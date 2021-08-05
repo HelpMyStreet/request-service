@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210805101951_AddRequestSubmission")]
+    partial class AddRequestSubmission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8041,49 +8043,6 @@ namespace RequestService.Repo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumFrequency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Frequency","Lookup");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 10,
-                            Name = "Once"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Daily"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Name = "Weekly"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Name = "Fortnightly"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            Name = "EveryFourWeeks"
-                        });
-                });
-
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumJobStatuses", b =>
                 {
                     b.Property<int>("Id")
@@ -8461,16 +8420,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 26,
                             Name = "ApexBankStaff_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Name = "AgeUKMidMersey_Public"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Name = "AgeUKMidMersey_RequestSubmitter"
                         });
                 });
 
@@ -8657,11 +8606,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 32,
                             Name = "BankStaffVaccinator"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Name = "SkillShare"
                         });
                 });
 

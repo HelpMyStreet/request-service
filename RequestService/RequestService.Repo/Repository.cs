@@ -214,14 +214,25 @@ namespace RequestService.Repo
                         Archive = false,
                         SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
                         MultiVolunteer = helpRequestDetail.VolunteerCount>1,
-                        Repeat = helpRequestDetail.Repeat
+                        Repeat = helpRequestDetail.Repeat,
+                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid
                     };
+
+                    var firstJob = helpRequestDetail.NewJobsRequest.Jobs.First();
+
+                    if (!helpRequestDetail.HelpRequest.ParentGuid.HasValue)
+                    {
+                        _context.RequestSubmission.Add(new RequestSubmission()
+                        {
+                            Request = newRequest,
+                            NumberOfRepeats = firstJob.NumberOfRepeats > 1 ? firstJob.NumberOfRepeats : (int?) null,
+                            FreqencyId = (byte)firstJob.RepeatFrequency
+                        });
+                    }
 
                     if (requestType == RequestType.Shift)
                     {
-                        HelpMyStreet.Utils.Models.Job shiftJob = helpRequestDetail.NewJobsRequest.Jobs.First();
-
-                        var locationQuestion = shiftJob.Questions.Where(x => x.Id == (int)Questions.Location).First();
+                        var locationQuestion = firstJob.Questions.Where(x => x.Id == (int)Questions.Location).First();
 
                         if (locationQuestion == null)
                         {
@@ -233,8 +244,8 @@ namespace RequestService.Repo
                         _context.Shift.Add(new EntityFramework.Entities.Shift()
                         {
                             Request = newRequest,
-                            StartDate = shiftJob.StartDate.Value,
-                            ShiftLength = (int)(shiftJob.EndDate.Value - shiftJob.StartDate.Value).TotalMinutes,
+                            StartDate = firstJob.StartDate.Value,
+                            ShiftLength = (int)(firstJob.EndDate.Value - firstJob.StartDate.Value).TotalMinutes,
                             LocationId = locationId
                         });
                     }
