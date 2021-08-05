@@ -126,7 +126,8 @@ namespace RequestService.Handlers.BusinessLogic
                         Source = first.HelpRequest.Source,
                         SpecialCommunicationNeeds = first.HelpRequest.SpecialCommunicationNeeds,
                         VolunteerUserId = first.HelpRequest.VolunteerUserId,
-                        Guid = Guid.NewGuid()
+                        Guid = Guid.NewGuid(),
+                        ParentGuid = first.HelpRequest.Guid
                     },
                     NewJobsRequest = new NewJobsRequest()
                 };
