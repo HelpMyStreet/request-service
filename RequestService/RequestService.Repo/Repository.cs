@@ -1887,14 +1887,13 @@ namespace RequestService.Repo
             List<int> response = new List<int>();
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
-            byte dueDateTypeASAP = (byte)DueDateType.ASAP;
 
-            DateTime now = DateTime.UtcNow;
+            DateTime today = DateTime.UtcNow.Date;
 
             response = _context.Job
                 .Include(x => x.NewRequest)
                 .Where(x => x.NewRequest.Repeat == true 
-                            && x.DueDate< now 
+                            && x.DueDate.Date < today 
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
                 .Select(x => x.Id)
