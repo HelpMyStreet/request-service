@@ -548,6 +548,24 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobStatusOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            var job = _context.JobQuestions.Where(w => w.JobId == jobID && w.QuestionId == questionId).FirstOrDefault();
+
+            if (job != null)
+            {
+                job.Answer = answer;
+                int result = await _context.SaveChangesAsync(cancellationToken);
+
+                if (result == 1)
+                {
+                    response = UpdateJobStatusOutcome.Success;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
