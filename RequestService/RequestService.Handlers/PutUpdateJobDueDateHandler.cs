@@ -34,6 +34,16 @@ namespace RequestService.Handlers
 
             if (hasPermission)
             {
+                var jobDetails = _repository.GetJobDetails(request.JobID.Value);
+
+                if (
+                    (jobDetails == null) || 
+                    (jobDetails.JobSummary.JobStatus == JobStatuses.Done || jobDetails.JobSummary.JobStatus == JobStatuses.Cancelled)
+                    )
+                {
+                    return response;
+                }
+
                 var result = await _repository.UpdateJobDueDateAsync(request.JobID.Value, request.AuthorisedByUserID.Value, request.DueDate, cancellationToken);
                 response.Outcome = result;
 
