@@ -1950,5 +1950,20 @@ namespace RequestService.Repo
 
             return success;
         }
+
+        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int jobId = 0)
+        {
+            _context.UpdateHistory.Add(new UpdateHistory()
+            {
+                RequestId = requestId,
+                JobId = jobId,
+                FieldChanged = fieldChanged,
+                OldValue = oldValue,
+                NewValue = newValue,
+                CreatedByUserId = createdByUserId
+            });
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

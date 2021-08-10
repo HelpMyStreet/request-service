@@ -73,5 +73,7 @@ namespace RequestService.Core.Interfaces.Repositories
         List<int> GetOverdueRepeatJobs();
 
         Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs);
+
+        Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int jobId = 0);
     }
 }
