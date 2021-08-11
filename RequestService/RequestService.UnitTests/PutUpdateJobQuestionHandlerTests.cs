@@ -55,18 +55,18 @@ namespace RequestService.UnitTests
                 .ReturnsAsync(() => _hasPermission);
         }
 
-        [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.Open, 1)]
-        [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.New, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Cancelled, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Accepted, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Done, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.InProgress, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Open, 2)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.New, 2)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, false, JobStatuses.Open, 1)]
-        [TestCase(UpdateJobStatusOutcome.Unauthorized, false, JobStatuses.New, 1)]
+        [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.Open, 1, 1, 1)]
+        [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.New, 1, 1, 1)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Cancelled, 1, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Accepted, 1, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Done, 1, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.InProgress, 1, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Open, 2, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.New, 2, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, false, JobStatuses.Open, 1, 0, 0)]
+        [TestCase(UpdateJobStatusOutcome.Unauthorized, false, JobStatuses.New, 1, 0, 0)]
         [Test]
-        public async Task WhenSuccessfullyChangingJobStatusToDone_ReturnsTrue(UpdateJobStatusOutcome outcome, bool hasPermission, JobStatuses jobStatus, int questionId)
+        public async Task TestUpdateDueDate(UpdateJobStatusOutcome outcome, bool hasPermission, JobStatuses jobStatus, int questionId, int numberOfCallsToGetJobdetails, int numberOfCallsToUpdateQuestion)
         {
             _updateJobStatusOutcome = outcome;
             _hasPermission = hasPermission;
@@ -82,7 +82,7 @@ namespace RequestService.UnitTests
                 JobSummary = new JobSummary()
                 {
                     JobStatus = jobStatus,
-                    Questions = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.Question>()
+                    Questions = new System.Collections.Generic.List<Question>()
                     {
                         new Question()
                         {
@@ -93,19 +93,9 @@ namespace RequestService.UnitTests
             };
   
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
-            _jobService.Verify(x => x.HasPermissionToChangeJobAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);   
-            _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), _hasPermission ? Times.Once() : Times.Never());
-
-            bool shouldCallUpdateJobQuestion = (_hasPermission 
-                &&  (jobStatus == JobStatuses.New || jobStatus == JobStatuses.Open) 
-                && (_getJobDetailsResponse.JobSummary.Questions.Count(x => x.Id == _request.QuestionID) == 1)
-                );
-
-
-            _repository.Verify(x => x.UpdateJobQuestion(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),It.IsAny<CancellationToken>()),
-                shouldCallUpdateJobQuestion ? Times.Once() : Times.Never());
-           
-
+            _jobService.Verify(x => x.HasPermissionToChangeJobAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), Times.Exactly(numberOfCallsToGetJobdetails));
+            _repository.Verify(x => x.UpdateJobQuestion(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(numberOfCallsToUpdateQuestion));
             Assert.AreEqual(outcome, response.Outcome);
         }
     }

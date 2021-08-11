@@ -44,12 +44,22 @@ namespace RequestService.Handlers
                     return response;
                 }
 
+                var oldValue = jobDetails.JobSummary.DueDate;
                 var result = await _repository.UpdateJobDueDateAsync(request.JobID.Value, request.AuthorisedByUserID.Value, request.DueDate, cancellationToken);
                 response.Outcome = result;
 
                 if (result == UpdateJobOutcome.Success)
                 {
                     response.Outcome = UpdateJobOutcome.Success;
+
+                    await _repository.UpdateHistory(
+                        jobDetails.JobSummary.RequestID,
+                        request.AuthorisedByUserID.Value,
+                        "Due Date",
+                        oldValue.ToString(),
+                        request.DueDate.ToString(),
+                        request.JobID.Value);
+
                     await _communicationService.RequestCommunication(
                     new RequestCommunicationRequest()
                     {
