@@ -1951,7 +1951,7 @@ namespace RequestService.Repo
             return success;
         }
 
-        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int jobId = 0)
+        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0)
         {
             _context.UpdateHistory.Add(new UpdateHistory()
             {
@@ -1960,7 +1960,8 @@ namespace RequestService.Repo
                 FieldChanged = fieldChanged,
                 OldValue = oldValue,
                 NewValue = newValue,
-                CreatedByUserId = createdByUserId
+                CreatedByUserId = createdByUserId,
+                QuestionId = questionId
             });
 
             await _context.SaveChangesAsync();

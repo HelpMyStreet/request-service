@@ -74,6 +74,6 @@ namespace RequestService.Core.Interfaces.Repositories
 
         Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs);
 
-        Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int jobId = 0);
+        Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0);
     }
 }

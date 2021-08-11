@@ -44,7 +44,22 @@ namespace RequestService.Handlers
                 {
                     if (jobDetails.JobSummary.Questions.Count(x => x.Id == request.QuestionID) == 1)
                     {
+                        var oldAnswer = jobDetails.JobSummary.Questions.First(x => x.Id == request.QuestionID).Answer;
                         var result = await _repository.UpdateJobQuestion(request.JobID, request.QuestionID, request.Answer, cancellationToken);
+
+                        if(result == UpdateJobStatusOutcome.Success)
+                        {
+                            await _repository.UpdateHistory(
+                                requestId: jobDetails.JobSummary.RequestID,
+                                createdByUserId: request.AuthorisedByUserID,
+                                fieldChanged: ((Questions)request.QuestionID).ToString(),
+                                oldValue: oldAnswer,
+                                newValue: request.Answer,
+                                questionId: request.QuestionID,
+                                jobId: request.JobID
+                                );
+                        }
+
                         response.Outcome = result;
                     }
                 }

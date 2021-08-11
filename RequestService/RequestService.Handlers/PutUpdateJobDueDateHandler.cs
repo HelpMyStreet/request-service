@@ -8,6 +8,7 @@ using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using System.Collections.Generic;
+using System;
 
 namespace RequestService.Handlers
 {
@@ -29,6 +30,11 @@ namespace RequestService.Handlers
             {
                 Outcome = UpdateJobOutcome.Unauthorized
             };
+
+            if (request.DueDate < DateTime.UtcNow)
+            {
+                return response;
+            }
 
             bool hasPermission = await _jobService.HasPermissionToChangeJobAsync(request.JobID.Value, request.AuthorisedByUserID.Value, cancellationToken);
 
@@ -53,12 +59,13 @@ namespace RequestService.Handlers
                     response.Outcome = UpdateJobOutcome.Success;
 
                     await _repository.UpdateHistory(
-                        jobDetails.JobSummary.RequestID,
-                        request.AuthorisedByUserID.Value,
-                        "Due Date",
-                        oldValue.ToString(),
-                        request.DueDate.ToString(),
-                        request.JobID.Value);
+                        requestId: jobDetails.JobSummary.RequestID,
+                        createdByUserId: request.AuthorisedByUserID.Value,
+                        fieldChanged: "Due Date",
+                        oldValue: oldValue.ToString(),
+                        newValue: request.DueDate.ToString(),
+                        questionId: null,
+                        jobId: request.JobID.Value);
 
                     await _communicationService.RequestCommunication(
                     new RequestCommunicationRequest()

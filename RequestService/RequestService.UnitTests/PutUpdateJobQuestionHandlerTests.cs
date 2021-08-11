@@ -46,6 +46,15 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.GetJobDetails(It.IsAny<int>()))
                 .Returns(() => _getJobDetailsResponse);
 
+            _repository.Setup(x => x.UpdateHistory(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int?>(),
+                It.IsAny<int>()
+                ));
         }
 
         private void SetupJobService()
@@ -96,6 +105,8 @@ namespace RequestService.UnitTests
             _jobService.Verify(x => x.HasPermissionToChangeJobAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _repository.Verify(x => x.GetJobDetails(It.IsAny<int>()), Times.Exactly(numberOfCallsToGetJobdetails));
             _repository.Verify(x => x.UpdateJobQuestion(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(numberOfCallsToUpdateQuestion));
+            _repository.Verify(x => x.UpdateHistory(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int>()), Times.Exactly(numberOfCallsToUpdateQuestion));
+            
             Assert.AreEqual(outcome, response.Outcome);
         }
     }
