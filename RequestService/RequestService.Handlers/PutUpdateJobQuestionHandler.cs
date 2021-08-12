@@ -9,6 +9,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using System.Collections.Generic;
 using System.Linq;
+using HelpMyStreet.Utils.Extensions;
 
 namespace RequestService.Handlers
 {
@@ -46,8 +47,7 @@ namespace RequestService.Handlers
                 {
                     if (jobDetails.JobSummary.Questions.Count(x => x.Id == request.QuestionID) == 1)
                     {
-                        var fieldChanged = ((Questions)request.QuestionID).ToString();
-                        var oldAnswer = jobDetails.JobSummary.Questions.First(x => x.Id == request.QuestionID).Answer;
+                        var question = jobDetails.JobSummary.Questions.First(x => x.Id == request.QuestionID);                        
                         var result = await _repository.UpdateJobQuestion(request.JobID, request.QuestionID, request.Answer, cancellationToken);
 
                         if(result == UpdateJobOutcome.Success)
@@ -55,8 +55,8 @@ namespace RequestService.Handlers
                             await _repository.UpdateHistory(
                                 requestId: jobDetails.JobSummary.RequestID,
                                 createdByUserId: request.AuthorisedByUserID,
-                                fieldChanged: ((Questions)request.QuestionID).ToString(),
-                                oldValue: oldAnswer,
+                                fieldChanged: question.FriendlyName(),
+                                oldValue: question.Answer,
                                 newValue: request.Answer,
                                 questionId: request.QuestionID,
                                 jobId: request.JobID
@@ -69,9 +69,9 @@ namespace RequestService.Handlers
                                 JobID = request.JobID,
                                 AdditionalParameters = new Dictionary<string, string>()
                                 {
-                                    { "FieldUpdated",fieldChanged },
-                                    { "OldValue",oldAnswer },
-                                    { "NewValue",request.Answer }
+                                    { "FieldUpdated", question.FriendlyName() },
+                                    { "OldValue", question.Answer },
+                                    { "NewValue", request.Answer }
                                 }
                             },
                             cancellationToken);
