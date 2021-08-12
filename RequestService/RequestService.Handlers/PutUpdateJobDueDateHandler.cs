@@ -74,7 +74,9 @@ namespace RequestService.Handlers
                         JobID = request.JobID,
                         AdditionalParameters = new Dictionary<string, string>()
                         {
-                            { "FieldUpdated","Due Date" }
+                            { "FieldUpdated","Due Date" },
+                            { "OldValue", oldValue.ToString() },
+                            { "NewValue", request.DueDate.ToString() }
                         }
                     },
                     cancellationToken);
