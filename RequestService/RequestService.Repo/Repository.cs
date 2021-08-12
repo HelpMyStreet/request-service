@@ -548,9 +548,9 @@ namespace RequestService.Repo
             return response;
         }
 
-        public async Task<UpdateJobStatusOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
+        public async Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
         {
-            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            UpdateJobOutcome response = UpdateJobOutcome.BadRequest;
             var job = _context.JobQuestions.Where(w => w.JobId == jobID && w.QuestionId == questionId).FirstOrDefault();
 
             if (job != null)
@@ -560,7 +560,7 @@ namespace RequestService.Repo
 
                 if (result == 1)
                 {
-                    response = UpdateJobStatusOutcome.Success;
+                    response = UpdateJobOutcome.Success;
                 }
             }
             return response;
