@@ -42,7 +42,7 @@ namespace RequestService.Handlers
                     return response;
                 }
 
-                if (jobDetails.JobSummary.JobStatus == JobStatuses.New || jobDetails.JobSummary.JobStatus == JobStatuses.Open)
+                if (jobDetails.JobSummary.JobStatus != JobStatuses.Cancelled && jobDetails.JobSummary.JobStatus != JobStatuses.Done)
                 {
                     if (jobDetails.JobSummary.Questions.Count(x => x.Id == request.QuestionID) == 1)
                     {
