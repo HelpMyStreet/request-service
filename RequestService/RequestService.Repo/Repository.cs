@@ -529,20 +529,23 @@ namespace RequestService.Repo
 
             if (job != null)
             {
-                if (job.JobStatusId != acceptedJobStatus)
+                if (((HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId).RequestType() == RequestType.Shift)
                 {
-                    job.JobStatusId = acceptedJobStatus;
-                    job.VolunteerUserId = volunteerUserID; ;
-                    AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
-                    if (result == 2)
+                    if (job.JobStatusId != acceptedJobStatus)
                     {
-                        response = UpdateJobStatusOutcome.Success;
+                        job.JobStatusId = acceptedJobStatus;
+                        job.VolunteerUserId = volunteerUserID; ;
+                        AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
+                        int result = await _context.SaveChangesAsync(cancellationToken);
+                        if (result == 2)
+                        {
+                            response = UpdateJobStatusOutcome.Success;
+                        }
                     }
-                }
-                else
-                {
-                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    else
+                    {
+                        response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    }
                 }
             }
             return response;
