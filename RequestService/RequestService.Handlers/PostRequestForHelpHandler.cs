@@ -116,7 +116,7 @@ namespace RequestService.Handlers
 
                 if (!failedChecks)
                 {
-                    var groupMember = await _groupService.GetGroupMember(new HelpMyStreet.Contracts.GroupService.Request.GetGroupMemberRequest()
+                    var groupMember = await _groupService.GetGroupMember(new GetGroupMemberRequest()
                     {
                         AuthorisingUserId = helpRequest.CreatedByUserId,
                         UserId = helpRequest.CreatedByUserId,
