@@ -104,15 +104,6 @@ namespace RequestService.UnitTests
         {
             _groupService = new Mock<IGroupService>();
 
-            //_formVariantResponse = new GetRequestHelpFormVariantResponse()
-            //{
-            //    AccessRestrictedByRole = false,
-            //    RequestorDefinedByGroup = false,
-            //    RequestHelpFormVariant = RequestHelpFormVariant.Default,
-            //    TargetGroups = TargetGroups.GenericGroup,
-            //    SuppressRecipientPersonalDetails = true
-            //};
-
             _groupService.Setup(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _formVariantResponse);
 
