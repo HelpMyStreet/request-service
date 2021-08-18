@@ -22,6 +22,7 @@ using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using RequestService.Handlers.BusinessLogic;
 using HelpMyStreet.Cache.Extensions;
 using HelpMyStreet.Cache;
 using HelpMyStreet.Contracts.GroupService.Response;
@@ -82,7 +83,7 @@ namespace RequestService.AzureFunction
             connectionStringSettings.Bind(connectionStrings);
 
 
-            builder.Services.AddMediatR(typeof(PostNewRequestForHelpHandler).Assembly);
+            builder.Services.AddMediatR(typeof(PostRequestForHelpHandler).Assembly);
             builder.Services.AddAutoMapper(typeof(AddressDetailsProfile).Assembly);
             builder.Services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
             builder.Services.AddSingleton<IUserService, Core.Services.UserService>();
@@ -96,6 +97,7 @@ namespace RequestService.AzureFunction
             builder.Services.AddTransient<IJobFilteringService, JobFilteringService>();
             builder.Services.AddTransient<IArchiveService, ArchiveService>();
             builder.Services.AddTransient<IManageRequestsService, ManageRequestsService>();
+            builder.Services.AddTransient<IMultiJobs, MultiJobs>();
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILoggerWrapper<>), typeof(LoggerWrapper<>)));

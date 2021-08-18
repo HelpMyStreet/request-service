@@ -34,6 +34,7 @@ namespace RequestService.UnitTests
         private int _referringGroupId;
         private PostAssignRoleResponse _postAssignRoleResponse;
         private bool _isSameAsProposed = false;
+        private bool _alreadyInThisStatus = false;
         private GetGroupMemberResponse _getGroupMemberResponse;
         private GetGroupActivityCredentialsResponse _getGroupActivityCredentialsResponse;
         private GetJobDetailsResponse _getJobDetailsResponse;
@@ -78,6 +79,9 @@ namespace RequestService.UnitTests
 
             _repository.Setup(x => x.GetJobDetails(It.IsAny<int>()))
                 .Returns(() => _getJobDetailsResponse);
+
+            _repository.Setup(x => x.VolunteerHasAlreadyJobForThisRequestWithThisStatus(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatuses>()))
+                .Returns(() => _alreadyInThisStatus);
 
         }
 
@@ -482,6 +486,39 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.AreEqual(UpdateJobStatusOutcome.Success, response.Outcome);
+        }
+
+        [Test]
+        public async Task WhenVolunteerHasAlreadySimilarJobInProgress_ReturnAlreadyInThisStatus()
+        {         
+            _updateJobStatusOutcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
+            _isSameAsProposed = false;
+            _alreadyInThisStatus = true;
+            _request = new PutUpdateJobStatusToInProgressRequest
+            {
+                CreatedByUserID = 1,
+                JobID = 1,
+                VolunteerUserID = 2
+            };
+          
+            _hasPermission = true;
+
+            var response = await _classUnderTest.Handle(_request, CancellationToken.None);
+            _jobService.Verify(x => x.HasPermissionToChangeStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
+            _repository.Verify(x => x.JobIsInProgressWithSameVolunteerUserId(It.IsAny<int>(), It.IsAny<int?>()), Times.Once);
+            _repository.Verify(x => x.VolunteerHasAlreadyJobForThisRequestWithThisStatus(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatuses>()), Times.Once);
+
+
+            _groupService.Verify(x => x.GetUserGroups(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Never);
+            _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Never);
+            _repository.Verify(x => x.GetGroupsForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Never);
+            _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Never);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            Assert.AreEqual(UpdateJobStatusOutcome.AlreadyInThisStatus, response.Outcome);
         }
     }
 }

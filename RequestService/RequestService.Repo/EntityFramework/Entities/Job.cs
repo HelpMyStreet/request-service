@@ -23,6 +23,7 @@ namespace RequestService.Repo.EntityFramework.Entities
         public bool IsHealthCritical { get; set; }
         public string Reference { get; set; }
         public byte DueDateTypeId { get; set; }
+        public DateTime? NotBeforeDate { get; set; }
 
         public virtual Request NewRequest { get; set; }
         public virtual ICollection<JobQuestions> JobQuestions { get; set; }

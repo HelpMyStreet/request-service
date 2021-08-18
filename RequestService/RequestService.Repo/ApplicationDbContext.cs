@@ -46,10 +46,12 @@ namespace RequestService.Repo
         public virtual DbSet<EnumRequestTypes> EnumRequestTypes { get; set; }
         public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
         public virtual DbSet<EnumRequestEvents> EnumRequestEvents { get; set; }
+        public virtual DbSet<EnumFrequency> EnumFrequency { get; set; }
         public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<QueryJobHeader> JobHeader { get; set; }
         public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
         public virtual DbSet<LogRequestEvent> LogRequestEvent { get; set; }
+        public virtual DbSet<RequestSubmission> RequestSubmission { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -96,6 +98,15 @@ namespace RequestService.Repo
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.SetEnumDueDateTypeData();
+            });
+
+            modelBuilder.Entity<EnumFrequency>(entity =>
+            {
+                entity.ToTable("Frequency", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumFrequencyData();
             });
 
             modelBuilder.Entity<EnumRequestTypes>(entity =>
@@ -180,6 +191,8 @@ namespace RequestService.Repo
                 entity.Property(e => e.Details).IsUnicode(false);
 
                 entity.Property(e => e.DueDate).HasColumnType("datetime");
+
+                entity.Property(e => e.NotBeforeDate).HasColumnType("datetime");
 
                 entity.Property(e => e.SupportActivityId).HasColumnName("SupportActivityID");
 
@@ -473,6 +486,25 @@ namespace RequestService.Repo
                     .HasForeignKey(d => d.RequestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LogRequestEvent_RequestID");
+            });
+
+            modelBuilder.Entity<RequestSubmission>(entity =>
+            {
+                entity.HasKey(e => e.RequestId);
+
+                entity.ToTable("RequestSubmission", "Request");
+
+                entity.Property(e => e.RequestId)
+                    .HasColumnName("RequestID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.FreqencyId).HasColumnName("FreqencyID");
+
+                entity.HasOne(d => d.Request)
+                    .WithOne(p => p.RequestSubmission)
+                    .HasForeignKey<RequestSubmission>(d => d.RequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestSubmission_RequestID");
             });
 
             modelBuilder.SetupPostcodeCoordinateTables();
