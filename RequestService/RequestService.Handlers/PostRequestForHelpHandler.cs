@@ -116,7 +116,7 @@ namespace RequestService.Handlers
 
                 if (!failedChecks)
                 {
-                    var groupMember = await _groupService.GetGroupMember(new HelpMyStreet.Contracts.GroupService.Request.GetGroupMemberRequest()
+                    var groupMember = await _groupService.GetGroupMember(new GetGroupMemberRequest()
                     {
                         AuthorisingUserId = helpRequest.CreatedByUserId,
                         UserId = helpRequest.CreatedByUserId,
@@ -145,23 +145,26 @@ namespace RequestService.Handlers
             return failedChecks;
         }
 
-        private void CopyRequestorAsRecipient(HelpRequest request, bool requestorDefinedByGroup, RequestPersonalDetails requestPersonalDetails )
+        private void CopyRequestorAsRecipient(List<HelpRequestDetail> helpRequestDetails, bool requestorDefinedByGroup, RequestPersonalDetails requestPersonalDetails )
         {
-            if (requestorDefinedByGroup && requestPersonalDetails != null)
+            foreach (HelpRequestDetail helpRequestDetail in helpRequestDetails)
             {
-                request.Requestor = requestPersonalDetails;
-            }
-            else
-            {
-                request.Requestor.Address.Postcode = HelpMyStreet.Utils.Utils.PostcodeFormatter.FormatPostcode(request.Requestor.Address.Postcode);
-
-                if (request.RequestorType == RequestorType.Myself)
+                if (requestorDefinedByGroup && requestPersonalDetails != null)
                 {
-                    request.Recipient = request.Requestor;
+                    helpRequestDetail.HelpRequest.Requestor = requestPersonalDetails;
                 }
                 else
                 {
-                    request.Recipient.Address.Postcode = HelpMyStreet.Utils.Utils.PostcodeFormatter.FormatPostcode(request.Recipient.Address.Postcode);
+                    helpRequestDetail.HelpRequest.Requestor.Address.Postcode = HelpMyStreet.Utils.Utils.PostcodeFormatter.FormatPostcode(helpRequestDetail.HelpRequest.Requestor.Address.Postcode);
+
+                    if (helpRequestDetail.HelpRequest.RequestorType == RequestorType.Myself)
+                    {
+                        helpRequestDetail.HelpRequest.Recipient = helpRequestDetail.HelpRequest.Requestor;
+                    }
+                    else
+                    {
+                        helpRequestDetail.HelpRequest.Recipient.Address.Postcode = HelpMyStreet.Utils.Utils.PostcodeFormatter.FormatPostcode(helpRequestDetail.HelpRequest.Recipient.Address.Postcode);
+                    }
                 }
             }
         }
@@ -332,7 +335,7 @@ namespace RequestService.Handlers
 
             HandleASAP(request);
             AddMultiAndRepeats(request);
-            CopyRequestorAsRecipient(firstHelpRequestDetail.HelpRequest, formVariant.RequestorDefinedByGroup, formVariant.RequestorPersonalDetails);
+            CopyRequestorAsRecipient(request.HelpRequestDetails, formVariant.RequestorDefinedByGroup, formVariant.RequestorPersonalDetails);
 
             // Currently indicates standard "passed to volunteers" result
             response.Fulfillable = Fulfillable.Accepted_ManualReferral;

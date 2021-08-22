@@ -529,20 +529,23 @@ namespace RequestService.Repo
 
             if (job != null)
             {
-                if (job.JobStatusId != acceptedJobStatus)
+                if (((HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId).RequestType() == RequestType.Shift)
                 {
-                    job.JobStatusId = acceptedJobStatus;
-                    job.VolunteerUserId = volunteerUserID; ;
-                    AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
-                    int result = await _context.SaveChangesAsync(cancellationToken);
-                    if (result == 2)
+                    if (job.JobStatusId != acceptedJobStatus)
                     {
-                        response = UpdateJobStatusOutcome.Success;
+                        job.JobStatusId = acceptedJobStatus;
+                        job.VolunteerUserId = volunteerUserID; ;
+                        AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
+                        int result = await _context.SaveChangesAsync(cancellationToken);
+                        if (result == 2)
+                        {
+                            response = UpdateJobStatusOutcome.Success;
+                        }
                     }
-                }
-                else
-                {
-                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    else
+                    {
+                        response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    }
                 }
             }
             return response;
@@ -1842,9 +1845,12 @@ namespace RequestService.Repo
             var allRequests = _context.Request
                 .Include(i => i.Shift)
                 .Include(i => i.Job)
-                .ThenInclude(i => i.JobAvailableToGroup)
+                    .ThenInclude(i => i.JobAvailableToGroup)
+                .Include(i => i.Job)                
+                    .ThenInclude(i => i.RequestJobStatus)
                 .Include(i => i.Job)
-                .ThenInclude(i => i.RequestJobStatus)
+                    .ThenInclude(i => i.JobQuestions)
+                    .ThenInclude(rq => rq.Question)
                 .Where(w => RequestIDs.Contains(w.Id)).ToList();
 
             return allRequests.Select(x => MapEFRequestToSummary(x)).ToList();
