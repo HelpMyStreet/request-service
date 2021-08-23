@@ -551,6 +551,24 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
+        {
+            UpdateJobOutcome response = UpdateJobOutcome.BadRequest;
+            var job = _context.JobQuestions.Where(w => w.JobId == jobID && w.QuestionId == questionId).FirstOrDefault();
+
+            if (job != null)
+            {
+                job.Answer = answer;
+                int result = await _context.SaveChangesAsync(cancellationToken);
+
+                if (result == 1)
+                {
+                    response = UpdateJobOutcome.Success;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
@@ -1937,6 +1955,22 @@ namespace RequestService.Repo
             }
 
             return success;
+        }
+
+        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0)
+        {
+            _context.UpdateHistory.Add(new UpdateHistory()
+            {
+                RequestId = requestId,
+                JobId = jobId,
+                FieldChanged = fieldChanged,
+                OldValue = oldValue,
+                NewValue = newValue,
+                CreatedByUserId = createdByUserId,
+                QuestionId = questionId
+            });
+
+            await _context.SaveChangesAsync();
         }
     }
 }
