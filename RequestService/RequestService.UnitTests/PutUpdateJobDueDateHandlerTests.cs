@@ -73,7 +73,7 @@ namespace RequestService.UnitTests
             _communicationService.Setup(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         }
 
-        [TestCase(UpdateJobOutcome.Unauthorized, -1, JobStatuses.Open, 0, 0, 0)]        
+        [TestCase(UpdateJobOutcome.BadRequest, -1, JobStatuses.Open, 0, 0, 0)]
         [TestCase(UpdateJobOutcome.Unauthorized, 1, JobStatuses.Cancelled, 1, 1, 0)]
         [TestCase(UpdateJobOutcome.Unauthorized, 1, JobStatuses.Done, 1, 1, 0)]
         [TestCase(UpdateJobOutcome.Success, 1, JobStatuses.Open, 1, 1, 1)]
@@ -89,12 +89,14 @@ namespace RequestService.UnitTests
             int callsToGetJobDetails, 
             int callsToUpdateDueDate)
         {
+            var info = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+
             _updateJobOutcome = outcome;
             _request = new PutUpdateJobDueDateRequest
             { 
                 AuthorisedByUserID = 2,
                 JobID = 1,
-                DueDate = DateTime.Now.AddDays(daysToAdd)
+                DueDate = TimeZoneInfo.ConvertTime(DateTime.Now.AddDays(daysToAdd),info)
 
             };
 
@@ -103,7 +105,7 @@ namespace RequestService.UnitTests
                 JobSummary = new JobSummary()
                 {
                     JobStatus = jobStatus,
-                    DueDate = new DateTime(2021,1,1)
+                    DueDate = TimeZoneInfo.ConvertTime(new DateTime(2021, 1, 1, 9, 0, 0), info)
                 }
             };
 
