@@ -40,6 +40,7 @@ namespace RequestService.Handlers
 
                 if (jobDetails == null)
                 {
+                    response.Outcome = UpdateJobOutcome.BadRequest;
                     return response;
                 }
 
@@ -79,6 +80,10 @@ namespace RequestService.Handlers
 
                         response.Outcome = result;
                     }
+                }
+                else
+                {
+                    response.Outcome = UpdateJobOutcome.BadRequest;
                 }
             }
             
