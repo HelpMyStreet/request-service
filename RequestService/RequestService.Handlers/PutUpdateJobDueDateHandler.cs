@@ -9,6 +9,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using System.Collections.Generic;
 using System;
+using HelpMyStreet.Utils.Extensions;
 
 namespace RequestService.Handlers
 {
@@ -33,6 +34,7 @@ namespace RequestService.Handlers
 
             if (request.DueDate < DateTime.UtcNow)
             {
+                response.Outcome = UpdateJobOutcome.BadRequest;
                 return response;
             }
 
@@ -50,7 +52,7 @@ namespace RequestService.Handlers
                     return response;
                 }
 
-                var oldValue = jobDetails.JobSummary.DueDate;
+                var oldValue = jobDetails.JobSummary.DueDate.ToUTCFromUKTime();
                 var result = await _repository.UpdateJobDueDateAsync(request.JobID.Value, request.AuthorisedByUserID.Value, request.DueDate, cancellationToken);
                 response.Outcome = result;
 
@@ -63,7 +65,7 @@ namespace RequestService.Handlers
                         createdByUserId: request.AuthorisedByUserID.Value,
                         fieldChanged: "Due Date",
                         oldValue: oldValue.ToString(),
-                        newValue: request.DueDate.ToString(),
+                        newValue: request.DueDate.ToUTCFromUKTime().ToString(),
                         questionId: null,
                         jobId: request.JobID.Value);
 

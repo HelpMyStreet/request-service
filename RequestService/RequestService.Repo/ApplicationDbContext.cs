@@ -530,12 +530,10 @@ namespace RequestService.Repo
 
                 entity.Property(e => e.NewValue)
                     .IsRequired()
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.OldValue)
                     .IsRequired()
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Request)
