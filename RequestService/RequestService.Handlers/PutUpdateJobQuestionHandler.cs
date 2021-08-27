@@ -36,11 +36,12 @@ namespace RequestService.Handlers
 
             if (hasPermission)
             {
+                response.Outcome = UpdateJobOutcome.BadRequest;
+
                 var jobDetails = _repository.GetJobDetails(request.JobID);
 
                 if (jobDetails == null)
                 {
-                    response.Outcome = UpdateJobOutcome.BadRequest;
                     return response;
                 }
 
@@ -48,7 +49,13 @@ namespace RequestService.Handlers
                 {
                     if (jobDetails.JobSummary.Questions.Count(x => x.Id == request.QuestionID) == 1)
                     {
-                        var question = jobDetails.JobSummary.Questions.First(x => x.Id == request.QuestionID);                        
+                        var question = jobDetails.JobSummary.Questions.First(x => x.Id == request.QuestionID);       
+                        
+                        if (!question.AnswerMayBeEdited())
+                        {
+                            return response;
+                        }
+
                         var result = await _repository.UpdateJobQuestion(request.JobID, request.QuestionID, request.Answer, cancellationToken);
 
                         if(result == UpdateJobOutcome.Success)
@@ -80,10 +87,6 @@ namespace RequestService.Handlers
 
                         response.Outcome = result;
                     }
-                }
-                else
-                {
-                    response.Outcome = UpdateJobOutcome.BadRequest;
                 }
             }
             
