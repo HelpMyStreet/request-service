@@ -79,6 +79,7 @@ namespace RequestService.UnitTests
         [TestCase(UpdateJobStatusOutcome.BadRequest, true, JobStatuses.Cancelled, 1, 1, 0)]
         [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.Accepted, 1, 1, 1)]
         [TestCase(UpdateJobStatusOutcome.BadRequest, true, JobStatuses.Done, 1, 1, 0)]
+        [TestCase(UpdateJobStatusOutcome.BadRequest, true, JobStatuses.InProgress, Questions.SuppressRecipientPersonalDetails, 1, 0)]
         [TestCase(UpdateJobStatusOutcome.Success, true, JobStatuses.InProgress, 1, 1, 1)]
         [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.Open, 2, 1, 0)]
         [TestCase(UpdateJobStatusOutcome.Unauthorized, true, JobStatuses.New, 2, 1, 0)]
@@ -92,7 +93,7 @@ namespace RequestService.UnitTests
             _request = new PutUpdateJobQuestionRequest
             {
                 JobID = 1,
-                QuestionID = 1,
+                QuestionID = questionId,
                 AuthorisedByUserID = 2,
                 Answer = "Answer"
             };
