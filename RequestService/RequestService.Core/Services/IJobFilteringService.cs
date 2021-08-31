@@ -22,5 +22,12 @@ namespace RequestService.Core.Services
             List<JobDTO> jobs,
             string postcode,
             CancellationToken cancellationToken);
+
+        Task FilterAllRequests(
+            List<RequestSummary> requests,
+            string postcode,
+            double? distanceInMiles,
+            Dictionary<SupportActivities, double?> activitySpecificSupportDistancesInMiles,
+            CancellationToken cancellationToken);
     }
 }

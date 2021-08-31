@@ -24,7 +24,7 @@ namespace RequestService.Handlers
         private readonly IAddressService _addressService;
         private readonly IJobFilteringService _jobFilteringService;
         private readonly IGroupService _groupService;
-        private IEqualityComparer<JobBasic> _jobBasicDedupe_EqualityComparer;
+        private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
 
         public GetAllJobsByFilterHandler(
             IRepository repository,
@@ -36,7 +36,7 @@ namespace RequestService.Handlers
             _addressService = addressService;
             _jobFilteringService = jobFilteringService;
             _groupService = groupService;
-            _jobBasicDedupe_EqualityComparer = new JobBasicDedupe_EqualityComparer();
+            _jobBasicDedupeWithDate_EqualityComparer = new JobBasicDedupeWithDate_EqualityComparer();
         }
 
         private async Task AddPostCodeForLocations(List<JobDTO> allJobs)
@@ -160,7 +160,7 @@ namespace RequestService.Handlers
                 var allocatedJobsToUsers = _repository.GetUserJobs(request.ExcludeSiblingsOfJobsAllocatedToUserID.Value);
                 if (allocatedJobsToUsers != null && allocatedJobsToUsers.Count() > 0)
                 {
-                    allFilteredJobs = allFilteredJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupe_EqualityComparer)).ToList();
+                    allFilteredJobs = allFilteredJobs.Where(s => !allocatedJobsToUsers.Contains(s, _jobBasicDedupeWithDate_EqualityComparer)).ToList();
                 }
             }
 
@@ -186,7 +186,8 @@ namespace RequestService.Handlers
                 DueDateType = job.DueDateType,
                 RequestID = job.RequestID,
                 RequestType = job.RequestType,
-                RequestorDefinedByGroup = job.RequestorDefinedByGroup
+                RequestorDefinedByGroup = job.RequestorDefinedByGroup,
+                NotBeforeDate = job.NotBeforeDate
             }));
 
             List<ShiftJob> shiftJobs = new List<ShiftJob>();

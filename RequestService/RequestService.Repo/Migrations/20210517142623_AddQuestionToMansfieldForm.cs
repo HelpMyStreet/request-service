@@ -8,12 +8,6 @@ namespace RequestService.Repo.Migrations
         {
             migrationBuilder.InsertData(
                 schema: "Lookup",
-                table: "DueDateType",
-                columns: new[] { "ID", "Name" },
-                values: new object[] { 5, "ASAP" });
-
-            migrationBuilder.InsertData(
-                schema: "Lookup",
                 table: "RequestFormVariant",
                 columns: new[] { "ID", "Name" },
                 values: new object[] { 24, "Mansfield_CVS" });
@@ -32,12 +26,6 @@ namespace RequestService.Repo.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                schema: "Lookup",
-                table: "DueDateType",
-                keyColumn: "ID",
-                keyValue: 5);
-
             migrationBuilder.DeleteData(
                 schema: "Lookup",
                 table: "RequestFormVariant",

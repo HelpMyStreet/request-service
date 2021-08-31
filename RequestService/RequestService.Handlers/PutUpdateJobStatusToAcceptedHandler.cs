@@ -2,18 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using RequestService.Core.Interfaces.Repositories;
-using RequestService.Core.Dto;
 using RequestService.Core.Services;
 using System.Collections.Generic;
-using System.Linq;
-using System;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.CommunicationService.Request;
-using Microsoft.Extensions.Options;
-using RequestService.Core.Config;
 using HelpMyStreet.Contracts.RequestService.Response;
-using HelpMyStreet.Utils.Models;
 
 namespace RequestService.Handlers
 {
@@ -46,22 +40,29 @@ namespace RequestService.Handlers
 
                 if (hasPermission)
                 {
-                    var result = await _repository.UpdateJobStatusAcceptedAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
-                    response.Outcome = result;
-
-                    if (result == UpdateJobStatusOutcome.Success)
+                    if (!_repository.VolunteerHasAlreadyJobForThisRequestWithThisStatus(request.JobID, request.VolunteerUserID, JobStatuses.Accepted))
                     {
-                        await _communicationService.RequestCommunication(
-                        new RequestCommunicationRequest()
+                        var result = await _repository.UpdateJobStatusAcceptedAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
+                        response.Outcome = result;
+
+                        if (result == UpdateJobStatusOutcome.Success)
                         {
-                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                            JobID = request.JobID,
-                            AdditionalParameters = new Dictionary<string, string>()
+                            await _communicationService.RequestCommunication(
+                            new RequestCommunicationRequest()
                             {
+                                CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                                JobID = request.JobID,
+                                AdditionalParameters = new Dictionary<string, string>()
+                                {
                                 { "FieldUpdated","Status" }
-                            }                            
-                        },
-                        cancellationToken);
+                                }
+                            },
+                            cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
                     }
                 }
             }

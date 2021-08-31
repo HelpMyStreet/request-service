@@ -32,7 +32,8 @@ namespace RequestService.AzureFunction
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetRequestsByFilterResponse))]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]            
-            [RequestBodyType(typeof(GetRequestsByFilterRequest), "Get Requests By Filter request")] GetRequestsByFilterRequest req,
+            //[RequestBodyType(typeof(GetRequestsByFilterRequest), "Get Requests By Filter request")] 
+            GetRequestsByFilterRequest req,
             CancellationToken cancellationToken)
         {
             try

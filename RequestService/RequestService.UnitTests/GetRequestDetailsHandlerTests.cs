@@ -38,20 +38,22 @@ namespace RequestService.UnitTests
                         ShiftLength = 10
                     },
                     JobSummaries = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.JobSummary>()
-                     {
-                         new HelpMyStreet.Utils.Models.JobSummary()
+                    {
+                        new HelpMyStreet.Utils.Models.JobSummary()
                         {
                             JobID = 1,
                             SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.Shopping,
-                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
-                         },
+                            JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.InProgress,
+                            VolunteerUserID = 2
+                        },
                         new HelpMyStreet.Utils.Models.JobSummary()
                         {
                             JobID = 1,
                             SupportActivity = HelpMyStreet.Utils.Enums.SupportActivities.CollectingPrescriptions,
                             JobStatus = HelpMyStreet.Utils.Enums.JobStatuses.New
                         }
-                     }
+                    },
+                    ShiftJobs = new System.Collections.Generic.List<HelpMyStreet.Utils.Models.ShiftJob>()
                 }
             };
         }
@@ -84,18 +86,31 @@ namespace RequestService.UnitTests
         }
 
         [Test]
+        public async Task WhenPassesInKnownAndAuthorisedByUserIDIsVolunteer_ReturnsDetails()
+        {
+            _permission = false;
+            _request = new GetRequestDetailsRequest
+            {
+                RequestID = 1,
+                AuthorisedByUserID = 2
+            };
+
+            var response = await _classUnderTest.Handle(_request, CancellationToken.None);
+            Assert.AreEqual(_response, response);
+        }
+
+
+        [Test]
         public async Task WhenPassesInKnownRequestIDButUserIsNotAuthorised_ReturnsNull()
         {
             _permission = false;
             _request = new GetRequestDetailsRequest
             {
                 RequestID = 1,
-                AuthorisedByUserID = -1
+                AuthorisedByUserID = 1
             };
-            _response = null;
-
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
-            Assert.AreEqual(_response, response);
+            Assert.AreEqual(null, response);
         }
 
     }

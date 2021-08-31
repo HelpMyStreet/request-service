@@ -22,5 +22,6 @@ namespace RequestService.Repo.EntityFramework.Entities
         public int RequestID { get; set; }
         public byte RequestType { get; set; }
         public bool RequestorDefinedByGroup { get; set; }
+        public DateTime? NotBeforeDate { get; set; }
     }
 }
