@@ -522,8 +522,7 @@ namespace RequestService.Repo
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FieldChanged)
-                    .HasMaxLength(50)
+                entity.Property(e => e.FieldChanged)               
                     .IsUnicode(false);
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
