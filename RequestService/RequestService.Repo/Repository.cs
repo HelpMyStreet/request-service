@@ -1041,13 +1041,27 @@ namespace RequestService.Repo
                 isArchived = efJob.NewRequest.Archive.Value;
             }
 
+            var updateHistory = _context.UpdateHistory
+                .Where(x => x.JobId == jobID)
+                .Select(x => new HelpMyStreet.Contracts.RequestService.Response.UpdateHistory()
+                {
+                    FieldChanged = x.FieldChanged,
+                    CreatedByUserID = x.CreatedByUserId,
+                    OldValue = x.OldValue,
+                    NewValue = x.NewValue,
+                    DateCreated = x.DateCreated,
+                    QuestionID = x.QuestionId
+                })
+                .ToList();
+
             response = new GetJobDetailsResponse()
             {
                 JobSummary = MapEFJobToSummary(efJob),
                 Recipient = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
                 Requestor = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRequesterNavigation),
                 History = GetJobStatusHistory(efJob.RequestJobStatus.ToList()),
-                RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
+                RequestSummary = MapEFRequestToSummary(efJob.NewRequest),
+                UpdateHistory = updateHistory
             };
 
             return response;
@@ -1959,7 +1973,7 @@ namespace RequestService.Repo
 
         public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0)
         {
-            _context.UpdateHistory.Add(new UpdateHistory()
+            _context.UpdateHistory.Add(new Repo.EntityFramework.Entities.UpdateHistory()
             {
                 RequestId = requestId,
                 JobId = jobId,
