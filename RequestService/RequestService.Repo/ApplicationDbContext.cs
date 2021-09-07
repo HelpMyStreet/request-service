@@ -52,6 +52,7 @@ namespace RequestService.Repo
         public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
         public virtual DbSet<LogRequestEvent> LogRequestEvent { get; set; }
         public virtual DbSet<RequestSubmission> RequestSubmission { get; set; }
+        public virtual DbSet<UpdateHistory> UpdateHistory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -505,6 +506,40 @@ namespace RequestService.Repo
                     .HasForeignKey<RequestSubmission>(d => d.RequestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RequestSubmission_RequestID");
+            });
+
+            modelBuilder.Entity<UpdateHistory>(entity =>
+            {
+                entity.HasKey(e => new { e.RequestId, e.JobId, e.DateCreated, e.FieldChanged });
+
+                entity.ToTable("UpdateHistory", "Request");
+
+                entity.Property(e => e.RequestId).HasColumnName("RequestID");
+
+                entity.Property(e => e.JobId).HasColumnName("JobID");
+
+                entity.Property(e => e.DateCreated)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.FieldChanged)               
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
+
+                entity.Property(e => e.NewValue)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OldValue)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Request)
+                    .WithMany(p => p.UpdateHistory)
+                    .HasForeignKey(d => d.RequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UpdateHistory_RequestID");
             });
 
             modelBuilder.SetupPostcodeCoordinateTables();

@@ -551,6 +551,24 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
+        {
+            UpdateJobOutcome response = UpdateJobOutcome.BadRequest;
+            var job = _context.JobQuestions.Where(w => w.JobId == jobID && w.QuestionId == questionId).FirstOrDefault();
+
+            if (job != null)
+            {
+                job.Answer = answer;
+                int result = await _context.SaveChangesAsync(cancellationToken);
+
+                if (result == 1)
+                {
+                    response = UpdateJobOutcome.Success;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
@@ -1023,13 +1041,27 @@ namespace RequestService.Repo
                 isArchived = efJob.NewRequest.Archive.Value;
             }
 
+            var updateHistory = _context.UpdateHistory
+                .Where(x => x.JobId == jobID)
+                .Select(x => new HelpMyStreet.Contracts.RequestService.Response.UpdateHistory()
+                {
+                    FieldChanged = x.FieldChanged,
+                    CreatedByUserID = x.CreatedByUserId,
+                    OldValue = x.OldValue,
+                    NewValue = x.NewValue,
+                    DateCreated = x.DateCreated,
+                    QuestionID = x.QuestionId
+                })
+                .ToList();
+
             response = new GetJobDetailsResponse()
             {
                 JobSummary = MapEFJobToSummary(efJob),
                 Recipient = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
                 Requestor = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRequesterNavigation),
                 History = GetJobStatusHistory(efJob.RequestJobStatus.ToList()),
-                RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
+                RequestSummary = MapEFRequestToSummary(efJob.NewRequest),
+                UpdateHistory = updateHistory
             };
 
             return response;
@@ -1937,6 +1969,22 @@ namespace RequestService.Repo
             }
 
             return success;
+        }
+
+        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0)
+        {
+            _context.UpdateHistory.Add(new Repo.EntityFramework.Entities.UpdateHistory()
+            {
+                RequestId = requestId,
+                JobId = jobId,
+                FieldChanged = fieldChanged,
+                OldValue = oldValue,
+                NewValue = newValue,
+                CreatedByUserId = createdByUserId,
+                QuestionId = questionId
+            });
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210810151427_AddUpdateHistory")]
+    partial class AddUpdateHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -10079,7 +10081,8 @@ namespace RequestService.Repo.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("FieldChanged")
-                        .HasColumnType("varchar(900)")
+                        .HasColumnType("varchar(50)")
+                        .HasMaxLength(50)
                         .IsUnicode(false);
 
                     b.Property<int>("CreatedByUserId")
@@ -10088,16 +10091,15 @@ namespace RequestService.Repo.Migrations
 
                     b.Property<string>("NewValue")
                         .IsRequired()
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("varchar(100)")
+                        .HasMaxLength(100)
                         .IsUnicode(false);
 
                     b.Property<string>("OldValue")
                         .IsRequired()
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("varchar(100)")
+                        .HasMaxLength(100)
                         .IsUnicode(false);
-
-                    b.Property<int?>("QuestionId")
-                        .HasColumnType("int");
 
                     b.HasKey("RequestId", "JobId", "DateCreated", "FieldChanged");
 

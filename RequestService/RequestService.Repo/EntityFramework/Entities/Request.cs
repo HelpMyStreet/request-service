@@ -11,6 +11,7 @@ namespace RequestService.Repo.EntityFramework.Entities
             SupportActivities = new HashSet<SupportActivities>();
             LogRequestEvent = new HashSet<LogRequestEvent>();
             Job = new HashSet<Job>();
+            UpdateHistory = new HashSet<UpdateHistory>();
         }
 
         public int? CreatedByUserId { get; set; }
@@ -48,6 +49,7 @@ namespace RequestService.Repo.EntityFramework.Entities
         public virtual ICollection<LogRequestEvent> LogRequestEvent { get; set; }
         public virtual ICollection<SupportActivities> SupportActivities { get; set; }
         public virtual ICollection<Job> Job { get; set; }
-        
+        public virtual ICollection<UpdateHistory> UpdateHistory { get; set; }
+
     }
 }
