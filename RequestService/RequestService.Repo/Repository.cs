@@ -856,7 +856,7 @@ namespace RequestService.Repo
                 Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                 RecipientOrganisation = job.NewRequest.OrganisationName,
                 DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                DueDays = (dueDate.Date - DateTime.UtcNow.Date).Days,
+                DueDays = (dueDate.ToUKFromUTCTime().Date - DateTime.UtcNow.ToUKFromUTCTime().Date).Days,
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive.Value,
@@ -907,7 +907,7 @@ namespace RequestService.Repo
                             Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                             RecipientOrganisation = job.NewRequest.OrganisationName,
                             DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                            DueDays = (job.DueDate.Date - DateTime.UtcNow.Date).Days,
+                            DueDays = (job.DueDate.ToUKFromUTCTime().Date - DateTime.UtcNow.ToUKFromUTCTime().Date).Days,
                             DateRequested = job.NewRequest.DateRequested,
                             RequestorType = (RequestorType)job.NewRequest.RequestorType,
                             Archive = job.NewRequest.Archive.Value,
@@ -1926,12 +1926,12 @@ namespace RequestService.Repo
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
 
-            DateTime today = DateTime.UtcNow.Date;
-
+            DateTime twelveHoursAgo = DateTime.UtcNow.AddHours(-12);
+            
             response = _context.Job
                 .Include(x => x.NewRequest)
                 .Where(x => x.NewRequest.Repeat == true 
-                            && x.DueDate.Date < today 
+                            && x.DueDate < twelveHoursAgo
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
                 .Select(x => x.Id)
