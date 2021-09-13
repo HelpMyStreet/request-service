@@ -1926,12 +1926,12 @@ namespace RequestService.Repo
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
 
-            DateTime twelveHoursAgo = DateTime.UtcNow.AddHours(-12);
+            DateTime sixHoursAgo = DateTime.UtcNow.AddHours(-6);
             
             response = _context.Job
                 .Include(x => x.NewRequest)
                 .Where(x => x.NewRequest.Repeat == true 
-                            && x.DueDate < twelveHoursAgo
+                            && x.DueDate < sixHoursAgo
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
                 .Select(x => x.Id)
