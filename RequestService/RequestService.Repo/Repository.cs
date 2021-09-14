@@ -120,8 +120,9 @@ namespace RequestService.Repo
         public List<ReportItem> GetDailyReport()
         {
             List<ReportItem> response = new List<ReportItem>();
-            List<DailyReport> result = _context.DailyReport.ToList();
-
+            List<DailyReport> result = _context.DailyReport
+                                .FromSqlRaw("TwoHourlyReport")
+                                .ToList();
             if (result != null)
             {
                 foreach (DailyReport dailyReport in result)
