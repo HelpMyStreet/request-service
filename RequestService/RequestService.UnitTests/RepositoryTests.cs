@@ -108,26 +108,9 @@ namespace RequestService.UnitTests
             return connection;
         }
 
-        private void GetDatabaseContext()
-        {
-            //var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            //    .UseSqlite(CreateInMemoryDatabase())
-            //    .Options;
-
-            //var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            //    .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            //    .Options;
-            //_applicationDbContext = new ApplicationDbContext(options);
-            //_applicationDbContext.Database.Migrate();
-            //_//applicationDbContext.Database.EnsureCreated();
-            //BulkPopulateJobAndRequestData();
-        }
-
         [SetUp]
         public void Setup()
         {
-            //PopulateSampleData();
-            //GetDatabaseContext();
             _classUnderTest = new Repository(_applicationDbContext);
         }
 
