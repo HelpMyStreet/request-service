@@ -19,8 +19,11 @@ namespace RequestService.Repo
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            SqlConnection conn = (SqlConnection)Database.GetDbConnection();
-            conn.AddAzureToken();
+            if (Database.IsSqlServer())
+            {
+                SqlConnection conn = (SqlConnection)Database.GetDbConnection();
+                conn.AddAzureToken();
+            }
         }
 
         public virtual DbSet<Job> Job { get; set; }
@@ -166,7 +169,7 @@ namespace RequestService.Repo
 
             modelBuilder.Entity<EnumQuestions>(entity =>
             {
-                entity.ToTable("Question", "Lookup");
+                entity.ToTable("QuestionL", "Lookup");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
@@ -313,10 +316,9 @@ namespace RequestService.Repo
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.DateRequested)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.Guid).HasDefaultValueSql("(newid())");
+                    .HasColumnType("datetime");
+                    //.HasDefaultValueSql("(getdate())");
+                //entity.Property(e => e.Guid).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.OtherDetails).IsUnicode(false);
                 entity.Property(e => e.OrganisationName).HasMaxLength(255).IsUnicode(false);
@@ -344,15 +346,15 @@ namespace RequestService.Repo
 
             modelBuilder.Entity<RequestJobStatus>(entity =>
             {
-                entity.HasKey(e => new { e.JobId, e.DateCreated, e.JobStatusId });
+            entity.HasKey(e => new { e.JobId, e.DateCreated, e.JobStatusId });
 
-                entity.ToTable("RequestJobStatus", "Request");
+            entity.ToTable("RequestJobStatus", "Request");
 
-                entity.Property(e => e.JobId).HasColumnName("JobID");
+            entity.Property(e => e.JobId).HasColumnName("JobID");
 
-                entity.Property(e => e.DateCreated)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.DateCreated)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.JobStatusId).HasColumnName("JobStatusID");
 
@@ -543,7 +545,7 @@ namespace RequestService.Repo
             });
 
             modelBuilder.SetupPostcodeCoordinateTables();
-            modelBuilder.SetupPostcodeCoordinateDefaultIndexes();
+            //modelBuilder.SetupPostcodeCoordinateDefaultIndexes();
         }
 
 
