@@ -215,7 +215,8 @@ namespace RequestService.Repo
                         SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
                         MultiVolunteer = helpRequestDetail.VolunteerCount>1,
                         Repeat = helpRequestDetail.Repeat,
-                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid
+                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid,
+                        Language = helpRequestDetail.HelpRequest.Language
                     };
 
                     var firstJob = helpRequestDetail.NewJobsRequest.Jobs.First();
