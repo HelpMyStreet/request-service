@@ -19,8 +19,11 @@ namespace RequestService.Repo
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            SqlConnection conn = (SqlConnection)Database.GetDbConnection();
-            conn.AddAzureToken();
+            if (Database.IsSqlServer())
+            {
+                SqlConnection conn = (SqlConnection)Database.GetDbConnection();
+                conn.AddAzureToken();
+            }
         }
 
         public virtual DbSet<Job> Job { get; set; }
@@ -64,8 +67,8 @@ namespace RequestService.Repo
 
             modelBuilder.Entity<QueryAllJobs>().HasNoKey().ToView("view_that_does_not_exist2");
 
-            modelBuilder.Entity<DailyReport>().HasNoKey().ToQuery(() => DailyReport.FromSqlRaw("TwoHourlyReport"));
-
+            modelBuilder.Entity<DailyReport>().HasNoKey().ToView("view_that_does_not_exist3");
+            
             modelBuilder.Entity<Shift>(entity =>
             {
                 entity.HasKey(e => e.RequestId);
