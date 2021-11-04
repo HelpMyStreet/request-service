@@ -4,8 +4,8 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="HelpMyStreet.CoreV3.Contracts" Version="1.1.809" />
-		<PackageReference Include="HelpMyStreet.CoreV3.Utils" Version="1.1.809" />
+		<PackageReference Include="HelpMyStreet.CoreV3.Contracts" Version="1.1.830" />
+		<PackageReference Include="HelpMyStreet.CoreV3.Utils" Version="1.1.830" />
 		<PackageReference Include="MediatR" Version="9.0.0" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
 	</ItemGroup>
