@@ -756,7 +756,6 @@ namespace RequestService.Repo.Helpers
                     };
                     break;
                 case RequestHelpFormVariant.BostonGNS_Public:
-                case RequestHelpFormVariant.BostonGNS_RequestSubmitter:
                     activites = new List<SupportActivities>()
                     {
                         SupportActivities.Shopping,
@@ -766,6 +765,19 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.DogWalking,
                         SupportActivities.DigitalSupport,
                         SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.BostonGNS_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.DogWalking,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.Other,
+                        SupportActivities.VolunteerSupport
                     };
                     break;
                 default:
