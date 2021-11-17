@@ -209,7 +209,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.NewRequest)
                     .WithMany(p => p.Job)
                     .HasForeignKey(d => d.RequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NewRequest_NewRequestID");
             });
 
@@ -336,12 +336,12 @@ namespace RequestService.Repo
 
                 entity.HasOne(d => d.PersonIdRecipientNavigation)
                     .WithMany(p => p.RequestPersonIdRecipientNavigation)
-                    .HasForeignKey(d => d.PersonIdRecipient)
+                    .HasForeignKey(d => d.PersonIdRecipient)                    
                     .HasConstraintName("FK_RequestPersonal_Person_PersonID_Recipient");
 
                 entity.HasOne(d => d.PersonIdRequesterNavigation)
                     .WithMany(p => p.RequestPersonIdRequesterNavigation)
-                    .HasForeignKey(d => d.PersonIdRequester)
+                    .HasForeignKey(d => d.PersonIdRequester)                    
                     .HasConstraintName("FK_RequestPersonal_Person_PersonID_Requester");
 
                 entity.Property(e => e.Language)
@@ -370,7 +370,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.RequestJobStatus)
                     .HasForeignKey(d => d.JobId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Job_JobID");
             });
 
@@ -475,7 +475,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.JobAvailableToGroup)
                     .HasForeignKey(d => d.JobId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_JobAvailableToGroup_JobID");
             });
 

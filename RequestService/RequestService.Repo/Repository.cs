@@ -1988,5 +1988,44 @@ namespace RequestService.Repo
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken)
+        {
+            var request = _context.Request
+                            .Include(i=> i.PersonIdRecipientNavigation)
+                            .Include(i=> i.PersonIdRequesterNavigation)
+                            .Include(i=> i.Shift)
+                            .Include(i => i.RequestSubmission)
+                            .Include(i => i.UpdateHistory)
+                            .Include(i => i.LogRequestEvent)
+                            .Include(i => i.SupportActivities)
+                            .Include(i => i.Job)
+                            .ThenInclude(i=> i.RequestJobStatus)
+                            .Include(i=> i.Job)
+                            .ThenInclude(i=> i.JobQuestions)
+                            .Include(i => i.Job)
+                            .ThenInclude(i => i.JobAvailableToGroup)
+                            .First(x => x.Id == requestId);
+
+            int? personId_recipient = request.PersonIdRecipient;
+            int? personId_requestor = request.PersonIdRequester;
+
+            _context.Remove(request);
+
+            var result =_context.SaveChanges();
+
+            if(result>0)
+            {
+                var persons = _context.Person.Where(x => x.Id == personId_recipient.Value || x.Id == personId_requestor).ToList();
+                _context.RemoveRange(persons);
+                _context.SaveChanges();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }            
+        }
     }
 }

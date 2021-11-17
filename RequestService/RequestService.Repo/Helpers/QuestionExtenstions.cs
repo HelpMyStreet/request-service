@@ -499,14 +499,11 @@ namespace RequestService.Repo.Helpers
             {
                 SupportActivities.CheckingIn,
                 SupportActivities.CollectingPrescriptions,
-                SupportActivities.DogWalking,
                 SupportActivities.Errands,
                 SupportActivities.FaceMask,
                 SupportActivities.HomeworkSupport,
                 SupportActivities.MealPreparation,
-                SupportActivities.MedicalAppointmentTransport,
                 SupportActivities.Other,
-                SupportActivities.PhoneCalls_Anxious,
                 SupportActivities.PhoneCalls_Friendly,
                 SupportActivities.Shopping
             };
@@ -524,15 +521,23 @@ namespace RequestService.Repo.Helpers
                     break;
 
                 case RequestHelpFormVariant.VitalsForVeterans:
-                    activites = new List<SupportActivities>(genericSupportActivities);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.WellbeingPackage);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
+                    activites = new List<SupportActivities>() 
+                    { 
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.Other,
+                        SupportActivities.WellbeingPackage,
+                        SupportActivities.VolunteerSupport
+                    };
                     break;
 
                 case RequestHelpFormVariant.Ruddington:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Remove(SupportActivities.HomeworkSupport);
                     ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.DogWalking);
+
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
@@ -541,7 +546,6 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Shopping,
                         SupportActivities.CollectingPrescriptions, 
                         SupportActivities.Other,
-                        SupportActivities.Transport,
                         SupportActivities.ColdWeatherArmy,
                         SupportActivities.VolunteerSupport
                     };
