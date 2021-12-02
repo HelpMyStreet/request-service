@@ -2027,14 +2027,12 @@ namespace RequestService.Repo
 
         public async Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId)
         {
-            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
-
             Byte jobstatus_done = (byte)JobStatuses.Done;
 
             return _context.Job
                 .Include(i => i.NewRequest)
-                .Where(x => (x.JobStatusId == jobstatus_done && x.NewRequest.ReferringGroupId == groupId))
-                .ToList()
+                .Where(x => x.JobStatusId == jobstatus_done && 
+                x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId))
                 .GroupBy(p => p.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {
@@ -2045,8 +2043,6 @@ namespace RequestService.Repo
 
         public async Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days)
         {
-            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
-
             DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
 
             Byte jobstatus_done = (byte)JobStatuses.Done;
@@ -2055,9 +2051,8 @@ namespace RequestService.Repo
                 .Include(i => i.Job)
                 .ThenInclude(i => i.NewRequest)
                 .Where(x => x.JobStatusId == jobstatus_done 
-                && x.Job.NewRequest.ReferringGroupId == groupId 
+                && x.Job.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.Job.NewRequest.ReferringGroupId)
                 && x.DateCreated > dtLessThanXDays)
-                .ToList()
                 .GroupBy(p => p.Job.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {
@@ -2068,15 +2063,12 @@ namespace RequestService.Repo
 
         public async Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days)
         {
-            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
-
             DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
 
             return _context.Job
                 .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId
+                .Where(x => x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId)
                 && x.NewRequest.DateRequested > dtLessThanXDays)
-                .ToList()
                 .GroupBy(p => p.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {

@@ -28,8 +28,8 @@ namespace RequestService.Handlers
             };
 
             var completedActivities = await _repository.GetCompletedActivitiesCount(request.GroupId);
-            var completedActivitiesToday = await _repository.GetActivitiesCompletedLastXDaysCount(request.GroupId, -1);
-            var requestsAddedWithinLastWeek = await _repository.GetRequestsAddedLastXDaysCount(request.GroupId, -7);
+            var completedActivitiesToday = await _repository.GetActivitiesCompletedLastXDaysCount(request.GroupId, 1);
+            var requestsAddedWithinLastWeek = await _repository.GetRequestsAddedLastXDaysCount(request.GroupId, 7);
             var openJobCount = await _repository.OpenJobCount(request.GroupId);
 
             foreach (SupportActivityCount item in completedActivities.Where(x=> x.Value>10).OrderByDescending(x => x.Value).Take(3))
