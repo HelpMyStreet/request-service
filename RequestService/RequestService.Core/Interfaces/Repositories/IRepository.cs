@@ -15,6 +15,14 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId);
+
+        Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days);
+
+        Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days);
+
+        Task<int> OpenJobCount(int? groupId);
+
         Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken);
         Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent);
         Task UpdateInProgressFromAccepted();

@@ -479,7 +479,7 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
 
-                    if (!form.IsPublic())
+                    if (!form.IsPublic() && form!=RequestHelpFormVariant.BostonGNS_RequestSubmitter)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "details1", Order = 1, Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request.", RequestFormVariantId = (int)form, Required = true });
                     }
@@ -757,6 +757,31 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.ColdWeatherArmy,
                         SupportActivities.SkillShare,
                         SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.BostonGNS_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.DogWalking,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.BostonGNS_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.DogWalking,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.Other,
+                        SupportActivities.VolunteerSupport
                     };
                     break;
                 default:

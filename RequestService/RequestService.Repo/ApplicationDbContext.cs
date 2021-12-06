@@ -343,6 +343,10 @@ namespace RequestService.Repo
                     .WithMany(p => p.RequestPersonIdRequesterNavigation)
                     .HasForeignKey(d => d.PersonIdRequester)                    
                     .HasConstraintName("FK_RequestPersonal_Person_PersonID_Requester");
+
+                entity.Property(e => e.Language)
+                    .HasMaxLength(20);
+
             });
 
             modelBuilder.Entity<RequestJobStatus>(entity =>

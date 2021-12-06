@@ -19,11 +19,7 @@ using Microsoft.Data.SqlClient;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
-using System.Security.Cryptography.X509Certificates;
-using RequestService.Core.Domains.Entities;
-using Polly.Caching;
 using HelpMyStreet.Utils.Extensions;
-using AutoMapper.Configuration.Conventions;
 using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Repo
@@ -32,6 +28,7 @@ namespace RequestService.Repo
     {
         private readonly ApplicationDbContext _context;
         private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
+        private const int GENERIC_GROUPID = -1;
 
         public Repository(ApplicationDbContext context)
         {
@@ -216,7 +213,8 @@ namespace RequestService.Repo
                         SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
                         MultiVolunteer = helpRequestDetail.VolunteerCount>1,
                         Repeat = helpRequestDetail.Repeat,
-                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid
+                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid,
+                        Language = helpRequestDetail.HelpRequest.Language
                     };
 
                     var firstJob = helpRequestDetail.NewJobsRequest.Jobs.First();
@@ -2025,6 +2023,68 @@ namespace RequestService.Repo
             {
                 return false;
             }            
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId)
+        {
+            Byte jobstatus_done = (byte)JobStatuses.Done;
+
+            return _context.Job
+                .Include(i => i.NewRequest)
+                .Where(x => x.JobStatusId == jobstatus_done && 
+                x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId))
+                .GroupBy(p => p.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities) g.Key,
+                    Value = g.Count()
+                });            
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days)
+        {
+            DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
+
+            Byte jobstatus_done = (byte)JobStatuses.Done;
+
+            return _context.RequestJobStatus
+                .Include(i => i.Job)
+                .ThenInclude(i => i.NewRequest)
+                .Where(x => x.JobStatusId == jobstatus_done 
+                && x.Job.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.Job.NewRequest.ReferringGroupId)
+                && x.DateCreated > dtLessThanXDays)
+                .GroupBy(p => p.Job.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)g.Key,
+                    Value = g.Count()
+                });
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days)
+        {
+            DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
+
+            return _context.Job
+                .Include(i => i.NewRequest)
+                .Where(x => x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId)
+                && x.NewRequest.DateRequested > dtLessThanXDays)
+                .GroupBy(p => p.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)g.Key,
+                    Value = g.Count()
+                });
+        }
+
+        public async Task<int> OpenJobCount(int? groupId)
+        {
+            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
+
+            Byte jobstatus_open = (byte)JobStatuses.Open;
+
+            return _context.Job
+                .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
         }
     }
 }
