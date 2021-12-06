@@ -19,11 +19,7 @@ using Microsoft.Data.SqlClient;
 using HelpMyStreet.Utils.Utils;
 using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
-using System.Security.Cryptography.X509Certificates;
-using RequestService.Core.Domains.Entities;
-using Polly.Caching;
 using HelpMyStreet.Utils.Extensions;
-using AutoMapper.Configuration.Conventions;
 using HelpMyStreet.Utils.EqualityComparers;
 
 namespace RequestService.Repo
@@ -32,6 +28,7 @@ namespace RequestService.Repo
     {
         private readonly ApplicationDbContext _context;
         private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
+        private const int GENERIC_GROUPID = -1;
 
         public Repository(ApplicationDbContext context)
         {
@@ -120,8 +117,9 @@ namespace RequestService.Repo
         public List<ReportItem> GetDailyReport()
         {
             List<ReportItem> response = new List<ReportItem>();
-            List<DailyReport> result = _context.DailyReport.ToList();
-
+            List<DailyReport> result = _context.DailyReport
+                                .FromSqlRaw("TwoHourlyReport")
+                                .ToList();
             if (result != null)
             {
                 foreach (DailyReport dailyReport in result)
@@ -215,7 +213,8 @@ namespace RequestService.Repo
                         SuppressRecipientPersonalDetail = suppressRecipientPersonalDetails,                        
                         MultiVolunteer = helpRequestDetail.VolunteerCount>1,
                         Repeat = helpRequestDetail.Repeat,
-                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid
+                        ParentGuid = helpRequestDetail.HelpRequest.ParentGuid,
+                        Language = helpRequestDetail.HelpRequest.Language
                     };
 
                     var firstJob = helpRequestDetail.NewJobsRequest.Jobs.First();
@@ -551,6 +550,24 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken)
+        {
+            UpdateJobOutcome response = UpdateJobOutcome.BadRequest;
+            var job = _context.JobQuestions.Where(w => w.JobId == jobID && w.QuestionId == questionId).FirstOrDefault();
+
+            if (job != null)
+            {
+                job.Answer = answer;
+                int result = await _context.SaveChangesAsync(cancellationToken);
+
+                if (result == 1)
+                {
+                    response = UpdateJobOutcome.Success;
+                }
+            }
+            return response;
+        }
+
         public List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID)
         {
             byte jobStatusID_InProgress = (byte)JobStatuses.InProgress;
@@ -838,7 +855,7 @@ namespace RequestService.Repo
                 Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                 RecipientOrganisation = job.NewRequest.OrganisationName,
                 DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                DueDays = (dueDate.Date - DateTime.UtcNow.Date).Days,
+                DueDays = (dueDate.ToUKFromUTCTime().Date - DateTime.UtcNow.ToUKFromUTCTime().Date).Days,
                 DateRequested = job.NewRequest.DateRequested,
                 RequestorType = (RequestorType)job.NewRequest.RequestorType,
                 Archive = job.NewRequest.Archive.Value,
@@ -889,7 +906,7 @@ namespace RequestService.Repo
                             Groups = job.JobAvailableToGroup.Select(x => x.GroupId).ToList(),
                             RecipientOrganisation = job.NewRequest.OrganisationName,
                             DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
-                            DueDays = (job.DueDate.Date - DateTime.UtcNow.Date).Days,
+                            DueDays = (job.DueDate.ToUKFromUTCTime().Date - DateTime.UtcNow.ToUKFromUTCTime().Date).Days,
                             DateRequested = job.NewRequest.DateRequested,
                             RequestorType = (RequestorType)job.NewRequest.RequestorType,
                             Archive = job.NewRequest.Archive.Value,
@@ -1023,13 +1040,27 @@ namespace RequestService.Repo
                 isArchived = efJob.NewRequest.Archive.Value;
             }
 
+            var updateHistory = _context.UpdateHistory
+                .Where(x => x.JobId == jobID)
+                .Select(x => new HelpMyStreet.Contracts.RequestService.Response.UpdateHistory()
+                {
+                    FieldChanged = x.FieldChanged,
+                    CreatedByUserID = x.CreatedByUserId,
+                    OldValue = x.OldValue,
+                    NewValue = x.NewValue,
+                    DateCreated = x.DateCreated,
+                    QuestionID = x.QuestionId
+                })
+                .ToList();
+
             response = new GetJobDetailsResponse()
             {
                 JobSummary = MapEFJobToSummary(efJob),
                 Recipient = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRecipientNavigation),
                 Requestor = isArchived ? null : GetPerson(efJob.NewRequest.PersonIdRequesterNavigation),
                 History = GetJobStatusHistory(efJob.RequestJobStatus.ToList()),
-                RequestSummary = MapEFRequestToSummary(efJob.NewRequest)
+                RequestSummary = MapEFRequestToSummary(efJob.NewRequest),
+                UpdateHistory = updateHistory
             };
 
             return response;
@@ -1894,12 +1925,12 @@ namespace RequestService.Repo
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
 
-            DateTime today = DateTime.UtcNow.Date;
-
+            DateTime sixHoursAgo = DateTime.UtcNow.AddHours(-6);
+            
             response = _context.Job
                 .Include(x => x.NewRequest)
                 .Where(x => x.NewRequest.Repeat == true 
-                            && x.DueDate.Date < today 
+                            && x.DueDate < sixHoursAgo
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
                 .Select(x => x.Id)
@@ -1937,6 +1968,123 @@ namespace RequestService.Repo
             }
 
             return success;
+        }
+
+        public async Task UpdateHistory(int requestId, int createdByUserId, string fieldChanged, string oldValue, string newValue, int? questionId, int jobId = 0)
+        {
+            _context.UpdateHistory.Add(new Repo.EntityFramework.Entities.UpdateHistory()
+            {
+                RequestId = requestId,
+                JobId = jobId,
+                FieldChanged = fieldChanged,
+                OldValue = oldValue,
+                NewValue = newValue,
+                CreatedByUserId = createdByUserId,
+                QuestionId = questionId
+            });
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken)
+        {
+            var request = _context.Request
+                            .Include(i=> i.PersonIdRecipientNavigation)
+                            .Include(i=> i.PersonIdRequesterNavigation)
+                            .Include(i=> i.Shift)
+                            .Include(i => i.RequestSubmission)
+                            .Include(i => i.UpdateHistory)
+                            .Include(i => i.LogRequestEvent)
+                            .Include(i => i.SupportActivities)
+                            .Include(i => i.Job)
+                            .ThenInclude(i=> i.RequestJobStatus)
+                            .Include(i=> i.Job)
+                            .ThenInclude(i=> i.JobQuestions)
+                            .Include(i => i.Job)
+                            .ThenInclude(i => i.JobAvailableToGroup)
+                            .First(x => x.Id == requestId);
+
+            int? personId_recipient = request.PersonIdRecipient;
+            int? personId_requestor = request.PersonIdRequester;
+
+            _context.Remove(request);
+
+            var result =_context.SaveChanges();
+
+            if(result>0)
+            {
+                var persons = _context.Person.Where(x => x.Id == personId_recipient.Value || x.Id == personId_requestor).ToList();
+                _context.RemoveRange(persons);
+                _context.SaveChanges();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }            
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId)
+        {
+            Byte jobstatus_done = (byte)JobStatuses.Done;
+
+            return _context.Job
+                .Include(i => i.NewRequest)
+                .Where(x => x.JobStatusId == jobstatus_done && 
+                x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId))
+                .GroupBy(p => p.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities) g.Key,
+                    Value = g.Count()
+                });            
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days)
+        {
+            DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
+
+            Byte jobstatus_done = (byte)JobStatuses.Done;
+
+            return _context.RequestJobStatus
+                .Include(i => i.Job)
+                .ThenInclude(i => i.NewRequest)
+                .Where(x => x.JobStatusId == jobstatus_done 
+                && x.Job.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.Job.NewRequest.ReferringGroupId)
+                && x.DateCreated > dtLessThanXDays)
+                .GroupBy(p => p.Job.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)g.Key,
+                    Value = g.Count()
+                });
+        }
+
+        public async Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days)
+        {
+            DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
+
+            return _context.Job
+                .Include(i => i.NewRequest)
+                .Where(x => x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId)
+                && x.NewRequest.DateRequested > dtLessThanXDays)
+                .GroupBy(p => p.SupportActivityId)
+                .Select(g => new SupportActivityCount
+                {
+                    SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)g.Key,
+                    Value = g.Count()
+                });
+        }
+
+        public async Task<int> OpenJobCount(int? groupId)
+        {
+            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
+
+            Byte jobstatus_open = (byte)JobStatuses.Open;
+
+            return _context.Job
+                .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
         }
     }
 }

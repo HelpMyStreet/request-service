@@ -8,6 +8,8 @@ using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using System.Collections.Generic;
+using System;
+using HelpMyStreet.Utils.Extensions;
 
 namespace RequestService.Handlers
 {
@@ -30,16 +32,43 @@ namespace RequestService.Handlers
                 Outcome = UpdateJobOutcome.Unauthorized
             };
 
+            if (request.DueDate < DateTime.UtcNow)
+            {
+                response.Outcome = UpdateJobOutcome.BadRequest;
+                return response;
+            }
+
             bool hasPermission = await _jobService.HasPermissionToChangeJobAsync(request.JobID.Value, request.AuthorisedByUserID.Value, cancellationToken);
 
             if (hasPermission)
             {
+                var jobDetails = _repository.GetJobDetails(request.JobID.Value);
+
+                if (
+                    (jobDetails == null) || 
+                    (jobDetails.JobSummary.JobStatus == JobStatuses.Done || jobDetails.JobSummary.JobStatus == JobStatuses.Cancelled)
+                    )
+                {
+                    return response;
+                }
+
+                var oldValue = jobDetails.JobSummary.DueDate.ToUTCFromUKTime();
                 var result = await _repository.UpdateJobDueDateAsync(request.JobID.Value, request.AuthorisedByUserID.Value, request.DueDate, cancellationToken);
                 response.Outcome = result;
 
                 if (result == UpdateJobOutcome.Success)
                 {
                     response.Outcome = UpdateJobOutcome.Success;
+
+                    await _repository.UpdateHistory(
+                        requestId: jobDetails.JobSummary.RequestID,
+                        createdByUserId: request.AuthorisedByUserID.Value,
+                        fieldChanged: "Due Date",
+                        oldValue: oldValue.ToString(),
+                        newValue: request.DueDate.ToUTCFromUKTime().ToString(),
+                        questionId: null,
+                        jobId: request.JobID.Value);
+
                     await _communicationService.RequestCommunication(
                     new RequestCommunicationRequest()
                     {
@@ -47,7 +76,9 @@ namespace RequestService.Handlers
                         JobID = request.JobID,
                         AdditionalParameters = new Dictionary<string, string>()
                         {
-                            { "FieldUpdated","Due Date" }
+                            { "FieldUpdated","Due Date" },
+                            { "OldValue", oldValue.ToString() },
+                            { "NewValue", request.DueDate.ToString() }
                         }
                     },
                     cancellationToken);

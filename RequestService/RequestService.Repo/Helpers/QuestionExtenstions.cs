@@ -479,7 +479,7 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.WillYouCompleteYourself, Location = "pos3", Order = 3, RequestFormVariantId = (int)form, Required = true });
                     }
 
-                    if (!form.IsPublic())
+                    if (!form.IsPublic() && form!=RequestHelpFormVariant.BostonGNS_RequestSubmitter)
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SuppressRecipientPersonalDetails, Location = "details1", Order = 1, Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request.", RequestFormVariantId = (int)form, Required = true });
                     }
@@ -499,14 +499,11 @@ namespace RequestService.Repo.Helpers
             {
                 SupportActivities.CheckingIn,
                 SupportActivities.CollectingPrescriptions,
-                SupportActivities.DogWalking,
                 SupportActivities.Errands,
                 SupportActivities.FaceMask,
                 SupportActivities.HomeworkSupport,
                 SupportActivities.MealPreparation,
-                SupportActivities.MedicalAppointmentTransport,
                 SupportActivities.Other,
-                SupportActivities.PhoneCalls_Anxious,
                 SupportActivities.PhoneCalls_Friendly,
                 SupportActivities.Shopping
             };
@@ -524,15 +521,23 @@ namespace RequestService.Repo.Helpers
                     break;
 
                 case RequestHelpFormVariant.VitalsForVeterans:
-                    activites = new List<SupportActivities>(genericSupportActivities);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.WellbeingPackage);
-                    ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
+                    activites = new List<SupportActivities>() 
+                    { 
+                        SupportActivities.Shopping,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.Errands,
+                        SupportActivities.Other,
+                        SupportActivities.WellbeingPackage,
+                        SupportActivities.VolunteerSupport
+                    };
                     break;
 
                 case RequestHelpFormVariant.Ruddington:
                     activites = new List<SupportActivities>(genericSupportActivities);
                     ((List<SupportActivities>)activites).Remove(SupportActivities.HomeworkSupport);
                     ((List<SupportActivities>)activites).Add(SupportActivities.VolunteerSupport);
+                    ((List<SupportActivities>)activites).Add(SupportActivities.DogWalking);
+
                     break;
 
                 case RequestHelpFormVariant.AgeUKWirral:
@@ -541,7 +546,6 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.Shopping,
                         SupportActivities.CollectingPrescriptions, 
                         SupportActivities.Other,
-                        SupportActivities.Transport,
                         SupportActivities.ColdWeatherArmy,
                         SupportActivities.VolunteerSupport
                     };
@@ -753,6 +757,31 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.ColdWeatherArmy,
                         SupportActivities.SkillShare,
                         SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.BostonGNS_Public:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.DogWalking,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.Other
+                    };
+                    break;
+                case RequestHelpFormVariant.BostonGNS_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CollectingPrescriptions,
+                        SupportActivities.PracticalSupport,
+                        SupportActivities.DogWalking,
+                        SupportActivities.DigitalSupport,
+                        SupportActivities.Other,
+                        SupportActivities.VolunteerSupport
                     };
                     break;
                 default:

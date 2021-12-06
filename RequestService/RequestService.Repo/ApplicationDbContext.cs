@@ -19,8 +19,11 @@ namespace RequestService.Repo
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            SqlConnection conn = (SqlConnection)Database.GetDbConnection();
-            conn.AddAzureToken();
+            if (Database.IsSqlServer())
+            {
+                SqlConnection conn = (SqlConnection)Database.GetDbConnection();
+                conn.AddAzureToken();
+            }
         }
 
         public virtual DbSet<Job> Job { get; set; }
@@ -52,6 +55,7 @@ namespace RequestService.Repo
         public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
         public virtual DbSet<LogRequestEvent> LogRequestEvent { get; set; }
         public virtual DbSet<RequestSubmission> RequestSubmission { get; set; }
+        public virtual DbSet<UpdateHistory> UpdateHistory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -63,8 +67,8 @@ namespace RequestService.Repo
 
             modelBuilder.Entity<QueryAllJobs>().HasNoKey().ToView("view_that_does_not_exist2");
 
-            modelBuilder.Entity<DailyReport>().HasNoKey().ToQuery(() => DailyReport.FromSqlRaw("TwoHourlyReport"));
-
+            modelBuilder.Entity<DailyReport>().HasNoKey().ToView("view_that_does_not_exist3");
+            
             modelBuilder.Entity<Shift>(entity =>
             {
                 entity.HasKey(e => e.RequestId);
@@ -205,7 +209,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.NewRequest)
                     .WithMany(p => p.Job)
                     .HasForeignKey(d => d.RequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NewRequest_NewRequestID");
             });
 
@@ -332,13 +336,17 @@ namespace RequestService.Repo
 
                 entity.HasOne(d => d.PersonIdRecipientNavigation)
                     .WithMany(p => p.RequestPersonIdRecipientNavigation)
-                    .HasForeignKey(d => d.PersonIdRecipient)
+                    .HasForeignKey(d => d.PersonIdRecipient)                    
                     .HasConstraintName("FK_RequestPersonal_Person_PersonID_Recipient");
 
                 entity.HasOne(d => d.PersonIdRequesterNavigation)
                     .WithMany(p => p.RequestPersonIdRequesterNavigation)
-                    .HasForeignKey(d => d.PersonIdRequester)
+                    .HasForeignKey(d => d.PersonIdRequester)                    
                     .HasConstraintName("FK_RequestPersonal_Person_PersonID_Requester");
+
+                entity.Property(e => e.Language)
+                    .HasMaxLength(20);
+
             });
 
             modelBuilder.Entity<RequestJobStatus>(entity =>
@@ -362,7 +370,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.RequestJobStatus)
                     .HasForeignKey(d => d.JobId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Job_JobID");
             });
 
@@ -467,7 +475,7 @@ namespace RequestService.Repo
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.JobAvailableToGroup)
                     .HasForeignKey(d => d.JobId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_JobAvailableToGroup_JobID");
             });
 
@@ -505,6 +513,40 @@ namespace RequestService.Repo
                     .HasForeignKey<RequestSubmission>(d => d.RequestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RequestSubmission_RequestID");
+            });
+
+            modelBuilder.Entity<UpdateHistory>(entity =>
+            {
+                entity.HasKey(e => new { e.RequestId, e.JobId, e.DateCreated, e.FieldChanged });
+
+                entity.ToTable("UpdateHistory", "Request");
+
+                entity.Property(e => e.RequestId).HasColumnName("RequestID");
+
+                entity.Property(e => e.JobId).HasColumnName("JobID");
+
+                entity.Property(e => e.DateCreated)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.FieldChanged)               
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
+
+                entity.Property(e => e.NewValue)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OldValue)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Request)
+                    .WithMany(p => p.UpdateHistory)
+                    .HasForeignKey(d => d.RequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UpdateHistory_RequestID");
             });
 
             modelBuilder.SetupPostcodeCoordinateTables();
