@@ -8,6 +8,7 @@ using HelpMyStreet.Contracts;
 using RequestService.Core.Domains;
 using HelpMyStreet.Utils.Extensions;
 using System.Linq;
+using System;
 
 namespace RequestService.Handlers
 {
@@ -38,7 +39,7 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ item.Value }** {item.SupportActivity.FriendlyNameShort()} { item.SupportActivity.RequestType().ToString() }  completed"
+                    Message = $"**{ item.Value }** *{item.SupportActivity.FriendlyNameShort().ToLower()}* { item.SupportActivity.RequestType().PerfectTense(Convert.ToInt32(item.Value)) } completed"
                 });
             };
 
