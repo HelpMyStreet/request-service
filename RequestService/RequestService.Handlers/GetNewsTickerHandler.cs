@@ -9,6 +9,7 @@ using RequestService.Core.Domains;
 using HelpMyStreet.Utils.Extensions;
 using System.Linq;
 using System;
+using HelpMyStreet.Utils.Models;
 
 namespace RequestService.Handlers
 {
@@ -39,7 +40,7 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ item.Value }** *{item.SupportActivity.FriendlyNameShort().ToLower()}* { item.SupportActivity.RequestType().PerfectTense(Convert.ToInt32(item.Value)) } completed"
+                    Message = $"**{ item.Value }** *{item.SupportActivity.FriendlyNameShort().ToLower()}* { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
                 });
             };
 
@@ -55,7 +56,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalRequests,
-                        Message = $"**{ totalRequests }** {HelpMyStreet.Utils.Enums.RequestType.Task.PerfectTense(Convert.ToInt32(totalRequests))} completed"
+                        Message = $"**{ totalRequests }** {HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests))} completed"
                     });
                 }
             }
@@ -68,7 +69,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = $"**{ totalShifts }** {HelpMyStreet.Utils.Enums.RequestType.Shift.PerfectTense(Convert.ToInt32(totalShifts))} completed"
+                        Message = $"**{ totalShifts }** {HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts))} completed"
                     });
                 }
             }
