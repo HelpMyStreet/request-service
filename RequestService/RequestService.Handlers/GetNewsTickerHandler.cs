@@ -43,19 +43,19 @@ namespace RequestService.Handlers
                 });
             };
 
-            var totalTasks = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Sum(x => x.Value);
+            var totalRequests = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Sum(x => x.Value);
             var totalShifts = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Shift)?.Sum(x => x.Value);
             
-            if(totalTasks>0)
+            if(totalRequests>0)
             {
                 var maxTaskCount =  completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Max(x => x.Value);
 
-                if (totalTasks > 20 && totalTasks > (maxTaskCount * 1.1))
+                if (totalRequests > 20 && totalRequests > (maxTaskCount * 1.1))
                 {
                     response.Messages.Add(new NewsTickerMessage()
                     {
-                        Value = totalTasks,
-                        Message = $"**{ totalTasks }** requests completed"
+                        Value = totalRequests,
+                        Message = $"**{ totalRequests }** {HelpMyStreet.Utils.Enums.RequestType.Task.PerfectTense(Convert.ToInt32(totalRequests))} completed"
                     });
                 }
             }
@@ -68,7 +68,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = $"**{ totalShifts }** shifts completed"
+                        Message = $"**{ totalShifts }** {HelpMyStreet.Utils.Enums.RequestType.Shift.PerfectTense(Convert.ToInt32(totalShifts))} completed"
                     });
                 }
             }
