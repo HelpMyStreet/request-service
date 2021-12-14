@@ -40,7 +40,7 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ item.Value }** *{item.SupportActivity.FriendlyNameShort().ToLower()}* { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
+                    Message = $"**{ item.Value } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
                 });
             };
 

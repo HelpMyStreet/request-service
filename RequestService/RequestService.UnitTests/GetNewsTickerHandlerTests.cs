@@ -113,7 +113,7 @@ namespace RequestService.UnitTests
                     {
                         SupportActivity = item.SupportActivity,
                         Value = item.Value,
-                        Message = $"**{ item.Value }** *{item.SupportActivity.FriendlyNameShort().ToLower()}* { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
+                        Message = $"**{ item.Value } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
                     }, _equalityComparer));
 
                 });
