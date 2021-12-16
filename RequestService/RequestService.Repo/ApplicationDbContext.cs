@@ -377,6 +377,8 @@ namespace RequestService.Repo
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
+                entity.Property(e => e.JobStatusChangeReasonCodeId).HasColumnName("JobStatusChangeReasonCodeID");
+
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.RequestJobStatus)
                     .HasForeignKey(d => d.JobId)
