@@ -50,6 +50,7 @@ namespace RequestService.Repo
         public virtual DbSet<EnumDueDateTypes> EnumDueDateTypes { get; set; }
         public virtual DbSet<EnumRequestEvents> EnumRequestEvents { get; set; }
         public virtual DbSet<EnumFrequency> EnumFrequency { get; set; }
+        public virtual DbSet<EnumJobStatusChangeReasonCodes> EnumJobStatusChangeReasonCodes { get; set; }
         public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<QueryJobHeader> JobHeader { get; set; }
         public virtual DbSet<QueryAllJobs> QueryAllJobs { get; set; }
@@ -183,6 +184,15 @@ namespace RequestService.Repo
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.SetEnumRequestEventsData();
+            });
+
+            modelBuilder.Entity<EnumJobStatusChangeReasonCodes>(entity =>
+            {
+                entity.ToTable("JobStatusChangeReasonCode", "Lookup");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.SetEnumJobStatusChangeReasonCodeData();
             });
 
 
