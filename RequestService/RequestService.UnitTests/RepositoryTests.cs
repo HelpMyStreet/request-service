@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RequestService.UnitTests
 {
@@ -96,9 +97,9 @@ namespace RequestService.UnitTests
         }
 
         [Test]
-        public void CalculateOverdueRepeatJobs()
+        public async Task CalculateOverdueRepeatJobs()
         {
-            var actualOverdueJobs = _classUnderTest.GetOverdueRepeatJobs();
+            var actualOverdueJobs = await _classUnderTest.GetOverdueRepeatJobs();
 
             DateTime sixHoursAgo = DateTime.UtcNow.AddHours(-6);
 
@@ -107,7 +108,7 @@ namespace RequestService.UnitTests
                 && x.IsRepeat == true
                 && x.DueDate < sixHoursAgo
                 )
-                .Select(x => x.Id).ToList();
+                .Select(x => x.Id);
 
             Assert.AreEqual(expectedOverdueJobs, actualOverdueJobs);
         }

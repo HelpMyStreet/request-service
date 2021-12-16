@@ -15,6 +15,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<IEnumerable<int>> GetJobsPastDueDate(int days);
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId);
 
         Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days);
@@ -52,10 +53,10 @@ namespace RequestService.Core.Interfaces.Repositories
         List<JobSummary> GetJobsAllocatedToUser(int volunteerUserID);
         List<JobSummary> GetUserJobs(int volunteerUserID);
         Task<UpdateJobStatusOutcome> UpdateJobStatusAcceptedAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
-        Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
+        Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusOpenAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
-        Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken);
-        Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
+        Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken);
+        Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken);
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
@@ -79,7 +80,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<List<Question>> GetQuestionsForActivity(SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken);
         List<RequestSummary> GetAllRequests(List<int> RequestIDs);
         bool VolunteerHasAlreadyJobForThisRequestWithThisStatus(int jobId, int volunteerUserId, JobStatuses status);
-        List<int> GetOverdueRepeatJobs();
+        Task<IEnumerable<int>> GetOverdueRepeatJobs();
 
         Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs);
 

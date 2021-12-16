@@ -63,6 +63,7 @@ namespace RequestService.UnitTests
                 It.IsAny<int>(), 
                 It.IsAny<int>(),
                 It.IsAny<int>(),
+                It.IsAny<JobStatusChangeReasonCodes>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(()=> _updateJobStatusOutcome);
 
@@ -236,7 +237,7 @@ namespace RequestService.UnitTests
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Once);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Once);
 
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Never);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(UpdateJobStatusOutcome.BadRequest, response.Outcome);
         }
@@ -274,7 +275,7 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Never);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Never);            
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Never);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(UpdateJobStatusOutcome.BadRequest, response.Outcome);
         }
@@ -342,7 +343,7 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Never);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Never);
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Never);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(UpdateJobStatusOutcome.Unauthorized, response.Outcome);
         }
@@ -410,7 +411,7 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);            
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Once);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Once);
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Once);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.AreEqual(UpdateJobStatusOutcome.Success, response.Outcome);
         }
@@ -483,7 +484,7 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);            
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Once);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Once);
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Once);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.AreEqual(UpdateJobStatusOutcome.Success, response.Outcome);
         }
@@ -516,7 +517,7 @@ namespace RequestService.UnitTests
             _repository.Verify(x => x.GetReferringGroupIDForJobAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
             _groupService.Verify(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()), Times.Never);
             _groupService.Verify(x => x.GetGroupActivityCredentials(It.IsAny<GetGroupActivityCredentialsRequest>()), Times.Never);
-            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repository.Verify(x => x.UpdateJobStatusInProgressAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<JobStatusChangeReasonCodes>(), It.IsAny<CancellationToken>()), Times.Never);
             _communicationService.Verify(x => x.RequestCommunication(It.IsAny<RequestCommunicationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.AreEqual(UpdateJobStatusOutcome.AlreadyInThisStatus, response.Outcome);
         }

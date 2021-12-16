@@ -1,7 +1,9 @@
-﻿namespace RequestService.Core.Services
+﻿using System.Threading.Tasks;
+
+namespace RequestService.Core.Services
 {
     public interface IManageRequestsService
     {
-        void ManageRequests();
+        Task ManageRequests();
     }
 }
