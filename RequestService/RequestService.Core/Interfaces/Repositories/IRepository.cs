@@ -15,6 +15,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<IEnumerable<int>> GetJobsPastDueDate(int days);
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId);
 
         Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days);
@@ -79,7 +80,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<List<Question>> GetQuestionsForActivity(SupportActivities activity, RequestHelpFormVariant requestHelpFormVariant, RequestHelpFormStage requestHelpFormStage, CancellationToken cancellationToken);
         List<RequestSummary> GetAllRequests(List<int> RequestIDs);
         bool VolunteerHasAlreadyJobForThisRequestWithThisStatus(int jobId, int volunteerUserId, JobStatuses status);
-        List<int> GetOverdueRepeatJobs();
+        Task<IEnumerable<int>> GetOverdueRepeatJobs();
 
         Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs);
 

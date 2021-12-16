@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using RequestService.Core.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RequestService.Core.Services
 {
@@ -20,34 +22,37 @@ namespace RequestService.Core.Services
             _communicationService = communicationService;
         }
         
-        public void ManageRequests()
+        private void CancelJob(int jobId)
         {
-            _repository.UpdateInProgressFromAccepted();
-            _repository.UpdateJobsToDoneFromInProgress();
-            _repository.UpdateJobsToCancelledFromNewOrOpen();
+            var result = _repository.UpdateJobStatusCancelledAsync(jobId, -1, CancellationToken.None).Result;
 
-            var jobs =_repository.GetOverdueRepeatJobs();
-
-
-            foreach (int jobId in jobs)
+            if (result == HelpMyStreet.Utils.Enums.UpdateJobStatusOutcome.Success)
             {
-                var result = _repository.UpdateJobStatusCancelledAsync(jobId, -1, CancellationToken.None).Result;
-
-                if (result == HelpMyStreet.Utils.Enums.UpdateJobStatusOutcome.Success)
+                _communicationService.RequestCommunication(
+                new RequestCommunicationRequest()
                 {
-                    _communicationService.RequestCommunication(
-                    new RequestCommunicationRequest()
+                    CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                    JobID = jobId,
+                    AdditionalParameters = new Dictionary<string, string>()
                     {
-                        CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                        JobID = jobId,
-                        AdditionalParameters = new Dictionary<string, string>()
-                        {
                                 { "FieldUpdated","Status" }
-                        }
-                    },
-                    CancellationToken.None);
-                }
+                    }
+                },
+                CancellationToken.None);
             }
+        }
+        
+        public async Task ManageRequests()
+        {
+            await _repository.UpdateInProgressFromAccepted();
+            await _repository.UpdateJobsToDoneFromInProgress();
+            await _repository.UpdateJobsToCancelledFromNewOrOpen();
+
+            var jobs = await _repository.GetOverdueRepeatJobs();
+            jobs.ToList().ForEach(job => CancelJob(job));
+
+            var jobsPastDueDate = await _repository.GetJobsPastDueDate(14);
+            jobsPastDueDate.ToList().ForEach(job => CancelJob(job));
         }
     }
 }

@@ -11,7 +11,7 @@ namespace RequestService.Repo.EntityFramework.Entities
         public DateTime DateCreated { get; set; }
         public int? VolunteerUserId { get; set; }
         public int? CreatedByUserId { get; set; }
-
+        public byte? JobStatusChangeReasonCodeId { get; set; }
         public virtual Job Job { get; set; }
     }
 }

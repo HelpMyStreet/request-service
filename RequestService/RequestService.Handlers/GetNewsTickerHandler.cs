@@ -8,6 +8,7 @@ using HelpMyStreet.Contracts;
 using RequestService.Core.Domains;
 using HelpMyStreet.Utils.Extensions;
 using System.Linq;
+using HelpMyStreet.Utils.Models;
 
 namespace RequestService.Handlers
 {

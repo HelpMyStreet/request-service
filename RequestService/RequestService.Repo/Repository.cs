@@ -1919,24 +1919,20 @@ namespace RequestService.Repo
             }
         }
 
-        public List<int> GetOverdueRepeatJobs()
+        public async Task<IEnumerable<int>> GetOverdueRepeatJobs()
         {
-            List<int> response = new List<int>();
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
 
             DateTime sixHoursAgo = DateTime.UtcNow.AddHours(-6);
-            
-            response = _context.Job
+
+            return  _context.Job
                 .Include(x => x.NewRequest)
-                .Where(x => x.NewRequest.Repeat == true 
+                .Where(x => x.NewRequest.Repeat == true
                             && x.DueDate < sixHoursAgo
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
-                .Select(x => x.Id)
-                .ToList();
-
-            return response;
+                .Select(x => x.Id);
         }
 
         public async Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs)
@@ -2085,6 +2081,22 @@ namespace RequestService.Repo
 
             return _context.Job
                 .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
+        }
+
+        public async Task<IEnumerable<int>> GetJobsPastDueDate(int days)
+        {
+            byte jobStatus_Open = (byte)JobStatuses.Open;
+            byte requestType_task = (byte)RequestType.Task;
+            DateTime dt = DateTime.Now.Date.AddDays(-days);
+
+            return _context.Job
+                .Include(x=> x.NewRequest)
+                .Where(x => x.JobStatusId == jobStatus_Open 
+                && x.NewRequest.RequestType == requestType_task
+                && (x.DueDate < dt)
+                )
+                .Select(x => x.Id)
+                .Take(2);
         }
     }
 }

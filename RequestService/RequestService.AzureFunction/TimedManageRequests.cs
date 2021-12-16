@@ -24,7 +24,7 @@ namespace RequestService.AzureFunction
             try
             {
                 log.LogInformation($"TimedManageRequests started at: {DateTime.Now}");
-                _manageRequestsService.ManageRequests();
+                await _manageRequestsService.ManageRequests();
                 log.LogInformation($"TimedManageRequests completed at: {DateTime.Now}");
 
             }
