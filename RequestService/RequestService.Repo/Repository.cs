@@ -276,13 +276,13 @@ namespace RequestService.Repo
                             });
                         }
 
-                        _context.RequestJobStatus.Add(new RequestJobStatus()
-                        {
-                            DateCreated = DateTime.Now,
-                            JobStatusId = (byte)JobStatuses.New,
-                            Job = EFcoreJob,
-                            CreatedByUserId = helpRequestDetail.HelpRequest.CreatedByUserId,
-                        });
+                        AddJobStatus(
+                            EFcoreJob.Id,
+                            helpRequestDetail.HelpRequest.CreatedByUserId,
+                            null,
+                            JobStatuses.New,
+                            JobStatusChangeReasonCodes.ManualChangeByVolunteer
+                            );
                     }
 
                     await _context.SaveChangesAsync();
@@ -346,13 +346,12 @@ namespace RequestService.Repo
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
                             _context.Job.Add(EFcoreJob);
-                            _context.RequestJobStatus.Add(new RequestJobStatus()
-                            {
-                                DateCreated = DateTime.Now,
-                                JobStatusId = (byte)JobStatuses.Open,
-                                Job = EFcoreJob,
-                                CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
-                            });
+                            AddJobStatus(
+                                EFcoreJob.Id, 
+                                postNewShiftsRequest.CreatedByUserId, 
+                                null, 
+                                JobStatuses.New, 
+                                JobStatusChangeReasonCodes.ManualChangeByVolunteer);
                         }
                     }
 
@@ -1653,7 +1652,7 @@ namespace RequestService.Repo
             {
                 job.JobStatusId = openJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.AutoProgressNewToOpen);
             }
             int result = await _context.SaveChangesAsync(cancellationToken);
 
