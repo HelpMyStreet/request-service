@@ -1,4 +1,5 @@
 ﻿using HelpMyStreet.Utils.Enums;
+using HelpMyStreet.Utils.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RequestService.Repo.EntityFramework.Entities;
 using System;
@@ -14,7 +15,7 @@ namespace RequestService.Repo.Helpers
 
             foreach (var reasonCode in reasonCodes)
             {
-                entity.HasData(new EnumJobStatusChangeReasonCodes { Id = (int)reasonCode, Name = reasonCode.ToString() });
+                entity.HasData(new EnumJobStatusChangeReasonCodes { Id = (int)reasonCode, Name = reasonCode.ToString(), TriggersStatusChange = reasonCode.TriggersStatusChangeEmail() });
             }
         }
     }

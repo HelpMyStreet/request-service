@@ -281,7 +281,7 @@ namespace RequestService.Repo
                             helpRequestDetail.HelpRequest.CreatedByUserId,
                             null,
                             JobStatuses.New,
-                            JobStatusChangeReasonCodes.ManualChangeByVolunteer
+                            JobStatusChangeReasonCodes.UserChange
                             );
                     }
 
@@ -351,7 +351,7 @@ namespace RequestService.Repo
                                 postNewShiftsRequest.CreatedByUserId, 
                                 null, 
                                 JobStatuses.New, 
-                                JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                                JobStatusChangeReasonCodes.UserChange);
                         }
                     }
 
@@ -390,7 +390,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = openJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -501,7 +501,7 @@ namespace RequestService.Repo
                 if (job.JobStatusId != newJobStatus)
                 {
                     job.JobStatusId = newJobStatus;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.New, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.New, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -534,7 +534,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = acceptedJobStatus;
                         job.VolunteerUserId = volunteerUserID; ;
-                        AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                        AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         int result = await _context.SaveChangesAsync(cancellationToken);
                         if (result == 2)
                         {
@@ -1409,7 +1409,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = (byte)JobStatuses.Accepted;
                         job.VolunteerUserId = volunteerUserID;
-                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         _context.SaveChanges();
 
                         count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
@@ -1720,14 +1720,14 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = byteCancelledJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 
                 if (job.JobStatusId == (byte)JobStatuses.Accepted || job.JobStatusId == (byte)JobStatuses.InProgress)
                 {
                     job.JobStatusId = byteDoneJobStatus;
-                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Done, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Done, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 
