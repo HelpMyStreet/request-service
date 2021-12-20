@@ -45,9 +45,9 @@ namespace RequestService.Core.Services
 
         public async Task ManageRequests()
         {
-            await _repository.UpdateInProgressFromAccepted();
-            await _repository.UpdateJobsToDoneFromInProgress();
-            await _repository.UpdateJobsToCancelledFromNewOrOpen();
+            await _repository.UpdateInProgressFromAccepted(JobStatusChangeReasonCodes.AutoProgressingShifts);
+            await _repository.UpdateJobsToDoneFromInProgress(JobStatusChangeReasonCodes.AutoProgressingShifts);
+            await _repository.UpdateJobsToCancelledFromNewOrOpen(JobStatusChangeReasonCodes.AutoProgressingShifts);
 
             var jobs = await _repository.GetOverdueRepeatJobs();
             jobs.ToList().ForEach(job => CancelJob(job, JobStatusChangeReasonCodes.AutoProgressingOverdueRepeats));

@@ -26,10 +26,10 @@ namespace RequestService.Core.Interfaces.Repositories
 
         Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken);
         Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent);
-        Task UpdateInProgressFromAccepted();
-        Task UpdateJobsToDoneFromInProgress();
-        Task UpdateJobsToCancelledFromNewOrOpen();
-        Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
+        Task UpdateInProgressFromAccepted(JobStatusChangeReasonCodes jobStatusChangeReasonCode);
+        Task UpdateJobsToDoneFromInProgress(JobStatusChangeReasonCodes jobStatusChangeReasonCode);
+        Task UpdateJobsToCancelledFromNewOrOpen(JobStatusChangeReasonCodes jobStatusChangeReasonCode);
+        Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken);
         Task<List<int>> UpdateRequestStatusToDoneAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);

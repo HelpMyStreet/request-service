@@ -1666,7 +1666,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             List<int> result = new List<int>();
 
@@ -1684,7 +1684,7 @@ namespace RequestService.Repo
             {
                 job.JobStatusId = cancelledJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.ManualChangeByVolunteer);
+                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
                 result.Add(job.Id);
             }
             await _context.SaveChangesAsync(cancellationToken);
@@ -1764,7 +1764,7 @@ namespace RequestService.Repo
         {
             return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) < DateTime.Now).ToList();
         }
-        public async Task UpdateInProgressFromAccepted()
+        public async Task UpdateInProgressFromAccepted(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Accepted);
@@ -1773,13 +1773,13 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, JobStatusChangeReasonCodes.AutoProgressingShifts, CancellationToken.None);
+                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
 
         }
 
-        public async Task UpdateJobsToDoneFromInProgress()
+        public async Task UpdateJobsToDoneFromInProgress(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.InProgress);
@@ -1789,12 +1789,12 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusDoneAsync(job.Id, -1, JobStatusChangeReasonCodes.AutoProgressingShifts, CancellationToken.None);
+                    await UpdateJobStatusDoneAsync(job.Id, -1, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
         }
 
-        public async Task UpdateJobsToCancelledFromNewOrOpen()
+        public async Task UpdateJobsToCancelledFromNewOrOpen(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.New);
@@ -1804,7 +1804,7 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusCancelledAsync(job.Id, -1, JobStatusChangeReasonCodes.AutoProgressingShifts, CancellationToken.None);
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
 
