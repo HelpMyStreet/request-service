@@ -43,6 +43,17 @@ namespace RequestService.Core.Services
             }
         }
 
+        private void NotifyInProgressPastDueDate(int jobId)
+        {
+            _communicationService.RequestCommunication(
+            new RequestCommunicationRequest()
+            {
+                CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.InProgressReminder },
+                JobID = jobId
+            },
+            CancellationToken.None); 
+        }
+
         public async Task ManageRequests()
         {
             await _repository.UpdateInProgressFromAccepted(JobStatusChangeReasonCodes.AutoProgressingShifts);
@@ -52,8 +63,11 @@ namespace RequestService.Core.Services
             var jobs = await _repository.GetOverdueRepeatJobs();
             jobs.ToList().ForEach(job => CancelJob(job, JobStatusChangeReasonCodes.AutoProgressingOverdueRepeats));
 
-            var jobsPastDueDate = await _repository.GetJobsPastDueDate(14);
+            var jobsPastDueDate = await _repository.GetJobsPastDueDate(JobStatuses.Open, 14);
             jobsPastDueDate.ToList().ForEach(job => CancelJob(job, JobStatusChangeReasonCodes.AutoProgressingJobsPastDueDates));
+
+            var jobsInProgressPastDueDate = await _repository.GetJobsPastDueDate(JobStatuses.InProgress, 3);
+            jobsInProgressPastDueDate.ToList().ForEach(job => NotifyInProgressPastDueDate(job));
 
         }
     }

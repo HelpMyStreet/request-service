@@ -2084,15 +2084,14 @@ namespace RequestService.Repo
                 .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
         }
 
-        public async Task<IEnumerable<int>> GetJobsPastDueDate(int days)
+        public async Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days)
         {
-            byte jobStatus_Open = (byte)JobStatuses.Open;
             byte requestType_task = (byte)RequestType.Task;
             DateTime dt = DateTime.Now.Date.AddDays(-days);
 
             return _context.Job
                 .Include(x => x.NewRequest)
-                .Where(x => x.JobStatusId == jobStatus_Open
+                .Where(x => x.JobStatusId == (byte) jobStatus
                 && x.NewRequest.RequestType == requestType_task
                 && (x.DueDate < dt)
                 )
