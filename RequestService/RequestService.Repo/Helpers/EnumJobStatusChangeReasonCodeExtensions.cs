@@ -15,7 +15,7 @@ namespace RequestService.Repo.Helpers
 
             foreach (var reasonCode in reasonCodes)
             {
-                entity.HasData(new EnumJobStatusChangeReasonCodes { Id = (int)reasonCode, Name = reasonCode.ToString(), TriggersStatusChange = reasonCode.TriggersStatusChangeEmail() });
+                entity.HasData(new EnumJobStatusChangeReasonCodes { Id = (int)reasonCode, Name = reasonCode.ToString(), TriggersStatusChangeEmail = reasonCode.TriggersStatusChangeEmail() });
             }
         }
     }
