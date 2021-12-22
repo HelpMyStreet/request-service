@@ -945,6 +945,7 @@ namespace RequestService.Repo
                 {
                     Shift = shift,
                     ReferringGroupID = request.ReferringGroupId,
+                    Source = request.Source,
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
                     MultiVolunteer = request.MultiVolunteer,
@@ -2094,6 +2095,21 @@ namespace RequestService.Repo
                 .Where(x => x.JobStatusId == (byte) jobStatus
                 && x.NewRequest.RequestType == requestType_task
                 && (x.DueDate < dt)
+                )
+                .Select(x => x.Id);
+        }
+
+        public async Task<IEnumerable<int>> GetOpenJobsDueTomorrow()
+        {
+            byte jobstatus_open = (byte)JobStatuses.Open;
+            byte requestType_task = (byte)RequestType.Task;
+            DateTime dt = DateTime.Now.Date.AddDays(1);
+
+            return _context.Job
+                .Include(x => x.NewRequest)
+                .Where(x => x.JobStatusId == (byte)jobstatus_open
+                && x.NewRequest.RequestType == requestType_task
+                && (x.DueDate.Date == dt)
                 )
                 .Select(x => x.Id);
         }
