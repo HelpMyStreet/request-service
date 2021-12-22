@@ -15,6 +15,7 @@ using HelpMyStreet.Contracts.AddressService.Request;
 using System;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.EqualityComparers;
+using HelpMyStreet.Utils.Extensions;
 
 namespace RequestService.Handlers
 {
@@ -153,6 +154,8 @@ namespace RequestService.Handlers
             allFilteredJobs = await _jobFilteringService.FilterAllJobs(
                 allFilteredJobs,
                 request.Postcode,
+                request.DateFrom,
+                request.DateTo,
                 cancellationToken);
 
             if (request.ExcludeSiblingsOfJobsAllocatedToUserID.HasValue)
@@ -187,7 +190,8 @@ namespace RequestService.Handlers
                 RequestID = job.RequestID,
                 RequestType = job.RequestType,
                 RequestorDefinedByGroup = job.RequestorDefinedByGroup,
-                NotBeforeDate = job.NotBeforeDate
+                NotBeforeDate = job.NotBeforeDate,
+                DueDays = (job.DueDate.ToUKFromUTCTime().Date - DateTime.UtcNow.ToUKFromUTCTime().Date).Days
             }));
 
             List<ShiftJob> shiftJobs = new List<ShiftJob>();

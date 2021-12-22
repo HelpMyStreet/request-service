@@ -55,6 +55,8 @@ namespace RequestService.Core.Services
         public async Task<List<JobDTO>> FilterAllJobs(
             List<JobDTO> jobs,
             string postcode,
+            DateTime? dateFrom,
+            DateTime? dateTo,
             CancellationToken cancellationToken)
         {
             bool applyDistanceFilter = false;
@@ -88,6 +90,18 @@ namespace RequestService.Core.Services
 
                 // Then hammer the cache, not the Group Service
                 jobs = jobs.Where(w => w.DistanceInMiles <= GetSupportDistanceForActivity(w.ReferringGroupID, w.SupportActivity, cancellationToken))
+                    .ToList();
+            }
+
+            if(dateFrom.HasValue)
+            {
+                jobs = jobs.Where(w => w.DueDate>=dateFrom.Value)
+                    .ToList();
+            }
+
+            if (dateTo.HasValue)
+            {
+                jobs = jobs.Where(w => w.DueDate <= dateTo.Value)
                     .ToList();
             }
 

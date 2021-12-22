@@ -15,7 +15,6 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        Task<IEnumerable<int>> GetOpenJobsDueTomorrow();
         Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days);
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId);
 
