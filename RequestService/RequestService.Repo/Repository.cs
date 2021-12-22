@@ -276,13 +276,13 @@ namespace RequestService.Repo
                             });
                         }
 
-                        _context.RequestJobStatus.Add(new RequestJobStatus()
-                        {
-                            DateCreated = DateTime.Now,
-                            JobStatusId = (byte)JobStatuses.New,
-                            Job = EFcoreJob,
-                            CreatedByUserId = helpRequestDetail.HelpRequest.CreatedByUserId,
-                        });
+                        AddJobStatus(
+                            EFcoreJob.Id,
+                            helpRequestDetail.HelpRequest.CreatedByUserId,
+                            null,
+                            JobStatuses.New,
+                            JobStatusChangeReasonCodes.UserChange
+                            );
                     }
 
                     await _context.SaveChangesAsync();
@@ -346,13 +346,12 @@ namespace RequestService.Repo
                                 JobStatusId = (byte)JobStatuses.Open,
                             };
                             _context.Job.Add(EFcoreJob);
-                            _context.RequestJobStatus.Add(new RequestJobStatus()
-                            {
-                                DateCreated = DateTime.Now,
-                                JobStatusId = (byte)JobStatuses.Open,
-                                Job = EFcoreJob,
-                                CreatedByUserId = postNewShiftsRequest.CreatedByUserId,
-                            });
+                            AddJobStatus(
+                                EFcoreJob.Id, 
+                                postNewShiftsRequest.CreatedByUserId, 
+                                null, 
+                                JobStatuses.New, 
+                                JobStatusChangeReasonCodes.UserChange);
                         }
                     }
 
@@ -368,14 +367,15 @@ namespace RequestService.Repo
             throw new Exception("Unable to save shift request");
         }
 
-        private void AddJobStatus(int jobID, int? createdByUserID, int? volunteerUserID, byte jobStatus)
+        private void AddJobStatus(int jobID, int? createdByUserID, int? volunteerUserID, JobStatuses jobStatus, JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             _context.RequestJobStatus.Add(new RequestJobStatus()
             {
                 CreatedByUserId = createdByUserID,
                 VolunteerUserId = volunteerUserID,
                 JobId = jobID,
-                JobStatusId = jobStatus
+                JobStatusId = (byte) jobStatus,
+                JobStatusChangeReasonCodeId = (byte)jobStatusChangeReasonCode
             });
         }
 
@@ -390,7 +390,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = openJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, openJobStatus);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -405,7 +405,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public async Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusCancelledAsync(int jobID, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte cancelledJobStatus = (byte)JobStatuses.Cancelled;
@@ -417,7 +417,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = cancelledJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, cancelledJobStatus);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -432,7 +432,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public async Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, CancellationToken cancellationToken)
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusInProgressAsync(int jobID, int createdByUserID, int volunteerUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte inProgressJobStatus = (byte)JobStatuses.InProgress;
@@ -444,7 +444,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
-                    AddJobStatus(jobID, createdByUserID, volunteerUserID, inProgressJobStatus);
+                    AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.InProgress, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -462,7 +462,7 @@ namespace RequestService.Repo
             return response;
         }
 
-        public async Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
             byte doneJobStatus = (byte)JobStatuses.Done;
@@ -472,7 +472,7 @@ namespace RequestService.Repo
                 if (job.JobStatusId != doneJobStatus)
                 {
                     job.JobStatusId = doneJobStatus;
-                    AddJobStatus(jobID, createdByUserID, null, doneJobStatus);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Done, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -501,7 +501,7 @@ namespace RequestService.Repo
                 if (job.JobStatusId != newJobStatus)
                 {
                     job.JobStatusId = newJobStatus;
-                    AddJobStatus(jobID, createdByUserID, null, newJobStatus);
+                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.New, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -534,7 +534,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = acceptedJobStatus;
                         job.VolunteerUserId = volunteerUserID; ;
-                        AddJobStatus(jobID, createdByUserID, volunteerUserID, acceptedJobStatus);
+                        AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         int result = await _context.SaveChangesAsync(cancellationToken);
                         if (result == 2)
                         {
@@ -945,6 +945,7 @@ namespace RequestService.Repo
                 {
                     Shift = shift,
                     ReferringGroupID = request.ReferringGroupId,
+                    Source = request.Source,
                     RequestType = (RequestType)request.RequestType,
                     RequestID = request.Id,
                     MultiVolunteer = request.MultiVolunteer,
@@ -1126,7 +1127,8 @@ namespace RequestService.Repo
                     JobStatus = (JobStatuses)x.JobStatusId,
                     StatusDate = x.DateCreated,
                     VolunteerUserID = x.VolunteerUserId,
-                    CreatedByUserID = x.CreatedByUserId
+                    CreatedByUserID = x.CreatedByUserId,
+                    JobStatusChangeReasonCode = (JobStatusChangeReasonCodes) x.JobStatusChangeReasonCodeId
                 }).ToList();
         }
 
@@ -1408,7 +1410,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = (byte)JobStatuses.Accepted;
                         job.VolunteerUserId = volunteerUserID;
-                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, (byte)JobStatuses.Accepted);
+                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         _context.SaveChanges();
 
                         count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
@@ -1651,7 +1653,7 @@ namespace RequestService.Repo
             {
                 job.JobStatusId = openJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, openJobStatus);
+                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.AutoProgressNewToOpen);
             }
             int result = await _context.SaveChangesAsync(cancellationToken);
 
@@ -1665,7 +1667,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
+        public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             List<int> result = new List<int>();
 
@@ -1683,7 +1685,7 @@ namespace RequestService.Repo
             {
                 job.JobStatusId = cancelledJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, cancelledJobStatus);
+                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
                 result.Add(job.Id);
             }
             await _context.SaveChangesAsync(cancellationToken);
@@ -1719,14 +1721,14 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = byteCancelledJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(job.Id, createdByUserID, null, byteCancelledJobStatus);
+                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 
                 if (job.JobStatusId == (byte)JobStatuses.Accepted || job.JobStatusId == (byte)JobStatuses.InProgress)
                 {
                     job.JobStatusId = byteDoneJobStatus;
-                    AddJobStatus(job.Id, createdByUserID, null, byteDoneJobStatus);
+                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Done, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 
@@ -1763,7 +1765,7 @@ namespace RequestService.Repo
         {
             return jobs.Where(x => x.NewRequest.Shift.StartDate.AddMinutes(x.NewRequest.Shift.ShiftLength) < DateTime.Now).ToList();
         }
-        public async Task UpdateInProgressFromAccepted()
+        public async Task UpdateInProgressFromAccepted(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.Accepted);
@@ -1772,13 +1774,13 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, CancellationToken.None);
+                    await UpdateJobStatusInProgressAsync(job.Id, -1, job.VolunteerUserId.Value, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
 
         }
 
-        public async Task UpdateJobsToDoneFromInProgress()
+        public async Task UpdateJobsToDoneFromInProgress(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.InProgress);
@@ -1788,12 +1790,12 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusDoneAsync(job.Id, -1, CancellationToken.None);
+                    await UpdateJobStatusDoneAsync(job.Id, -1, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
         }
 
-        public async Task UpdateJobsToCancelledFromNewOrOpen()
+        public async Task UpdateJobsToCancelledFromNewOrOpen(JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
             List<EntityFramework.Entities.Job> jobs = new List<EntityFramework.Entities.Job>();
             jobs = GetJobsWhereShiftStartDateHasPassed(JobStatuses.New);
@@ -1803,7 +1805,7 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, jobStatusChangeReasonCode, CancellationToken.None);
                 }
             }
 
@@ -1814,7 +1816,7 @@ namespace RequestService.Repo
             {
                 foreach (EntityFramework.Entities.Job job in jobs)
                 {
-                    await UpdateJobStatusCancelledAsync(job.Id, -1, CancellationToken.None);
+                    await UpdateJobStatusCancelledAsync(job.Id, -1, JobStatusChangeReasonCodes.AutoProgressingShifts, CancellationToken.None);
                 }
             }
         }
@@ -1919,24 +1921,20 @@ namespace RequestService.Repo
             }
         }
 
-        public List<int> GetOverdueRepeatJobs()
+        public async Task<IEnumerable<int>> GetOverdueRepeatJobs()
         {
-            List<int> response = new List<int>();
             byte jobStatusNew = (byte)JobStatuses.New;
             byte jobStatusOpen = (byte)JobStatuses.Open;
 
             DateTime sixHoursAgo = DateTime.UtcNow.AddHours(-6);
-            
-            response = _context.Job
+
+            return _context.Job
                 .Include(x => x.NewRequest)
-                .Where(x => x.NewRequest.Repeat == true 
+                .Where(x => x.NewRequest.Repeat == true
                             && x.DueDate < sixHoursAgo
                             && (x.JobStatusId == jobStatusNew || x.JobStatusId == jobStatusOpen)
                         )
-                .Select(x => x.Id)
-                .ToList();
-
-            return response;
+                .Select(x => x.Id);       
         }
 
         public async Task<Dictionary<int, int>> GetAllRequestIDs(List<int> JobIDs)
@@ -2085,6 +2083,20 @@ namespace RequestService.Repo
 
             return _context.Job
                 .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
+        }
+
+        public async Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days)
+        {
+            byte requestType_task = (byte)RequestType.Task;
+            DateTime dt = DateTime.Now.Date.AddDays(-days);
+
+            return _context.Job
+                .Include(x => x.NewRequest)
+                .Where(x => x.JobStatusId == (byte) jobStatus
+                && x.NewRequest.RequestType == requestType_task
+                && (x.DueDate < dt)
+                )
+                .Select(x => x.Id);
         }
     }
 }
