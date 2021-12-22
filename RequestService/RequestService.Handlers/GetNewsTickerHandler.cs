@@ -8,6 +8,8 @@ using HelpMyStreet.Contracts;
 using RequestService.Core.Domains;
 using HelpMyStreet.Utils.Extensions;
 using System.Linq;
+using System;
+using HelpMyStreet.Utils.Models;
 
 namespace RequestService.Handlers
 {
@@ -38,23 +40,23 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ item.Value }** {item.SupportActivity.FriendlyNameShort()} { item.SupportActivity.RequestType().ToString() }  completed"
+                    Message = $"**{ item.Value } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
                 });
             };
 
-            var totalTasks = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Sum(x => x.Value);
+            var totalRequests = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Sum(x => x.Value);
             var totalShifts = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Shift)?.Sum(x => x.Value);
             
-            if(totalTasks>0)
+            if(totalRequests>0)
             {
                 var maxTaskCount =  completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Task)?.Max(x => x.Value);
 
-                if (totalTasks > 20 && totalTasks > (maxTaskCount * 1.1))
+                if (totalRequests > 20 && totalRequests > (maxTaskCount * 1.1))
                 {
                     response.Messages.Add(new NewsTickerMessage()
                     {
-                        Value = totalTasks,
-                        Message = $"**{ totalTasks }** requests completed"
+                        Value = totalRequests,
+                        Message = $"**{ totalRequests }** {HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests))} completed"
                     });
                 }
             }
@@ -67,7 +69,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = $"**{ totalShifts }** shifts completed"
+                        Message = $"**{ totalShifts }** {HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts))} completed"
                     });
                 }
             }
