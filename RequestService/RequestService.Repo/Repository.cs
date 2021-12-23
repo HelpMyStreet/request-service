@@ -1128,7 +1128,7 @@ namespace RequestService.Repo
                     StatusDate = x.DateCreated,
                     VolunteerUserID = x.VolunteerUserId,
                     CreatedByUserID = x.CreatedByUserId,
-                    JobStatusChangeReasonCode = (JobStatusChangeReasonCodes) x.JobStatusChangeReasonCodeId
+                    JobStatusChangeReasonCode = (JobStatusChangeReasonCodes?) x.JobStatusChangeReasonCodeId
                 }).ToList();
         }
 
