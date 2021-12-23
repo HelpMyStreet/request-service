@@ -40,7 +40,7 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ item.Value } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
+                    Message = $"**{ String.Format("{0:n0}", item.Value) } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
                 });
             };
 
@@ -56,7 +56,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalRequests,
-                        Message = $"**{ totalRequests }** {HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests))} completed"
+                        Message = $"**{ String.Format("{0:n0}", totalRequests)  }** {HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests))} completed"
                     });
                 }
             }
@@ -69,7 +69,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = $"**{ totalShifts }** {HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts))} completed"
+                        Message = $"**{ String.Format("{0:n0}", totalShifts) }** {HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts))} completed"
                     });
                 }
             }
@@ -91,7 +91,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = totalRequestsAddedThisWeek,
-                    Message = $"**{totalRequestsAddedThisWeek}** new requests added this week"
+                    Message = $"**{String.Format("{0:n0}", totalRequestsAddedThisWeek)}** new requests added this week"
                 });
             }
 
@@ -100,7 +100,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = openJobCount,
-                    Message = $"**{openJobCount}** open jobs waiting for a volunteer"
+                    Message = $"**{String.Format("{0:n0}", openJobCount)}** open jobs waiting for a volunteer"
                 });
             }
 
