@@ -55,7 +55,7 @@ namespace RequestService.Handlers
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = string.Format("**{0:n0} {1}** {2} completed", item.Value, strSupportActivity, strRequestType)
+                    Message = $"**{item.Value:n0} {strSupportActivity}** {strRequestType} completed"
                 });
             };
 
@@ -72,7 +72,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalRequests,
-                        Message = String.Format("**{0:n0}** {1} completed", totalRequests, strRequestType)
+                        Message = $"**{totalRequests:n0}** {strRequestType} completed"
                     });
                 }
             }
@@ -86,7 +86,7 @@ namespace RequestService.Handlers
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = String.Format("**{0:n0}** {1} completed", totalShifts, strRequestType)
+                        Message = $"**{totalShifts:n0}** {strRequestType} completed"
                     });
                 }
             }
@@ -108,7 +108,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = totalRequestsAddedThisWeek,
-                    Message = string.Format("**{0:n0}** new requests added this week", totalRequestsAddedThisWeek)
+                    Message = $"**{totalRequestsAddedThisWeek:n0}** new requests added this week"
                 });
             }
 
@@ -117,7 +117,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = openJobCount,
-                    Message = string.Format("**{0:n0}** open jobs waiting for a volunteer", openJobCount)
+                    Message = $"**{openJobCount:n0}** open jobs waiting for a volunteer"
                 });
             }
 
