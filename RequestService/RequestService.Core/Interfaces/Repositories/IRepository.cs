@@ -15,13 +15,13 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId);
+        Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);
 
-        Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days);
+        Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(IEnumerable<int> groups, int days);
 
-        Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days);
+        Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(IEnumerable<int> groups, int days);
 
-        Task<int> OpenJobCount(int? groupId);
+        Task<int> OpenJobCount(IEnumerable<int> groups);
 
         Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken);
         Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent);

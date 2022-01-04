@@ -28,7 +28,6 @@ namespace RequestService.Repo
     {
         private readonly ApplicationDbContext _context;
         private IEqualityComparer<JobBasic> _jobBasicDedupeWithDate_EqualityComparer;
-        private const int GENERIC_GROUPID = -1;
 
         public Repository(ApplicationDbContext context)
         {
@@ -2025,14 +2024,17 @@ namespace RequestService.Repo
             }            
         }
 
-        public async Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(int? groupId)
+        public async Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups)
         {
             Byte jobstatus_done = (byte)JobStatuses.Done;
 
             return _context.Job
                 .Include(i => i.NewRequest)
-                .Where(x => x.JobStatusId == jobstatus_done && 
-                x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId))
+                .Where
+                (
+                    x => x.JobStatusId == jobstatus_done &&
+                    (groups.Count() == 0 || groups.Contains(x.NewRequest.ReferringGroupId))                    
+                )
                 .GroupBy(p => p.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {
@@ -2041,7 +2043,7 @@ namespace RequestService.Repo
                 });            
         }
 
-        public async Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(int? groupId, int days)
+        public async Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(IEnumerable<int> groups, int days)
         {
             DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
 
@@ -2050,9 +2052,12 @@ namespace RequestService.Repo
             return _context.RequestJobStatus
                 .Include(i => i.Job)
                 .ThenInclude(i => i.NewRequest)
-                .Where(x => x.JobStatusId == jobstatus_done 
-                && x.Job.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.Job.NewRequest.ReferringGroupId)
-                && x.DateCreated > dtLessThanXDays)
+                .Where
+                (
+                    x => x.JobStatusId == jobstatus_done &&
+                    (groups.Count() == 0 || groups.Contains(x.Job.NewRequest.ReferringGroupId))
+                    && x.DateCreated > dtLessThanXDays
+                )
                 .GroupBy(p => p.Job.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {
@@ -2061,14 +2066,17 @@ namespace RequestService.Repo
                 });
         }
 
-        public async Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(int? groupId, int days)
+        public async Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(IEnumerable<int> groups, int days)
         {
             DateTime dtLessThanXDays = DateTime.UtcNow.Date.AddDays(-days);
 
             return _context.Job
                 .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == (groupId.HasValue ? groupId.Value : x.NewRequest.ReferringGroupId)
-                && x.NewRequest.DateRequested > dtLessThanXDays)
+                .Where
+                (
+                    x => x.NewRequest.DateRequested > dtLessThanXDays &&
+                    (groups.Count() == 0 || groups.Contains(x.NewRequest.ReferringGroupId))
+                )
                 .GroupBy(p => p.SupportActivityId)
                 .Select(g => new SupportActivityCount
                 {
@@ -2077,14 +2085,16 @@ namespace RequestService.Repo
                 });
         }
 
-        public async Task<int> OpenJobCount(int? groupId)
+        public async Task<int> OpenJobCount(IEnumerable<int> groups)
         {
-            groupId = groupId.HasValue ? groupId.Value : GENERIC_GROUPID;
-
             Byte jobstatus_open = (byte)JobStatuses.Open;
 
             return _context.Job
-                .Count(x => x.JobStatusId == jobstatus_open & x.NewRequest.ReferringGroupId == groupId);
+                .Count
+                (
+                    x => x.JobStatusId == jobstatus_open && 
+                    (groups.Count() == 0 || groups.Contains(x.NewRequest.ReferringGroupId))
+                );
         }
     }
 }
