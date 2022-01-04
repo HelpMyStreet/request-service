@@ -10,16 +10,19 @@ using HelpMyStreet.Utils.Extensions;
 using System.Linq;
 using System;
 using HelpMyStreet.Utils.Models;
+using RequestService.Core.Services;
 
 namespace RequestService.Handlers
 {
     public class GetNewsTickerHandler : IRequestHandler<NewsTickerRequest, NewsTickerResponse>
     {
         private readonly IRepository _repository;
+        private readonly IGroupService _groupService;
 
-        public GetNewsTickerHandler(IRepository repository)
+        public GetNewsTickerHandler(IRepository repository, IGroupService groupService)
         {
             _repository = repository;
+            _groupService = groupService;
         }
 
         public async Task<NewsTickerResponse> Handle(NewsTickerRequest request, CancellationToken cancellationToken)
@@ -29,18 +32,30 @@ namespace RequestService.Handlers
                 Messages = new List<NewsTickerMessage>()
             };
 
-            var completedActivities = await _repository.GetCompletedActivitiesCount(request.GroupId);
-            var completedActivitiesToday = await _repository.GetActivitiesCompletedLastXDaysCount(request.GroupId, 1);
-            var requestsAddedWithinLastWeek = await _repository.GetRequestsAddedLastXDaysCount(request.GroupId, 7);
-            var openJobCount = await _repository.OpenJobCount(request.GroupId);
+            List<int> groups = new List<int>();
+
+            if(request.GroupId.HasValue)
+            {
+                groups.Add(request.GroupId.Value);
+                var childGroups = await _groupService.GetChildGroups(request.GroupId.Value);
+                groups.AddRange(childGroups.ChildGroups.Select(sm => sm.GroupId));
+            }
+
+            var completedActivities = await _repository.GetCompletedActivitiesCount(groups);
+            var completedActivitiesToday = await _repository.GetActivitiesCompletedLastXDaysCount(groups, 1);
+            var requestsAddedWithinLastWeek = await _repository.GetRequestsAddedLastXDaysCount(groups, 7);
+            var openJobCount = await _repository.OpenJobCount(groups);
 
             foreach (SupportActivityCount item in completedActivities.Where(x=> x.Value>10).OrderByDescending(x => x.Value).Take(3))
             {
+                string strRequestType = item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value));
+                string strSupportActivity = item.SupportActivity.FriendlyNameShort().ToLower();
+
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = item.Value,
                     SupportActivity = item.SupportActivity,
-                    Message = $"**{ String.Format("{0:n0}", item.Value) } {item.SupportActivity.FriendlyNameShort().ToLower()}** { item.SupportActivity.RequestType().FriendlyName(Convert.ToInt32(item.Value)) } completed"
+                    Message = string.Format("**{0:n0} {1}** {2} completed", item.Value, strSupportActivity, strRequestType)
                 });
             };
 
@@ -53,10 +68,11 @@ namespace RequestService.Handlers
 
                 if (totalRequests > 20 && totalRequests > (maxTaskCount * 1.1))
                 {
+                    string strRequestType = HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests));
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalRequests,
-                        Message = $"**{ String.Format("{0:n0}", totalRequests)  }** {HelpMyStreet.Utils.Enums.RequestType.Task.FriendlyName(Convert.ToInt32(totalRequests))} completed"
+                        Message = String.Format("**{0:n0}** {1} completed", totalRequests, strRequestType)
                     });
                 }
             }
@@ -66,10 +82,11 @@ namespace RequestService.Handlers
                 var maxShiftCount = completedActivities.Where(x => x.SupportActivity.RequestType() == HelpMyStreet.Utils.Enums.RequestType.Shift)?.Max(x => x.Value);
                 if (totalShifts > 20 && totalShifts > (maxShiftCount * 1.1))
                 {
+                    string strRequestType = HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts));
                     response.Messages.Add(new NewsTickerMessage()
                     {
                         Value = totalShifts,
-                        Message = $"**{ String.Format("{0:n0}", totalShifts) }** {HelpMyStreet.Utils.Enums.RequestType.Shift.FriendlyName(Convert.ToInt32(totalShifts))} completed"
+                        Message = String.Format("**{0:n0}** {1} completed", totalShifts, strRequestType)
                     });
                 }
             }
@@ -91,7 +108,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = totalRequestsAddedThisWeek,
-                    Message = $"**{String.Format("{0:n0}", totalRequestsAddedThisWeek)}** new requests added this week"
+                    Message = string.Format("**{0:n0}** new requests added this week", totalRequestsAddedThisWeek)
                 });
             }
 
@@ -100,7 +117,7 @@ namespace RequestService.Handlers
                 response.Messages.Add(new NewsTickerMessage()
                 {
                     Value = openJobCount,
-                    Message = $"**{String.Format("{0:n0}", openJobCount)}** open jobs waiting for a volunteer"
+                    Message = string.Format("**{0:n0}** open jobs waiting for a volunteer", openJobCount)
                 });
             }
 
