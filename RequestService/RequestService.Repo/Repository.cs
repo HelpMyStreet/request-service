@@ -2098,7 +2098,7 @@ namespace RequestService.Repo
         public async Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days)
         {
             byte requestType_task = (byte)RequestType.Task;
-            DateTime dt = DateTime.Now.Date.AddDays(-days);
+            DateTime dt = DateTime.UtcNow.Date.AddDays(-days);
 
             return _context.Job
                 .Include(x => x.NewRequest)
