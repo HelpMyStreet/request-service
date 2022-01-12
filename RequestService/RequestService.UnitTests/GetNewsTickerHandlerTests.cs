@@ -24,10 +24,12 @@ namespace RequestService.UnitTests
     public class GetNewsTickerHandlerTests
     {
         private Mock<IRepository> _repository;
+        private Mock<IGroupService> _groupService;
         private GetNewsTickerHandler _classUnderTest;
         private List<SupportActivityCount> _completedActivities;
         private List<SupportActivityCount> _completedActivitiesCompletedLastXDays;
         private List<SupportActivityCount> _requestsAddedLastXDays;
+        private GetChildGroupsResponse _childGroupsResponse;
         private int _openJobCount;
         private IEqualityComparer<NewsTickerMessage> _equalityComparer;
 
@@ -35,8 +37,9 @@ namespace RequestService.UnitTests
         public void Setup()
         {
             SetupRepository();
-            _equalityComparer = new NewsTickerMessages_EqualityComparer();
-            _classUnderTest = new GetNewsTickerHandler(_repository.Object);
+            SetupGroupService();
+            _equalityComparer = new NewsTickerMessages_EqualityComparer();            
+            _classUnderTest = new GetNewsTickerHandler(_repository.Object, _groupService.Object);
         }
 
         private void SetupRepository()
@@ -47,17 +50,24 @@ namespace RequestService.UnitTests
             _requestsAddedLastXDays = new List<SupportActivityCount>();
 
             _repository = new Mock<IRepository>();
-            _repository.Setup(x => x.GetCompletedActivitiesCount(It.IsAny<int?>()))
+            _repository.Setup(x => x.GetCompletedActivitiesCount(It.IsAny<List<int>>()))
                 .ReturnsAsync(()=> _completedActivities);
 
-            _repository.Setup(x => x.GetActivitiesCompletedLastXDaysCount(It.IsAny<int?>(), It.IsAny<int>()))
+            _repository.Setup(x => x.GetActivitiesCompletedLastXDaysCount(It.IsAny<IEnumerable<int>>(), It.IsAny<int>()))
                 .ReturnsAsync(() => _completedActivitiesCompletedLastXDays);
 
-            _repository.Setup(x => x.GetRequestsAddedLastXDaysCount(It.IsAny<int?>(), It.IsAny<int>()))
+            _repository.Setup(x => x.GetRequestsAddedLastXDaysCount(It.IsAny<IEnumerable<int>>(), It.IsAny<int>()))
                 .ReturnsAsync(() => _requestsAddedLastXDays);
 
-            _repository.Setup(x => x.OpenJobCount(It.IsAny<int?>()))
+            _repository.Setup(x => x.OpenJobCount(It.IsAny<IEnumerable<int>>()))
                 .ReturnsAsync(() => _openJobCount);
+        }
+
+        private void SetupGroupService()
+        {
+            _groupService = new Mock<IGroupService>();
+            _groupService.Setup(x => x.GetChildGroups(It.IsAny<int>()))
+                .ReturnsAsync(() => _childGroupsResponse);
         }
 
         [TestCase(20, 8, 15, 11, 15, 5)]
@@ -68,6 +78,13 @@ namespace RequestService.UnitTests
         public async Task WhenCompletedActivitiesExceedThreshold_Then_AddsToMessages(int shoppingCount, int facemaskCount, int homeworkSupportCount, int vaccineSupportCount, int bankStaffVaccinatorCount, int messageCount)
         {
             int? groupId = -3;
+            _childGroupsResponse = new GetChildGroupsResponse()
+            {
+                ChildGroups = new List<Group>()
+                {
+                    new Group(){GroupId = groupId.Value}
+                }
+            };
             _openJobCount = 0;
             _completedActivitiesCompletedLastXDays = new List<SupportActivityCount>();
             _requestsAddedLastXDays = new List<SupportActivityCount>();
@@ -148,6 +165,15 @@ namespace RequestService.UnitTests
         public async Task WhenCompletedLastXDays_Then_AddsToMessages()
         {
             int? groupId = -3;
+
+            _childGroupsResponse = new GetChildGroupsResponse()
+            {
+                ChildGroups = new List<Group>()
+                {
+                    new Group(){GroupId = groupId.Value}
+                }
+            };
+
             _openJobCount = 0;
             _completedActivities = new List<SupportActivityCount>();
             _requestsAddedLastXDays = new List<SupportActivityCount>();
@@ -238,6 +264,14 @@ namespace RequestService.UnitTests
         public async Task WhenOpenJobCountGreater_Then_AddsToMessages(int openJobCount)
         {
             int? groupId = -3;
+
+            _childGroupsResponse = new GetChildGroupsResponse()
+            {
+                ChildGroups = new List<Group>()
+                {
+                    new Group(){GroupId = groupId.Value}
+                }
+            };
             _openJobCount = openJobCount;
             _completedActivities = new List<SupportActivityCount>();
             _completedActivitiesCompletedLastXDays = new List<SupportActivityCount>();
