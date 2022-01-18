@@ -28,7 +28,7 @@ namespace RequestService.AzureFunction
         [FunctionName("GetChart")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GetChartResponse))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Function, "get, post", Route = null)]
             [RequestBodyType(typeof(GetChartRequest), "Get chart request")] GetChartRequest req,
             ILogger log)
         {
