@@ -1,4 +1,5 @@
-﻿using HelpMyStreet.Contracts.ReportService.Response;
+﻿using HelpMyStreet.Contracts.ReportService;
+using HelpMyStreet.Contracts.ReportService.Response;
 using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
@@ -15,6 +16,7 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<Chart> GetActivitiesByMonth(int groupId);
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);
 
         Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(IEnumerable<int> groups, int days);
