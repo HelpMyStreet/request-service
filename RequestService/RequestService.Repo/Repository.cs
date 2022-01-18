@@ -21,6 +21,7 @@ using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
 using HelpMyStreet.Utils.EqualityComparers;
+using HelpMyStreet.Contracts.ReportService;
 
 namespace RequestService.Repo
 {
@@ -2095,6 +2096,42 @@ namespace RequestService.Repo
                     x => x.JobStatusId == jobstatus_open && 
                     (groups.Count() == 0 || groups.Contains(x.NewRequest.ReferringGroupId))
                 );
+        }
+
+        public async Task<Chart> GetActivitiesByMonth(int groupId)
+        {
+            DateTime dt = DateTime.UtcNow.Date.AddYears(-1);
+            Chart result = new Chart()
+            {
+                Title = "Activities by month",
+                XAxisName = "Month",
+                YAxisName = "Count",
+                ChartType = ChartTypes.Bar,
+                ChartItems = new List<ChartItem>()
+            };
+
+            var chartItems = _context.Job
+                .Include(i => i.NewRequest)
+                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > dt)
+                .GroupBy(g => new { g.SupportActivityId, date = g.NewRequest.DateRequested })
+                .Select(s => new
+                {
+                    Date = s.Key.date,
+                    Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
+                    Count = s.Count()
+                }).ToList();
+
+            var x = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+                .Select(s => new ChartItem
+                {
+                    Count = s.Count(),
+                    Label = s.Key.Label,
+                    XAxis = s.Key.date
+                }).ToList();
+                
+            result.ChartItems = x;
+
+            return result;
         }
     }
 }
