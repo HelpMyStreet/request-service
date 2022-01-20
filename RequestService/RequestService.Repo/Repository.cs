@@ -2125,7 +2125,7 @@ namespace RequestService.Repo
             var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
 
             //Populate chartitems with support activities for each month
-            for (int i = 0; i < 12; i++)
+            while(dt< DateTime.UtcNow.Date)
             {
                 supportActivities.ForEach(sa =>
                 {
