@@ -2121,16 +2121,38 @@ namespace RequestService.Repo
                     Count = s.Count()
                 }).ToList();
 
-            var x = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+            //Get distinct activities from list
+            var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
+
+            //Populate chartitems with support activities for each month
+            while(dt< DateTime.UtcNow.Date)
+            {
+                supportActivities.ForEach(sa =>
+                {
+                    result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
+                });
+                dt = dt.AddMonths(1);
+            }
+
+            var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
                 .Select(s => new ChartItem
                 {
                     Count = s.Count(),
                     Label = s.Key.Label,
                     XAxis = s.Key.date
                 }).ToList();
-                
-            result.ChartItems = x;
 
+            //override chart items with actual values form the dataset.
+            result.ChartItems.ForEach(item =>
+            {
+                var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
+
+                if (matchedItem != null)
+                {
+                    item.Count = matchedItem.Count;
+                }
+            });
+            
             return result;
         }
     }

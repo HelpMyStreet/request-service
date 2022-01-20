@@ -43,7 +43,6 @@ namespace RequestService.Handlers
                     throw new Exception($"Unknown chart type { request.Chart.Chart}");
             }
 
-
             return response;
         }
     }
