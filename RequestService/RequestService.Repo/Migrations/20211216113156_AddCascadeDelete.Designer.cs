@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216113156_AddCascadeDelete")]
+    partial class AddCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8380,57 +8382,6 @@ namespace RequestService.Repo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumJobStatusChangeReasonCodes", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TriggersStatusChangeEmail")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobStatusChangeReasonCode","Lookup");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "AutoProgressingOverdueRepeats",
-                            TriggersStatusChangeEmail = false
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "AutoProgressingJobsPastDueDates",
-                            TriggersStatusChangeEmail = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "AutoProgressingShifts",
-                            TriggersStatusChangeEmail = false
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "UserChange",
-                            TriggersStatusChangeEmail = true
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "AutoProgressNewToOpen",
-                            TriggersStatusChangeEmail = false
-                        });
-                });
-
             modelBuilder.Entity("RequestService.Repo.EntityFramework.Entities.EnumJobStatuses", b =>
                 {
                     b.Property<int>("Id")
@@ -9614,10 +9565,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnName("CreatedByUserID")
                         .HasColumnType("int");
-
-                    b.Property<byte?>("JobStatusChangeReasonCodeId")
-                        .HasColumnName("JobStatusChangeReasonCodeID")
-                        .HasColumnType("tinyint");
 
                     b.Property<int?>("VolunteerUserId")
                         .HasColumnName("VolunteerUserID")

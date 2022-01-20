@@ -21,6 +21,8 @@ namespace RequestService.Core.Services
         Task<List<JobDTO>> FilterAllJobs(
             List<JobDTO> jobs,
             string postcode,
+            DateTime? dateFrom,
+            DateTime? dateTo,
             CancellationToken cancellationToken);
 
         Task FilterAllRequests(

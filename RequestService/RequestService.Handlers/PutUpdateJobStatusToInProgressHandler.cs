@@ -105,7 +105,7 @@ namespace RequestService.Handlers
                 return response;
             }
 
-            var result = await _repository.UpdateJobStatusInProgressAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, cancellationToken);
+            var result = await _repository.UpdateJobStatusInProgressAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, JobStatusChangeReasonCodes.UserChange, cancellationToken);
             response.Outcome = result;
 
             if (result == UpdateJobStatusOutcome.Success)

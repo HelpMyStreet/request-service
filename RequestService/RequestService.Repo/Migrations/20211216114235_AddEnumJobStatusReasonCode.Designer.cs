@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216114235_AddEnumJobStatusReasonCode")]
+    partial class AddEnumJobStatusReasonCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8391,9 +8393,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TriggersStatusChangeEmail")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("JobStatusChangeReasonCode","Lookup");
@@ -8402,32 +8401,22 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "AutoProgressingOverdueRepeats",
-                            TriggersStatusChangeEmail = false
+                            Name = "AutoProgressingOverdueRepeats"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "AutoProgressingJobsPastDueDates",
-                            TriggersStatusChangeEmail = true
+                            Name = "AutoProgressingJobsPastDueDates"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "AutoProgressingShifts",
-                            TriggersStatusChangeEmail = false
+                            Name = "AutoProgressingShifts"
                         },
                         new
                         {
                             Id = 4,
-                            Name = "UserChange",
-                            TriggersStatusChangeEmail = true
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "AutoProgressNewToOpen",
-                            TriggersStatusChangeEmail = false
+                            Name = "ManualChangeByVolunteer"
                         });
                 });
 
@@ -9614,10 +9603,6 @@ namespace RequestService.Repo.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnName("CreatedByUserID")
                         .HasColumnType("int");
-
-                    b.Property<byte?>("JobStatusChangeReasonCodeId")
-                        .HasColumnName("JobStatusChangeReasonCodeID")
-                        .HasColumnType("tinyint");
 
                     b.Property<int?>("VolunteerUserId")
                         .HasColumnName("VolunteerUserID")

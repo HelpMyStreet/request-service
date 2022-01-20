@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211220102210_AddPropertyToJobStatusChangeReasonCode")]
+    partial class AddPropertyToJobStatusChangeReasonCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8391,7 +8393,7 @@ namespace RequestService.Repo.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TriggersStatusChangeEmail")
+                    b.Property<bool>("TriggersStatusChange")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -8403,31 +8405,31 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 1,
                             Name = "AutoProgressingOverdueRepeats",
-                            TriggersStatusChangeEmail = false
+                            TriggersStatusChange = true
                         },
                         new
                         {
                             Id = 2,
                             Name = "AutoProgressingJobsPastDueDates",
-                            TriggersStatusChangeEmail = true
+                            TriggersStatusChange = true
                         },
                         new
                         {
                             Id = 3,
                             Name = "AutoProgressingShifts",
-                            TriggersStatusChangeEmail = false
+                            TriggersStatusChange = false
                         },
                         new
                         {
                             Id = 4,
                             Name = "UserChange",
-                            TriggersStatusChangeEmail = true
+                            TriggersStatusChange = true
                         },
                         new
                         {
                             Id = 5,
                             Name = "AutoProgressNewToOpen",
-                            TriggersStatusChangeEmail = false
+                            TriggersStatusChange = false
                         });
                 });
 
