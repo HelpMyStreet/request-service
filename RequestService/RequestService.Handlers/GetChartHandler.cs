@@ -39,6 +39,18 @@ namespace RequestService.Handlers
                     var activitiesByMonth = await _repository.GetActivitiesByMonth(request.GroupId);
                     response.Chart = activitiesByMonth;
                     break;
+                case HelpMyStreet.Utils.Enums.Charts.RequestVolumeByDueDateAndRecentStatus:
+                    var requestVolumes = await _repository.RequestVolumeByDueDateAndRecentStatus(request.GroupId);
+                    response.Chart = requestVolumes;
+                    break;
+                case HelpMyStreet.Utils.Enums.Charts.RequestVolumeByActivityType:
+                    var volumeByActivity = await _repository.RequestVolumeByActivity(request.GroupId);
+                    response.Chart = volumeByActivity;
+                    break;
+                case HelpMyStreet.Utils.Enums.Charts.RecentlyActiveVolunteersByVolumeOfAcceptedRequests:
+                    var recentActiveVolunteers = await _repository.RecentActiveVolunteersByVolumeAcceptedRequests(request.GroupId);
+                    response.Chart = recentActiveVolunteers;
+                    break;
                 default:
                     throw new Exception($"Unknown chart type { request.Chart.Chart}");
             }
