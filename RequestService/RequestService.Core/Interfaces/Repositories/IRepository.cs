@@ -16,10 +16,10 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        Task<IEnumerable<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate);
-        Task<IEnumerable<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate);
-        Task<IEnumerable<DataPoint>> RequestVolumeByActivity(int groupId, DateTime minDate);
-        Task<IEnumerable<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate);
+        Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate);
+        Task<List<DataItem>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate);
+        Task<List<DataItem>> RequestVolumeByActivity(int groupId, DateTime minDate);
+        Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate);
 
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);
 

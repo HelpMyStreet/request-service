@@ -6,7 +6,7 @@ namespace RequestService.Core.Domains
 {
     public class DataItem
     {
-        public byte Series { get; set; }
+        public string Series { get; set; }
         public DateTime Date { get; set; }
     }
 }
