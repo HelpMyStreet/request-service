@@ -22,7 +22,6 @@ using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
 using HelpMyStreet.Utils.EqualityComparers;
 using HelpMyStreet.Contracts.ReportService;
-using RequestService.Repo.EntityFramework.Helper;
 
 namespace RequestService.Repo
 {
@@ -2099,246 +2098,306 @@ namespace RequestService.Repo
                 );
         }
 
-        public async Task<Chart> GetActivitiesByMonth(int groupId)
+        public async Task<IEnumerable<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate)
         {
             DateTime dt = DateTime.UtcNow.Date.AddYears(-1);
-            Chart result = new Chart()
-            {
-                Title = "Activities by month",
-                XAxisName = "Month",
-                YAxisName = "Count",
-                ChartType = ChartTypes.Bar,
-                ChartItems = new List<ChartItem>()
-            };
 
-            var chartItems = _context.Job
-                .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > dt)
-                .GroupBy(g => new { g.SupportActivityId, date = g.NewRequest.DateRequested })
-                .Select(s => new
-                {
-                    Date = s.Key.date,
-                    Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
-                    Count = s.Count()
-                }).ToList();
+            return _context.Job
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > minDate)
+                    .Select(s => new DataItem() { Series = s.SupportActivityId, Date = s.NewRequest.DateRequested });
+                    
 
-            //Get distinct activities from list
-            var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
+            //    ////Get distinct activities from list
+            //    //var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
 
-            //Populate chartitems with support activities for each month
-            while(dt< DateTime.UtcNow.Date)
-            {
-                supportActivities.ForEach(sa =>
-                {
-                    result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
-                });
-                dt = dt.AddMonths(1);
-            }
+            //    ////Populate chartitems with support activities for each month
+            //    //while(dt< DateTime.UtcNow.Date)
+            //    //{
+            //    //    supportActivities.ForEach(sa =>
+            //    //    {
+            //    //        result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
+            //    //    });
+            //    //    dt = dt.AddMonths(1);
+            //    //}
 
-            var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
-                .Select(s => new ChartItem
-                {
-                    Count = s.Count(),
-                    Label = s.Key.Label,
-                    XAxis = s.Key.date
-                }).ToList();
+            //    //var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+            //    //    .Select(s => new ChartItem
+            //    //    {
+            //    //        Count = s.Count(),
+            //    //        Label = s.Key.Label,
+            //    //        XAxis = s.Key.date
+            //    //    }).ToList();
 
-            //override chart items with actual values form the dataset.
-            result.ChartItems.ForEach(item =>
-            {
-                var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
+            //    ////override chart items with actual values form the dataset.
+            //    //result.ChartItems.ForEach(item =>
+            //    //{
+            //    //    var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
 
-                if (matchedItem != null)
-                {
-                    item.Count = matchedItem.Count;
-                }
-            });
-            
-            return result;
+            //    //    if (matchedItem != null)
+            //    //    {
+            //    //        item.Count = matchedItem.Count;
+            //    //    }
+            //    //});
+
+            //    return result;
         }
 
-        public async Task<Chart> RequestVolumeByDueDateAndRecentStatus(int groupId)
+        public async Task<IEnumerable<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate)
         {
-            DateTime dt = DateTime.UtcNow.Date.AddMonths(-13);
-            Chart result = new Chart()
-            {
-                Title = "Request volume by due date and most recent status",
-                XAxisName = "Month",
-                YAxisName = "Count",
-                ChartType = ChartTypes.Bar,
-                ChartItems = new List<ChartItem>()
-            };
-
-            var chartItems = _context.Job
-                .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt)
-                .GroupBy(g => new { g.JobStatusId, date = g.DueDate })
-                .Select(s => new DataItem
-                {
-                    Date = s.Key.date,
-                    Label = ((JobStatuses)s.Key.JobStatusId).FriendlyName(),
-                    Count = s.Count()
-                }).ToList();
-
-            chartItems.Where(x => 
-                (x.Label.ToLower() != "done" && x.Label.ToLower() != "cancelled") 
-                && x.Date < DateTime.UtcNow.Date)
-                .ToList()
-                .ForEach(item =>
-                {
-                    item.Label = "Overdue";
-                });
-
-            chartItems.Where(x => x.Label == "In Progress")
-                .ToList()
-                .ForEach(item =>
-                {
-                    item.Label = "Accepted";
-                });
-
-            var allJobStatuses = new List<string>
-            {
-                "Pending Approval",
-                "Open",
-                "Accepted",
-                "Done",
-                "Overdue",
-                "Cancelled"
-            };
-
-            //Populate chartitems with jobstatuses for each month
-            while (dt < DateTime.UtcNow.Date)
-            {
-                allJobStatuses.ForEach(sa =>
-                {
-                    result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
-                });
-                dt = dt.AddMonths(1);
-            }
-
-            var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
-                .Select(s => new ChartItem
-                {
-                    Count = s.Count(),
-                    Label = s.Key.Label,
-                    XAxis = s.Key.date
-                }).ToList();
-
-            //override chart items with actual values form the dataset.
-            result.ChartItems.ForEach(item =>
-            {
-                var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
-
-                if (matchedItem != null)
-                {
-                    item.Count = matchedItem.Count;
-                }
-            });
-
-            return result;
+            throw new NotImplementedException();
         }
 
-        public async Task<Chart> RequestVolumeByActivity(int groupId)
+        public async Task<IEnumerable<DataPoint>> RequestVolumeByActivity(int groupId, DateTime minDate)
         {
-            DateTime dt = DateTime.UtcNow.Date.AddMonths(-13);
-            Chart result = new Chart()
-            {
-                Title = "Request volume by activity type",
-                XAxisName = "Month",
-                YAxisName = "Count",
-                ChartType = ChartTypes.Bar,
-                ChartItems = new List<ChartItem>()
-            };
-
-            var chartItems = _context.Job
-                .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt)
-                .GroupBy(g => new { g.SupportActivityId, date = g.DueDate })
-                .Select(s => new DataItem
-                {
-                    Date = s.Key.date,
-                    Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
-                    Count = s.Count()
-                }).ToList();
-
-            //Get distinct activities from list
-            var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
-
-            //Populate chartitems with jobstatuses for each month
-            while (dt < DateTime.UtcNow.Date)
-            {
-                supportActivities.ForEach(sa =>
-                {
-                    result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
-                });
-                dt = dt.AddMonths(1);
-            }
-
-            var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
-                .Select(s => new ChartItem
-                {
-                    Count = s.Count(),
-                    Label = s.Key.Label,
-                    XAxis = s.Key.date
-                }).ToList();
-
-            //override chart items with actual values form the dataset.
-            result.ChartItems.ForEach(item =>
-            {
-                var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
-
-                if (matchedItem != null)
-                {
-                    item.Count = matchedItem.Count;
-                }
-            });
-
-            return result;
+            throw new NotImplementedException();
         }
 
-        public async Task<Chart> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId)
+        public async Task<IEnumerable<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate)
         {
-            DateTime dt = DateTime.UtcNow.Date.AddYears(-14);
-            Chart result = new Chart()
-            {
-                Title = "Recently active volunteers by volume of accepted requests (activity from last 14 days)",               
-                ChartType = ChartTypes.Pie,
-                ChartItems = new List<ChartItem>()
-            };
-
-            byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
-            byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
-            byte jobStatus_Done = (byte)JobStatuses.Done;
-
-            var chartItems = _context.Job
-                .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt && 
-                (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done) )
-                .GroupBy(g => new { g.VolunteerUserId})
-                .Select(s => new ChartItem
-                {
-                    Label = s.Key.VolunteerUserId.ToString(),
-                    Count = s.Count()
-                }).ToList();
-
-            Dictionary<string, (int minValue, int maxValue)> dictCategories = new Dictionary<string, (int minValue, int maxValue)>();
-            dictCategories.Add("1 accepted request", (1, 1));
-            dictCategories.Add("2-3 accepted requests", (2, 3));
-            dictCategories.Add("4-5 accepted requests", (4, 5));
-            dictCategories.Add("6-9 accepted requests", (6, 9));
-            dictCategories.Add("10-more accepted requests", (10, int.MaxValue));
-
-            foreach(var item in dictCategories)
-            {
-                result.ChartItems.Add(new ChartItem()
-                {
-                    XAxis = item.Key,
-                    Count = chartItems.Count(x => x.Count >= item.Value.minValue && x.Count <= item.Value.maxValue),
-                    Label = "Dataset 1"
-                });
-            }
-
-            return result;
+            throw new NotImplementedException();
         }
+
+        //public async Task<Chart> GetActivitiesByMonth(int groupId)
+        //{
+        //    DateTime dt = DateTime.UtcNow.Date.AddYears(-1);
+        //    Chart result = new Chart()
+        //    {
+        //        //Title = "Activities by month",
+        //        XAxisName = "Month",
+        //        YAxisName = "Count",
+        //        //ChartType = ChartTypes.Bar,
+        //        //ChartItems = new List<ChartItem>()
+        //    };
+
+        //    //var chartItems = _context.Job
+        //    //    .Include(i => i.NewRequest)
+        //    //    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > dt)
+        //    //    .GroupBy(g => new { g.SupportActivityId, date = g.NewRequest.DateRequested })
+        //    //    .Select(s => new
+        //    //    {
+        //    //        Date = s.Key.date,
+        //    //        Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
+        //    //        Count = s.Count()
+        //    //    }).ToList();
+
+        //    ////Get distinct activities from list
+        //    //var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
+
+        //    ////Populate chartitems with support activities for each month
+        //    //while(dt< DateTime.UtcNow.Date)
+        //    //{
+        //    //    supportActivities.ForEach(sa =>
+        //    //    {
+        //    //        result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
+        //    //    });
+        //    //    dt = dt.AddMonths(1);
+        //    //}
+
+        //    //var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+        //    //    .Select(s => new ChartItem
+        //    //    {
+        //    //        Count = s.Count(),
+        //    //        Label = s.Key.Label,
+        //    //        XAxis = s.Key.date
+        //    //    }).ToList();
+
+        //    ////override chart items with actual values form the dataset.
+        //    //result.ChartItems.ForEach(item =>
+        //    //{
+        //    //    var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
+
+        //    //    if (matchedItem != null)
+        //    //    {
+        //    //        item.Count = matchedItem.Count;
+        //    //    }
+        //    //});
+
+        //    return result;
+        //}
+
+        //public async Task<Chart> RequestVolumeByDueDateAndRecentStatus(int groupId)
+        //{
+        //    DateTime dt = DateTime.UtcNow.Date.AddMonths(-13);
+        //    Chart result = new Chart()
+        //    {
+        //        //Title = "Request volume by due date and most recent status",
+        //        XAxisName = "Month",
+        //        YAxisName = "Count",
+        //        //ChartType = ChartTypes.Bar,
+        //        //ChartItems = new List<ChartItem>()
+        //    };
+
+        //    //var chartItems = _context.Job
+        //    //    .Include(i => i.NewRequest)
+        //    //    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt)
+        //    //    .GroupBy(g => new { g.JobStatusId, date = g.DueDate })
+        //    //    .Select(s => new DataItem
+        //    //    {
+        //    //        Date = s.Key.date,
+        //    //        Label = ((JobStatuses)s.Key.JobStatusId).FriendlyName(),
+        //    //        Count = s.Count()
+        //    //    }).ToList();
+
+        //    //chartItems.Where(x => 
+        //    //    (x.Label.ToLower() != "done" && x.Label.ToLower() != "cancelled") 
+        //    //    && x.Date < DateTime.UtcNow.Date)
+        //    //    .ToList()
+        //    //    .ForEach(item =>
+        //    //    {
+        //    //        item.Label = "Overdue";
+        //    //    });
+
+        //    //chartItems.Where(x => x.Label == "In Progress")
+        //    //    .ToList()
+        //    //    .ForEach(item =>
+        //    //    {
+        //    //        item.Label = "Accepted";
+        //    //    });
+
+        //    //var allJobStatuses = new List<string>
+        //    //{
+        //    //    "Pending Approval",
+        //    //    "Open",
+        //    //    "Accepted",
+        //    //    "Done",
+        //    //    "Overdue",
+        //    //    "Cancelled"
+        //    //};
+
+        //    ////Populate chartitems with jobstatuses for each month
+        //    //while (dt < DateTime.UtcNow.Date)
+        //    //{
+        //    //    allJobStatuses.ForEach(sa =>
+        //    //    {
+        //    //        result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
+        //    //    });
+        //    //    dt = dt.AddMonths(1);
+        //    //}
+
+        //    //var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+        //    //    .Select(s => new ChartItem
+        //    //    {
+        //    //        Count = s.Count(),
+        //    //        Label = s.Key.Label,
+        //    //        XAxis = s.Key.date
+        //    //    }).ToList();
+
+        //    ////override chart items with actual values form the dataset.
+        //    //result.ChartItems.ForEach(item =>
+        //    //{
+        //    //    var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
+
+        //    //    if (matchedItem != null)
+        //    //    {
+        //    //        item.Count = matchedItem.Count;
+        //    //    }
+        //    //});
+
+        //    return result;
+        //}
+
+        //public async Task<Chart> RequestVolumeByActivity(int groupId)
+        //{
+        //    DateTime dt = DateTime.UtcNow.Date.AddMonths(-13);
+        //    Chart result = new Chart()
+        //    {
+        //        //Title = "Request volume by activity type",
+        //        XAxisName = "Month",
+        //        YAxisName = "Count",
+        //        //ChartType = ChartTypes.Bar,
+        //        //ChartItems = new List<ChartItem>()
+        //    };
+
+        //    //var chartItems = _context.Job
+        //    //    .Include(i => i.NewRequest)
+        //    //    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt)
+        //    //    .GroupBy(g => new { g.SupportActivityId, date = g.DueDate })
+        //    //    .Select(s => new DataItem
+        //    //    {
+        //    //        Date = s.Key.date,
+        //    //        Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
+        //    //        Count = s.Count()
+        //    //    }).ToList();
+
+        //    ////Get distinct activities from list
+        //    //var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
+
+        //    ////Populate chartitems with jobstatuses for each month
+        //    //while (dt < DateTime.UtcNow.Date)
+        //    //{
+        //    //    supportActivities.ForEach(sa =>
+        //    //    {
+        //    //        result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
+        //    //    });
+        //    //    dt = dt.AddMonths(1);
+        //    //}
+
+        //    //var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
+        //    //    .Select(s => new ChartItem
+        //    //    {
+        //    //        Count = s.Count(),
+        //    //        Label = s.Key.Label,
+        //    //        XAxis = s.Key.date
+        //    //    }).ToList();
+
+        //    ////override chart items with actual values form the dataset.
+        //    //result.ChartItems.ForEach(item =>
+        //    //{
+        //    //    var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
+
+        //    //    if (matchedItem != null)
+        //    //    {
+        //    //        item.Count = matchedItem.Count;
+        //    //    }
+        //    //});
+
+        //    return result;
+        //}
+
+        //public async Task<Chart> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId)
+        //{
+        //    DateTime dt = DateTime.UtcNow.Date.AddYears(-14);
+        //    Chart result = new Chart()
+        //    {
+        //        //Title = "Recently active volunteers by volume of accepted requests (activity from last 14 days)",               
+        //        //ChartType = ChartTypes.Pie,
+        //        //ChartItems = new List<ChartItem>()
+        //    };
+
+        //    //byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
+        //    //byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
+        //    //byte jobStatus_Done = (byte)JobStatuses.Done;
+
+        //    //var chartItems = _context.Job
+        //    //    .Include(i => i.NewRequest)
+        //    //    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > dt && 
+        //    //    (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done) )
+        //    //    .GroupBy(g => new { g.VolunteerUserId})
+        //    //    .Select(s => new ChartItem
+        //    //    {
+        //    //        Label = s.Key.VolunteerUserId.ToString(),
+        //    //        Count = s.Count()
+        //    //    }).ToList();
+
+        //    //Dictionary<string, (int minValue, int maxValue)> dictCategories = new Dictionary<string, (int minValue, int maxValue)>();
+        //    //dictCategories.Add("1 accepted request", (1, 1));
+        //    //dictCategories.Add("2-3 accepted requests", (2, 3));
+        //    //dictCategories.Add("4-5 accepted requests", (4, 5));
+        //    //dictCategories.Add("6-9 accepted requests", (6, 9));
+        //    //dictCategories.Add("10-more accepted requests", (10, int.MaxValue));
+
+        //    //foreach(var item in dictCategories)
+        //    //{
+        //    //    result.ChartItems.Add(new ChartItem()
+        //    //    {
+        //    //        XAxis = item.Key,
+        //    //        Count = chartItems.Count(x => x.Count >= item.Value.minValue && x.Count <= item.Value.maxValue),
+        //    //        Label = "Dataset 1"
+        //    //    });
+        //    //}
+
+        //    return result;
+        //}
     }
 }

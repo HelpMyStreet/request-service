@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RequestService.Repo.EntityFramework.Helper
+namespace RequestService.Core.Domains
 {
     public class DataItem
     {
-        public string Label { get; set; }
+        public byte Series { get; set; }
         public DateTime Date { get; set; }
-        public int Count { get; set; }
     }
 }
