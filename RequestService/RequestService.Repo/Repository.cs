@@ -2099,9 +2099,7 @@ namespace RequestService.Repo
         }
 
         public async Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate)
-        {
-            DateTime dt = DateTime.UtcNow.Date.AddYears(-1);
-
+        {           
             return _context.Job
                     .Include(i => i.NewRequest)
                     .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > minDate)

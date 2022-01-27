@@ -1,7 +1,4 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
-using HelpMyStreet.Utils.Enums;
-using HelpMyStreet.Utils.Extensions;
-using Newtonsoft.Json;
 using RequestService.Core.Domains;
 using RequestService.Core.Interfaces.Repositories;
 using System;
@@ -29,18 +26,7 @@ namespace RequestService.Core.Services
             //Get distinct activities from list
             var supportActivities = dataItems.Select(x => x.Series).Distinct().ToList();
 
-            List<DataPoint> dataPoints = new List<DataPoint>();
-
-            //Populate chartitems with support activities for each month
-            while (minDate < DateTime.UtcNow.Date)
-            {
-                supportActivities.ForEach(sa =>
-                {
-                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{minDate:yyyy}-{minDate:MM}", Series = sa });
-                });
-                minDate = minDate.AddMonths(1);
-            }
-            
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, supportActivities);            
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
             return dataPoints;
         }
@@ -55,7 +41,7 @@ namespace RequestService.Core.Services
             dictCategories.Add("2-3 accepted requests", (2, 3));
             dictCategories.Add("4-5 accepted requests", (4, 5));
             dictCategories.Add("6-9 accepted requests", (6, 9));
-            dictCategories.Add("10-more accepted requests", (10, int.MaxValue));
+            dictCategories.Add("10+ accepted requests", (10, int.MaxValue));
 
             List<DataPoint> dataPoints = new List<DataPoint>();
 
@@ -85,20 +71,9 @@ namespace RequestService.Core.Services
             var dataItems = await _repository.RequestVolumeByActivity(groupId, minDate);
 
             //Get distinct activities from list
-            var supportActivities = dataItems.Select(x => x.Series).Distinct().ToList();
+            var supportActivities = dataItems.Select(x => x.Series).Distinct();
 
-            List<DataPoint> dataPoints = new List<DataPoint>();
-
-            //Populate chartitems with support activities for each month
-            while (minDate < DateTime.UtcNow.Date)
-            {
-                supportActivities.ForEach(sa =>
-                {
-                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{minDate:yyyy}-{minDate:MM}", Series = sa });
-                });
-                minDate = minDate.AddMonths(1);
-            }
-
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, supportActivities);
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
 
             return dataPoints;
@@ -106,8 +81,8 @@ namespace RequestService.Core.Services
 
         public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId)
         {
-            DateTime dt = DateTime.UtcNow.Date.AddMonths(-13);
-            var dataItems = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, dt);
+            DateTime minDate = DateTime.UtcNow.Date.AddMonths(-13);
+            var dataItems = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate);
 
             dataItems.Where(x =>
                 (x.Series.ToLower() != "done" && x.Series.ToLower() != "cancelled")
@@ -125,8 +100,6 @@ namespace RequestService.Core.Services
                     item.Series = "Accepted";
                 });
 
-            var sql = JsonConvert.SerializeObject(dataItems);
-
             var allJobStatuses = new List<string>
                 {
                     "Pending Approval",
@@ -137,18 +110,7 @@ namespace RequestService.Core.Services
                     "Cancelled"
                 };
 
-            List<DataPoint> dataPoints = new List<DataPoint>();
-
-            //Populate chartitems with jobstatuses for each month
-            while (dt < DateTime.UtcNow.Date)
-            {
-                allJobStatuses.ForEach(sa =>
-                {
-                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Series = sa });
-                });
-                dt = dt.AddMonths(1);
-            }
-
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, allJobStatuses);
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
 
             return dataPoints;
@@ -162,7 +124,7 @@ namespace RequestService.Core.Services
                         Value = s.Count(),
                         Series = s.Key.Series,
                         XAxis = s.Key.date
-                    }).ToList();
+                    });
 
             //override chart items with actual values form the dataset.
             dataPoints.ForEach(item =>
@@ -174,6 +136,21 @@ namespace RequestService.Core.Services
                     item.Value = matchedItem.Value;
                 }
             });
+        }
+
+        private List<DataPoint> PopulateListWithDefaultValues(DateTime dt, IEnumerable<string> series)
+        {
+            List<DataPoint> dataPoints = new List<DataPoint>();
+            while (dt <= DateTime.UtcNow.Date)
+            {
+                series.ToList().ForEach(sa =>
+                {
+                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Series = sa });
+                });
+                dt = dt.AddMonths(1);
+            }
+
+            return dataPoints;
         }
     }
 }
