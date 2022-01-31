@@ -17,24 +17,21 @@ namespace RequestService.Core.Services
             _repository = repository;
         }
 
-        public async Task<List<DataPoint>> GetActivitiesByMonth(int groupId)
+        public async Task<List<DataPoint>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
         {
-            DateTime minDate = DateTime.UtcNow.Date.AddYears(-1);
-
-            var dataItems = await _repository.GetActivitiesByMonth(groupId, minDate);
+            var dataItems = await _repository.GetActivitiesByMonth(groupId, minDate, maxDate);
 
             //Get distinct activities from list
             var supportActivities = dataItems.Select(x => x.Series).Distinct().ToList();
 
-            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, supportActivities);            
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);            
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
             return dataPoints;
         }
 
-        public async Task<List<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId)
+        public async Task<List<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
         {
-            DateTime minDate = DateTime.UtcNow.Date.AddMonths(-13);
-            var dataItems = await _repository.RecentActiveVolunteersByVolumeAcceptedRequests(groupId, minDate);
+            var dataItems = await _repository.RecentActiveVolunteersByVolumeAcceptedRequests(groupId, minDate, maxDate);
 
             Dictionary<string, (int minValue, int maxValue)> dictCategories = new Dictionary<string, (int minValue, int maxValue)>();
             dictCategories.Add("1 accepted request", (1, 1));
@@ -65,28 +62,26 @@ namespace RequestService.Core.Services
             return dataPoints;
         }
 
-        public async Task<List<DataPoint>> RequestVolumeByActivity(int groupId)
+        public async Task<List<DataPoint>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
         {
-            DateTime minDate = DateTime.UtcNow.Date.AddMonths(-13);
-            var dataItems = await _repository.RequestVolumeByActivity(groupId, minDate);
+            var dataItems = await _repository.RequestVolumeByActivity(groupId, minDate, maxDate);
 
             //Get distinct activities from list
             var supportActivities = dataItems.Select(x => x.Series).Distinct();
 
-            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, supportActivities);
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
 
             return dataPoints;
         }
 
-        public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId)
+        public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
         {
-            DateTime minDate = DateTime.UtcNow.Date.AddMonths(-13);
-            var dataItems = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate);
+            var dataItems = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate, maxDate);
 
             dataItems.Where(x =>
                 (x.Series.ToLower() != "done" && x.Series.ToLower() != "cancelled")
-                && x.Date < DateTime.UtcNow.Date)
+                && x.Date < maxDate)
                 .ToList()
                 .ForEach(item =>
                 {
@@ -110,13 +105,13 @@ namespace RequestService.Core.Services
                     "Cancelled"
                 };
 
-            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, allJobStatuses);
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, allJobStatuses);
             GroupAndReplaceValuesForKnown(dataPoints, dataItems);
 
             return dataPoints;
         }
 
-        private void GroupAndReplaceValuesForKnown(List<DataPoint> dataPoints, IEnumerable<DataItem> dataItems)
+        private void GroupAndReplaceValuesForKnown(List<DataPoint> dataPoints, List<DataItem> dataItems)
         {
             var groupedChartItems = dataItems.GroupBy(g => new { g.Series, date = $"{g.Date:yyyy}-{g.Date:MM}" })
                     .Select(s => new DataPoint
@@ -138,16 +133,16 @@ namespace RequestService.Core.Services
             });
         }
 
-        private List<DataPoint> PopulateListWithDefaultValues(DateTime dt, IEnumerable<string> series)
+        private List<DataPoint> PopulateListWithDefaultValues(DateTime minDate, DateTime maxDate, IEnumerable<string> series)
         {
             List<DataPoint> dataPoints = new List<DataPoint>();
-            while (dt <= DateTime.UtcNow.Date)
+            while (minDate <= maxDate)
             {
                 series.ToList().ForEach(sa =>
                 {
-                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Series = sa });
+                    dataPoints.Add(new DataPoint() { Value = 0, XAxis = $"{minDate:yyyy}-{minDate:MM}", Series = sa });
                 });
-                dt = dt.AddMonths(1);
+                minDate = minDate.AddMonths(1);
             }
 
             return dataPoints;

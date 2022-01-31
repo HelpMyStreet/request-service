@@ -1,4 +1,5 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,9 +7,9 @@ namespace RequestService.Core.Services
 {
     public interface IChartDataService
     {
-        Task<List<DataPoint>> GetActivitiesByMonth(int groupId);
-        Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId);
-        Task<List<DataPoint>> RequestVolumeByActivity(int groupId);
-        Task<List<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId);
+        Task<List<DataPoint>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<DataPoint>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate);
     }
 }

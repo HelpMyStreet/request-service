@@ -29,10 +29,12 @@ namespace RequestService.Handlers
 
             List<DataPoint> dataPoints;
 
+            DateTime maxDate = DateTime.UtcNow.Date;
+
             switch (request.Chart.Chart)
             {
                 case Charts.ActivitiesByMonth:
-                    dataPoints = await _chartService.GetActivitiesByMonth(request.GroupId);
+                    dataPoints = await _chartService.GetActivitiesByMonth(request.GroupId, DateTime.UtcNow.Date.AddYears(-1), maxDate);
                     return new GetChartResponse()
                     {
                         Chart = new Chart()
@@ -43,7 +45,7 @@ namespace RequestService.Handlers
                         }
                     };
                 case Charts.RequestVolumeByDueDateAndRecentStatus:
-                    dataPoints = await _chartService.RequestVolumeByDueDateAndRecentStatus(request.GroupId);
+                    dataPoints = await _chartService.RequestVolumeByDueDateAndRecentStatus(request.GroupId, DateTime.UtcNow.Date.AddMonths(-13), maxDate);
                     return new GetChartResponse()
                     {
                         Chart = new Chart()
@@ -54,7 +56,7 @@ namespace RequestService.Handlers
                         }
                     };
                 case Charts.RequestVolumeByActivityType:
-                    dataPoints = await _chartService.RequestVolumeByActivity(request.GroupId);
+                    dataPoints = await _chartService.RequestVolumeByActivity(request.GroupId, DateTime.UtcNow.Date.AddMonths(-13), maxDate);
                     return new GetChartResponse()
                     {
                         Chart = new Chart()
@@ -65,7 +67,7 @@ namespace RequestService.Handlers
                         }
                     };
                 case Charts.RecentlyActiveVolunteersByVolumeOfAcceptedRequests:
-                    dataPoints = await _chartService.RecentActiveVolunteersByVolumeAcceptedRequests(request.GroupId);
+                    dataPoints = await _chartService.RecentActiveVolunteersByVolumeAcceptedRequests(request.GroupId, DateTime.UtcNow.Date.AddMonths(-13), maxDate);
                     return new GetChartResponse()
                     {
                         Chart = new Chart()

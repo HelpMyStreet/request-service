@@ -2098,11 +2098,11 @@ namespace RequestService.Repo
                 );
         }
 
-        public async Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate)
+        public async Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
         {           
             return _context.Job
                     .Include(i => i.NewRequest)
-                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > minDate)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
                     .Select(s => new DataItem() 
                     { 
                         Series = ((HelpMyStreet.Utils.Enums.SupportActivities) s.SupportActivityId).FriendlyNameShort().ToString(), 
@@ -2111,11 +2111,11 @@ namespace RequestService.Repo
                     .ToList();
         }
 
-        public async Task<List<DataItem>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate)
+        public async Task<List<DataItem>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
         {
             return _context.Job
                    .Include(i => i.NewRequest)
-                   .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > minDate)
+                   .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate)
                    .Select(s => new DataItem() 
                    { 
                        Series = ((JobStatuses) s.JobStatusId.Value).FriendlyName().ToString(), 
@@ -2124,11 +2124,11 @@ namespace RequestService.Repo
                    .ToList();  
         }
 
-        public async Task<List<DataItem>> RequestVolumeByActivity(int groupId, DateTime minDate)
+        public async Task<List<DataItem>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
         {
             return _context.Job
                   .Include(i => i.NewRequest)
-                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > minDate)
+                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
                    .Select(s => new DataItem() 
                    { 
                        Series = ((HelpMyStreet.Utils.Enums.SupportActivities)s.SupportActivityId).FriendlyNameShort().ToString(),
@@ -2137,7 +2137,7 @@ namespace RequestService.Repo
                    .ToList();
         }
 
-        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate)
+        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
         {
             byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
             byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
@@ -2145,7 +2145,7 @@ namespace RequestService.Repo
 
             return _context.Job
                   .Include(i => i.NewRequest)
-                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate > minDate &&
+                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate &&
                   (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done))
                   .Select(s => s.VolunteerUserId)
                   .ToList();
