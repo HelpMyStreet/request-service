@@ -98,6 +98,7 @@ namespace RequestService.AzureFunction
             builder.Services.AddTransient<IArchiveService, ArchiveService>();
             builder.Services.AddTransient<IManageRequestsService, ManageRequestsService>();
             builder.Services.AddTransient<IMultiJobs, MultiJobs>();
+            builder.Services.AddTransient<ISystemClock, MockableDateTime>();
             builder.Services.AddTransient<IChartDataService, ChartDataService>();
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));

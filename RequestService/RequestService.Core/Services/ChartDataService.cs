@@ -1,5 +1,6 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
 using HelpMyStreet.Utils.Extensions;
+using Microsoft.Extensions.Internal;
 using RequestService.Core.Domains;
 using RequestService.Core.Interfaces.Repositories;
 using System;
@@ -12,10 +13,12 @@ namespace RequestService.Core.Services
     public class ChartDataService: IChartDataService
     {
         private readonly IRepository _repository;
+        private readonly ISystemClock _mockableDateTime;
 
-        public ChartDataService(IRepository repository)
+        public ChartDataService(IRepository repository, ISystemClock mockableDateTime)
         {
             _repository = repository;
+            _mockableDateTime = mockableDateTime;
         }
 
         public async Task<List<DataPoint>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
@@ -100,7 +103,7 @@ namespace RequestService.Core.Services
 
             dataItems.Where(x =>
                 (x.Series.ToLower() != "done" && x.Series.ToLower() != "cancelled")
-                && x.Date < maxDate)
+                && x.Date < _mockableDateTime.UtcNow)
                 .ToList()
                 .ForEach(item =>
                 {

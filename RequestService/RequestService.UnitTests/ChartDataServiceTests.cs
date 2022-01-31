@@ -6,6 +6,7 @@ using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Extensions;
 using HelpMyStreet.Utils.Models;
+using Microsoft.Extensions.Internal;
 using Moq;
 using NUnit.Framework;
 using RequestService.Core.Domains;
@@ -24,6 +25,7 @@ namespace RequestService.UnitTests
     public class ChartDataServiceTests
     {
         private Mock<IRepository> _repository;
+        private Mock<ISystemClock> _mockableDateTime;
         private List<int?> _volunteers;
         private List<JobBasic> _jobBasics;
         private ChartDataService _classUnderTest;
@@ -33,8 +35,11 @@ namespace RequestService.UnitTests
         {
             
             SetupRepository();
-            
-            _classUnderTest = new ChartDataService(_repository.Object);
+
+            _mockableDateTime = new Mock<ISystemClock>();
+            _mockableDateTime.Setup(x => x.UtcNow).Returns(new DateTime(2022, 1, 20, 1, 45, 00, 00, DateTimeKind.Utc));
+
+            _classUnderTest = new ChartDataService(_repository.Object,_mockableDateTime.Object);
         }
 
         private void SetupRepository()
