@@ -16,9 +16,9 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate);
-        Task<List<DataItem>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate);
-        Task<List<DataItem>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate);
         Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate);
 
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);

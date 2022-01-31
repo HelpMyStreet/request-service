@@ -1,4 +1,5 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
+using HelpMyStreet.Utils.Extensions;
 using RequestService.Core.Domains;
 using RequestService.Core.Interfaces.Repositories;
 using System;
@@ -22,10 +23,16 @@ namespace RequestService.Core.Services
             var dataItems = await _repository.GetActivitiesByMonth(groupId, minDate, maxDate);
 
             //Get distinct activities from list
-            var supportActivities = dataItems.Select(x => x.Series).Distinct().ToList();
+            var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
 
-            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);            
-            GroupAndReplaceValuesForKnown(dataPoints, dataItems);
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);
+            GroupAndReplaceValuesForKnown(
+                dataPoints, 
+                dataItems.Select(x => new DataItem() 
+                { 
+                    Date = x.DateRequested.Date, 
+                    Series = x.SupportActivity.FriendlyNameShort()
+                }).ToList());
             return dataPoints;
         }
 
@@ -67,17 +74,29 @@ namespace RequestService.Core.Services
             var dataItems = await _repository.RequestVolumeByActivity(groupId, minDate, maxDate);
 
             //Get distinct activities from list
-            var supportActivities = dataItems.Select(x => x.Series).Distinct();
+            var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
 
             List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);
-            GroupAndReplaceValuesForKnown(dataPoints, dataItems);
+            GroupAndReplaceValuesForKnown(
+               dataPoints,
+               dataItems.Select(x => new DataItem()
+               {
+                   Date = x.DueDate,
+                   Series = x.SupportActivity.FriendlyNameShort()
+               }).ToList());
 
             return dataPoints;
         }
 
         public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
         {
-            var dataItems = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate, maxDate);
+            var jobSummaries = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate, maxDate);
+
+            var dataItems = jobSummaries.Select(x => new DataItem()
+            {
+                Series = x.JobStatus.FriendlyName(),
+                Date = x.DueDate
+            }).ToList();
 
             dataItems.Where(x =>
                 (x.Series.ToLower() != "done" && x.Series.ToLower() != "cancelled")

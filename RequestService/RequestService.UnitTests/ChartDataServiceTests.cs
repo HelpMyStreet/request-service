@@ -24,12 +24,9 @@ namespace RequestService.UnitTests
     public class ChartDataServiceTests
     {
         private Mock<IRepository> _repository;
-        private List<DataItem> _activitiesByMonth;
-        private List<DataItem> _volumeByActivity;
-        private List<DataItem> _volumeByDueDateAndRecentStatus;
         private List<int?> _volunteers;
+        private List<JobBasic> _jobBasics;
         private ChartDataService _classUnderTest;
-        private Task<List<DataPoint>> result;
 
         [SetUp]
         public void Setup()
@@ -44,17 +41,32 @@ namespace RequestService.UnitTests
         {
             _repository = new Mock<IRepository>();
 
+            _jobBasics = new List<JobBasic>()
+            {
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1) },
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.CollectingPrescriptions, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.DogWalking, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.CollectingPrescriptions, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.DogWalking, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,1,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,2,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,2,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,2,1), SupportActivity = SupportActivities.CollectingPrescriptions, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,2,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,3,1), SupportActivity = SupportActivities.DogWalking, JobStatus = JobStatuses.Open, DueDate = new DateTime(2021,3,1)},
+                new JobBasic(){DateRequested = new DateTime(2021,1,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Cancelled, DueDate = new DateTime(2021,1,1) },
+                new JobBasic(){DateRequested = new DateTime(2022,1,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Accepted, DueDate = new DateTime(2022,1,31) },
+            };
+
             _repository.Setup(x => x.GetActivitiesByMonth(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(() => _activitiesByMonth);
+                .ReturnsAsync(() => _jobBasics);
 
             _repository.Setup(x => x.RecentActiveVolunteersByVolumeAcceptedRequests(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(() => _volunteers);
 
             _repository.Setup(x => x.RequestVolumeByActivity(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(() => _volumeByActivity);
+                .ReturnsAsync(() => _jobBasics);
 
             _repository.Setup(x => x.RequestVolumeByDueDateAndRecentStatus(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(() => _volumeByDueDateAndRecentStatus);
+                .ReturnsAsync(() => _jobBasics);
         }
 
         [Test]
@@ -63,61 +75,15 @@ namespace RequestService.UnitTests
             DateTime minDate = new DateTime(2021, 1, 1);
             DateTime maxDate = new DateTime(2022, 1, 31);
 
-            _activitiesByMonth = new List<DataItem>()
-            {
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,3,1), Series = SupportActivities.DogWalking.FriendlyNameShort()}
-            };
-
             Dictionary<(string series, string xAxis), double> expectedOutcome = new Dictionary<(string xAxis, string series), double>();
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-01"), 2);
+            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-01"), 3);
             expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-01"), 2);
             expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-01"), 2);
             expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-02"), 1);
             expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-02"), 1);
             expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-03"), 1);
             expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-03"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-04"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-05"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-06"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-07"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-08"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-09"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-10"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-11"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-12"), 0);
-            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2022-01"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-03"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-04"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-05"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-06"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-07"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-08"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-09"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-10"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-11"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-12"), 0);
-            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2022-01"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-02"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-04"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-05"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-06"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-07"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-08"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-09"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-10"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-11"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-12"), 0);
-            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2022-01"), 0);
-
-            minDate = new DateTime(2021, 1, 1);
+     
             List<DataPoint> result = await _classUnderTest.GetActivitiesByMonth(-1, minDate, maxDate);
 
             foreach(var item in expectedOutcome)
@@ -126,49 +92,7 @@ namespace RequestService.UnitTests
                 Assert.AreEqual(actual, item.Value);
             }
         }
-
-        [Test]
-        public async Task ActivitiesByMonth_Check2()
-        {
-            DateTime minDate = new DateTime(2021, 1, 1);
-            DateTime startDate = minDate;
-            DateTime maxDate = new DateTime(2022, 1, 31);
-
-            _activitiesByMonth = new List<DataItem>()
-            {
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,3,1), Series = SupportActivities.DogWalking.FriendlyNameShort()}
-            };
-
-            Dictionary<(string series, string xAxis), double> expectedOutcome = new Dictionary<(string xAxis, string series), double>();
-            _activitiesByMonth.Select(s => s.Series).Distinct().ToList()
-                .ForEach(item =>
-                {
-                    startDate = minDate;
-                    while (startDate <= maxDate)
-                    {
-                        var count = _activitiesByMonth.Count(x => x.Date == startDate && x.Series == item);
-                        expectedOutcome.Add((item, $"{startDate:yyyy}-{startDate:MM}"), count);
-                        startDate = startDate.AddMonths(1);
-                    }
-                });
-
-            List<DataPoint> result = await _classUnderTest.GetActivitiesByMonth(-1, minDate, maxDate);
-
-            foreach (var item in expectedOutcome)
-            {
-                var actual = result.Where(x => x.Series == item.Key.series && x.XAxis == item.Key.xAxis).Select(x => x.Value).First();
-                Assert.AreEqual(actual, item.Value);
-            }
-        }
-
+    
         [Test]
         public async Task RequestVolumeByActivity_Check()
         {
@@ -176,31 +100,14 @@ namespace RequestService.UnitTests
             DateTime startDate = minDate;
             DateTime maxDate = new DateTime(2022, 1, 31);
 
-            _volumeByActivity = new List<DataItem>()
-            {
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = SupportActivities.DogWalking.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.Shopping.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,2,1), Series = SupportActivities.CollectingPrescriptions.FriendlyNameShort()},
-                new DataItem(){Date = new DateTime(2021,3,1), Series = SupportActivities.DogWalking.FriendlyNameShort()}
-            };
-
             Dictionary<(string series, string xAxis), double> expectedOutcome = new Dictionary<(string xAxis, string series), double>();
-            _volumeByActivity.Select(s => s.Series).Distinct().ToList()
-                .ForEach(item =>
-                {
-                    startDate = minDate;
-                    while (startDate <= maxDate)
-                    {
-                        var count = _volumeByActivity.Count(x => x.Date == startDate && x.Series == item);
-                        expectedOutcome.Add((item, $"{startDate:yyyy}-{startDate:MM}"), count);
-                        startDate = startDate.AddMonths(1);
-                    }
-                });
+            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-01"), 3);
+            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-01"), 2);
+            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-01"), 2);
+            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-02"), 1);
+            expectedOutcome.Add((SupportActivities.CollectingPrescriptions.FriendlyNameShort(), "2021-02"), 1);
+            expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-03"), 1);
+            expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-03"), 0);
 
             List<DataPoint> result = await _classUnderTest.RequestVolumeByActivity(-1, minDate, maxDate);
 
@@ -218,17 +125,9 @@ namespace RequestService.UnitTests
             DateTime startDate = minDate;
             DateTime maxDate = new DateTime(2022, 1, 28);
 
-            _volumeByDueDateAndRecentStatus = new List<DataItem>()
-            {
-                new DataItem(){Date = new DateTime(2021,1,1), Series = JobStatuses.Open.FriendlyName()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = JobStatuses.Open.FriendlyName()},
-                new DataItem(){Date = new DateTime(2021,1,1), Series = JobStatuses.Cancelled.FriendlyName()},
-                new DataItem(){Date = new DateTime(2022,1,31), Series = JobStatuses.InProgress.FriendlyName()}
-            };
-
             Dictionary<(string series, string xAxis), double> expectedOutcome = new Dictionary<(string xAxis, string series), double>();
 
-            expectedOutcome.Add(("Overdue", "2021-01"), 2);
+            expectedOutcome.Add(("Overdue", "2021-01"), 6);
             expectedOutcome.Add(("Cancelled", "2021-01"), 1);
             expectedOutcome.Add(("Accepted", "2022-01"), 1);
 

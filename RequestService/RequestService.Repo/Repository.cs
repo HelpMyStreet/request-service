@@ -837,6 +837,39 @@ namespace RequestService.Repo
 
             return response;
         }
+
+        private JobBasic MapEFJobToBasic(EntityFramework.Entities.Job job)
+        {
+            DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
+            return new JobBasic()
+            {                
+                DueDate = dueDate,
+                JobID = job.Id,
+                VolunteerUserID = job.VolunteerUserId,
+                JobStatus = (JobStatuses)job.JobStatusId,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,                               
+                ReferringGroupID = job.NewRequest.ReferringGroupId,
+                DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
+                DateRequested = job.NewRequest.DateRequested,
+                Archive = job.NewRequest.Archive.Value,
+                DueDateType = (DueDateType)job.DueDateTypeId,
+                RequestID = job.NewRequest.Id,
+                RequestType = (RequestType)job.NewRequest.RequestType,
+                SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
+                NotBeforeDate = job.NotBeforeDate,                
+            };
+        }
+
+        private List<JobBasic> GetJobBasics(List<EntityFramework.Entities.Job> jobs)
+        {
+            List<JobBasic> response = new List<JobBasic>();
+            foreach (EntityFramework.Entities.Job j in jobs)
+            {
+                response.Add(MapEFJobToBasic(j));
+            }
+            return response;
+        }
+
         private JobSummary MapEFJobToSummary(EntityFramework.Entities.Job job)
         {
             DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
@@ -2098,43 +2131,31 @@ namespace RequestService.Repo
                 );
         }
 
-        public async Task<List<DataItem>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
-        {           
-            return _context.Job
+        public async Task<List<JobBasic>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
                     .Include(i => i.NewRequest)
                     .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
-                    .Select(s => new DataItem() 
-                    { 
-                        Series = ((HelpMyStreet.Utils.Enums.SupportActivities) s.SupportActivityId).FriendlyNameShort().ToString(), 
-                        Date = s.NewRequest.DateRequested.Date
-                    })
-                    .ToList();
+                    .ToList());
         }
 
-        public async Task<List<DataItem>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
         {
-            return _context.Job
-                   .Include(i => i.NewRequest)
-                   .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate)
-                   .Select(s => new DataItem() 
-                   { 
-                       Series = ((JobStatuses) s.JobStatusId.Value).FriendlyName().ToString(), 
-                       Date = s.DueDate.Date 
-                   })
-                   .ToList();  
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());  
         }
 
-        public async Task<List<DataItem>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<JobBasic>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
         {
-            return _context.Job
-                  .Include(i => i.NewRequest)
-                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
-                   .Select(s => new DataItem() 
-                   { 
-                       Series = ((HelpMyStreet.Utils.Enums.SupportActivities)s.SupportActivityId).FriendlyNameShort().ToString(),
-                       Date = s.DueDate.Date 
-                   })
-                   .ToList();
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());
         }
 
         public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
