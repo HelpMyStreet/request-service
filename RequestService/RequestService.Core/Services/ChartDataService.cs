@@ -1,4 +1,5 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
+using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Extensions;
 using Microsoft.Extensions.Internal;
 using RequestService.Core.Domains;
@@ -102,7 +103,7 @@ namespace RequestService.Core.Services
             }).ToList();
 
             dataItems.Where(x =>
-                (x.Series.ToLower() != "done" && x.Series.ToLower() != "cancelled")
+                (x.Series!= JobStatuses.Done.FriendlyName() && x.Series != JobStatuses.Cancelled.FriendlyName())
                 && x.Date < _mockableDateTime.UtcNow)
                 .ToList()
                 .ForEach(item =>
@@ -110,21 +111,21 @@ namespace RequestService.Core.Services
                     item.Series = "Overdue";
                 });
 
-            dataItems.Where(x => x.Series == "In Progress")
+            dataItems.Where(x => x.Series == JobStatuses.InProgress.FriendlyName())
                 .ToList()
                 .ForEach(item =>
                 {
-                    item.Series = "Accepted";
+                    item.Series = JobStatuses.Accepted.FriendlyName();
                 });
 
             var allJobStatuses = new List<string>
                 {
-                    "Pending Approval",
-                    "Open",
-                    "Accepted",
-                    "Done",
+                    JobStatuses.New.FriendlyName(),
+                    JobStatuses.Open.FriendlyName(),
+                    JobStatuses.Accepted.FriendlyName(),
+                    JobStatuses.Done.FriendlyName(),
                     "Overdue",
-                    "Cancelled"
+                    JobStatuses.Cancelled.FriendlyName()
                 };
 
             List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, allJobStatuses);
