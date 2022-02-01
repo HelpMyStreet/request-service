@@ -1,29 +1,23 @@
-﻿
-using RequestService.Core.Interfaces.Repositories;
-using MediatR;
+﻿using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using HelpMyStreet.Contracts;
-using RequestService.Core.Domains;
-using HelpMyStreet.Utils.Extensions;
-using System.Linq;
 using System;
-using HelpMyStreet.Utils.Models;
 using RequestService.Core.Services;
 using HelpMyStreet.Contracts.ReportService.Request;
 using HelpMyStreet.Contracts.ReportService.Response;
 using HelpMyStreet.Contracts.ReportService;
+using HelpMyStreet.Utils.Enums;
 
 namespace RequestService.Handlers
 {
     public class GetChartHandler : IRequestHandler<GetChartRequest, GetChartResponse>
     {
-        private readonly IRepository _repository;
+        private readonly IChartDataService _chartService;
 
-        public GetChartHandler(IRepository repository)
+        public GetChartHandler(IChartDataService chartService)
         {
-            _repository = repository;
+            _chartService = chartService;
         }
 
         public async Task<GetChartResponse> Handle(GetChartRequest request, CancellationToken cancellationToken)
@@ -33,17 +27,55 @@ namespace RequestService.Handlers
                 Chart = new Chart()
             };
 
-            switch(request.Chart.Chart)
+            List<DataPoint> dataPoints;
+
+            switch (request.Chart.Chart)
             {
-                case HelpMyStreet.Utils.Enums.Charts.ActivitiesByMonth:
-                    var activitiesByMonth = await _repository.GetActivitiesByMonth(request.GroupId);
-                    response.Chart = activitiesByMonth;
-                    break;
+                case Charts.ActivitiesByMonth:
+                    dataPoints = await _chartService.GetActivitiesByMonth(request.GroupId, request.DateFrom, request.DateTo);
+                    return new GetChartResponse()
+                    {
+                        Chart = new Chart()
+                        {
+                            XAxisName = "Month",
+                            YAxisName = "Count",
+                            DataPoints = dataPoints
+                        }
+                    };
+                case Charts.RequestVolumeByDueDateAndRecentStatus:
+                    dataPoints = await _chartService.RequestVolumeByDueDateAndRecentStatus(request.GroupId, request.DateFrom, request.DateTo);
+                    return new GetChartResponse()
+                    {
+                        Chart = new Chart()
+                        {
+                            XAxisName = "Month",
+                            YAxisName = "Count",
+                            DataPoints = dataPoints
+                        }
+                    };
+                case Charts.RequestVolumeByActivityType:
+                    dataPoints = await _chartService.RequestVolumeByActivity(request.GroupId, request.DateFrom, request.DateTo);
+                    return new GetChartResponse()
+                    {
+                        Chart = new Chart()
+                        {
+                            XAxisName = "Month",
+                            YAxisName = "Count",
+                            DataPoints = dataPoints
+                        }
+                    };
+                case Charts.RecentlyActiveVolunteersByVolumeOfAcceptedRequests:
+                    dataPoints = await _chartService.RecentActiveVolunteersByVolumeAcceptedRequests(request.GroupId, request.DateFrom, request.DateTo);
+                    return new GetChartResponse()
+                    {
+                        Chart = new Chart()
+                        {
+                            DataPoints = dataPoints
+                        }
+                    };
                 default:
                     throw new Exception($"Unknown chart type { request.Chart.Chart}");
             }
-
-            return response;
         }
     }
 }

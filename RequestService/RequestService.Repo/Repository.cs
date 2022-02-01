@@ -837,6 +837,39 @@ namespace RequestService.Repo
 
             return response;
         }
+
+        private JobBasic MapEFJobToBasic(EntityFramework.Entities.Job job)
+        {
+            DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
+            return new JobBasic()
+            {                
+                DueDate = dueDate,
+                JobID = job.Id,
+                VolunteerUserID = job.VolunteerUserId,
+                JobStatus = (JobStatuses)job.JobStatusId,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,                               
+                ReferringGroupID = job.NewRequest.ReferringGroupId,
+                DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
+                DateRequested = job.NewRequest.DateRequested,
+                Archive = job.NewRequest.Archive.Value,
+                DueDateType = (DueDateType)job.DueDateTypeId,
+                RequestID = job.NewRequest.Id,
+                RequestType = (RequestType)job.NewRequest.RequestType,
+                SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
+                NotBeforeDate = job.NotBeforeDate,                
+            };
+        }
+
+        private List<JobBasic> GetJobBasics(List<EntityFramework.Entities.Job> jobs)
+        {
+            List<JobBasic> response = new List<JobBasic>();
+            foreach (EntityFramework.Entities.Job j in jobs)
+            {
+                response.Add(MapEFJobToBasic(j));
+            }
+            return response;
+        }
+
         private JobSummary MapEFJobToSummary(EntityFramework.Entities.Job job)
         {
             DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
@@ -2098,62 +2131,45 @@ namespace RequestService.Repo
                 );
         }
 
-        public async Task<Chart> GetActivitiesByMonth(int groupId)
+        public async Task<List<JobBasic>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
         {
-            DateTime dt = DateTime.UtcNow.Date.AddYears(-1);
-            Chart result = new Chart()
-            {
-                Title = "Activities by month",
-                XAxisName = "Month",
-                YAxisName = "Count",
-                ChartType = ChartTypes.Bar,
-                ChartItems = new List<ChartItem>()
-            };
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
+                    .ToList());
+        }
 
-            var chartItems = _context.Job
-                .Include(i => i.NewRequest)
-                .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested > dt)
-                .GroupBy(g => new { g.SupportActivityId, date = g.NewRequest.DateRequested })
-                .Select(s => new
-                {
-                    Date = s.Key.date,
-                    Label = ((HelpMyStreet.Utils.Enums.SupportActivities)s.Key.SupportActivityId).FriendlyNameShort(),
-                    Count = s.Count()
-                }).ToList();
+        public async Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());  
+        }
 
-            //Get distinct activities from list
-            var supportActivities = chartItems.Select(x => x.Label).Distinct().ToList();
+        public async Task<List<JobBasic>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());
+        }
 
-            //Populate chartitems with support activities for each month
-            while(dt< DateTime.UtcNow.Date)
-            {
-                supportActivities.ForEach(sa =>
-                {
-                    result.ChartItems.Add(new ChartItem() { Count = 0, XAxis = $"{dt:yyyy}-{dt:MM}", Label = sa });
-                });
-                dt = dt.AddMonths(1);
-            }
+        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
+        {
+            byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
+            byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
+            byte jobStatus_Done = (byte)JobStatuses.Done;
 
-            var groupedChartItems = chartItems.GroupBy(g => new { g.Label, date = $"{g.Date:yyyy}-{g.Date:MM}" })
-                .Select(s => new ChartItem
-                {
-                    Count = s.Count(),
-                    Label = s.Key.Label,
-                    XAxis = s.Key.date
-                }).ToList();
-
-            //override chart items with actual values form the dataset.
-            result.ChartItems.ForEach(item =>
-            {
-                var matchedItem = groupedChartItems.FirstOrDefault(x => x.XAxis == item.XAxis && x.Label == item.Label);
-
-                if (matchedItem != null)
-                {
-                    item.Count = matchedItem.Count;
-                }
-            });
-            
-            return result;
+            return _context.Job
+                  .Include(i => i.NewRequest)
+                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate &&
+                  (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done))
+                  .Select(s => s.VolunteerUserId)
+                  .ToList();
         }
     }
 }
