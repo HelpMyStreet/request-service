@@ -46,7 +46,7 @@ namespace RequestService.Handlers
 
                 if (hasPermission)
                 {
-                    var result = await _repository.UpdateJobStatusCancelledAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                    var result = await _repository.UpdateJobStatusCancelledAsync(request.JobID, request.CreatedByUserID, JobStatusChangeReasonCodes.UserChange, cancellationToken);
                     response.Outcome = result;
 
                     if (result == UpdateJobStatusOutcome.Success)
