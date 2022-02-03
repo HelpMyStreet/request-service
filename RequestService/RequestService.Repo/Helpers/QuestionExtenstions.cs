@@ -784,6 +784,16 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.VolunteerSupport
                     };
                     break;
+                case RequestHelpFormVariant.ArroweParkHospital_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.BreakfastVisit,
+                        SupportActivities.LunchVisit,
+                        SupportActivities.MedicationCheckIn,
+                        SupportActivities.WellBeingVisit,
+                        SupportActivities.Other
+                    };
+                    break;
                 default:
                     activites = new List<SupportActivities>();
                     break;
