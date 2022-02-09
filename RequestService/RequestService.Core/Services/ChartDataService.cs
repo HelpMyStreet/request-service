@@ -14,17 +14,33 @@ namespace RequestService.Core.Services
     public class ChartDataService: IChartDataService
     {
         private readonly IRepository _repository;
+        private readonly IGroupService _groupService;
         private readonly ISystemClock _mockableDateTime;
 
-        public ChartDataService(IRepository repository, ISystemClock mockableDateTime)
+        public ChartDataService(IRepository repository, IGroupService groupService, ISystemClock mockableDateTime)
         {
             _repository = repository;
+            _groupService = groupService;
             _mockableDateTime = mockableDateTime;
+        }
+
+        private async Task<List<int>> GetGroups(int groupId)
+        {
+            List<int> groups = new List<int>()
+            {
+                groupId
+            };
+            
+            var childGroups = await _groupService.GetChildGroups(groupId);
+            groups.AddRange(childGroups.ChildGroups.Select(sm => sm.GroupId));
+
+            return groups;
         }
 
         public async Task<List<DataPoint>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
         {
-            var dataItems = await _repository.GetActivitiesByMonth(groupId, minDate, maxDate);
+            var groups = await GetGroups(groupId);
+            var dataItems = await _repository.GetActivitiesByMonth(groups, minDate, maxDate);
 
             //Get distinct activities from list
             var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
@@ -42,7 +58,8 @@ namespace RequestService.Core.Services
 
         public async Task<List<DataPoint>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
         {
-            var dataItems = await _repository.RecentActiveVolunteersByVolumeAcceptedRequests(groupId, minDate, maxDate);
+            var groups = await GetGroups(groupId);
+            var dataItems = await _repository.RecentActiveVolunteersByVolumeAcceptedRequests(groups, minDate, maxDate);
 
             Dictionary<string, (int minValue, int maxValue)> dictCategories = new Dictionary<string, (int minValue, int maxValue)>();
             dictCategories.Add("1 accepted request", (1, 1));
@@ -75,7 +92,8 @@ namespace RequestService.Core.Services
 
         public async Task<List<DataPoint>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
         {
-            var dataItems = await _repository.RequestVolumeByActivity(groupId, minDate, maxDate);
+            var groups = await GetGroups(groupId);
+            var dataItems = await _repository.RequestVolumeByActivity(groups, minDate, maxDate);
 
             //Get distinct activities from list
             var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
@@ -94,7 +112,8 @@ namespace RequestService.Core.Services
 
         public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
         {
-            var jobSummaries = await _repository.RequestVolumeByDueDateAndRecentStatus(groupId, minDate, maxDate);
+            var groups = await GetGroups(groupId);
+            var jobSummaries = await _repository.RequestVolumeByDueDateAndRecentStatus(groups, minDate, maxDate);
 
             var dataItems = jobSummaries.Select(x => new DataItem()
             {

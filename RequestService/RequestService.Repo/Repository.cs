@@ -2143,34 +2143,34 @@ namespace RequestService.Repo
                 .Select(x => x.Id);
         }
 		
-        public async Task<List<JobBasic>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<JobBasic>> GetActivitiesByMonth(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
         {
             return GetJobBasics(_context.Job
                     .Include(i => i.RequestJobStatus)
                     .Include(i => i.NewRequest)
-                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
                     .ToList());
         }
 
-        public async Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
         {
             return GetJobBasics(_context.Job
                     .Include(i => i.RequestJobStatus)
                     .Include(i => i.NewRequest)
-                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate)
                     .ToList());  
         }
 
-        public async Task<List<JobBasic>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<JobBasic>> RequestVolumeByActivity(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
         {
             return GetJobBasics(_context.Job
                     .Include(i => i.RequestJobStatus)
                     .Include(i => i.NewRequest)
-                    .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate)
                     .ToList());
         }
 
-        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate)
+        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
         {
             byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
             byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
@@ -2178,7 +2178,7 @@ namespace RequestService.Repo
 
             return _context.Job
                   .Include(i => i.NewRequest)
-                  .Where(x => x.NewRequest.ReferringGroupId == groupId && x.DueDate >= minDate && x.DueDate <= maxDate &&
+                  .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate &&
                   (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done))
                   .Select(s => s.VolunteerUserId)
                   .ToList();

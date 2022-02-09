@@ -16,10 +16,10 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
-        Task<List<JobBasic>> GetActivitiesByMonth(int groupId, DateTime minDate, DateTime maxDate);
-        Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate);
-        Task<List<JobBasic>> RequestVolumeByActivity(int groupId, DateTime minDate, DateTime maxDate);
-        Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(int groupId, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> GetActivitiesByMonth(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByActivity(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
 
         Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days);
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);

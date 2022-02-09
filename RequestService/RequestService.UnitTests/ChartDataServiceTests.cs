@@ -26,20 +26,22 @@ namespace RequestService.UnitTests
     {
         private Mock<IRepository> _repository;
         private Mock<ISystemClock> _mockableDateTime;
+        private Mock<IGroupService> _groupService;
         private List<int?> _volunteers;
         private List<JobBasic> _jobBasics;
+        private GetChildGroupsResponse _childGroupResponse;
         private ChartDataService _classUnderTest;
 
         [SetUp]
         public void Setup()
         {
-            
             SetupRepository();
+            SetupGroupService();
 
             _mockableDateTime = new Mock<ISystemClock>();
             _mockableDateTime.Setup(x => x.UtcNow).Returns(new DateTime(2022, 1, 20, 1, 45, 00, 00, DateTimeKind.Utc));
 
-            _classUnderTest = new ChartDataService(_repository.Object,_mockableDateTime.Object);
+            _classUnderTest = new ChartDataService(_repository.Object, _groupService.Object,_mockableDateTime.Object);
         }
 
         private void SetupRepository()
@@ -61,22 +63,42 @@ namespace RequestService.UnitTests
                 new JobBasic(){DateRequested = new DateTime(2022,1,1), SupportActivity = SupportActivities.Shopping, JobStatus = JobStatuses.Accepted, DueDate = new DateTime(2022,1,31) },
             };
 
-            _repository.Setup(x => x.GetActivitiesByMonth(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _repository.Setup(x => x.GetActivitiesByMonth(It.IsAny<List<int>>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(() => _jobBasics);
 
-            _repository.Setup(x => x.RecentActiveVolunteersByVolumeAcceptedRequests(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _repository.Setup(x => x.RecentActiveVolunteersByVolumeAcceptedRequests(It.IsAny<List<int>>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(() => _volunteers);
 
-            _repository.Setup(x => x.RequestVolumeByActivity(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _repository.Setup(x => x.RequestVolumeByActivity(It.IsAny<List<int>>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(() => _jobBasics);
 
-            _repository.Setup(x => x.RequestVolumeByDueDateAndRecentStatus(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _repository.Setup(x => x.RequestVolumeByDueDateAndRecentStatus(It.IsAny<List<int>>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(() => _jobBasics);
+
+            _childGroupResponse = new GetChildGroupsResponse()
+            {
+                ChildGroups = new List<Group>()
+                {
+                    new Group()
+                    {
+                        GroupId = -1
+                    }
+                }
+            };
+        }
+
+        private void SetupGroupService()
+        {
+            _groupService = new Mock<IGroupService>();
+            _groupService.Setup(x => x.GetChildGroups(It.IsAny<int>()))
+                .ReturnsAsync(() => _childGroupResponse);
+
         }
 
         [Test]
         public async Task ActivitiesByMonth_Check()
         {
+            int groupId = -1;
             DateTime minDate = new DateTime(2021, 1, 1);
             DateTime maxDate = new DateTime(2022, 1, 31);
 
@@ -89,7 +111,7 @@ namespace RequestService.UnitTests
             expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-03"), 1);
             expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-03"), 0);
      
-            List<DataPoint> result = await _classUnderTest.GetActivitiesByMonth(-1, minDate, maxDate);
+            List<DataPoint> result = await _classUnderTest.GetActivitiesByMonth(groupId, minDate, maxDate);
 
             foreach(var item in expectedOutcome)
             {
@@ -101,6 +123,7 @@ namespace RequestService.UnitTests
         [Test]
         public async Task RequestVolumeByActivity_Check()
         {
+            int groupId = -1;
             DateTime minDate = new DateTime(2021, 1, 1);
             DateTime startDate = minDate;
             DateTime maxDate = new DateTime(2022, 1, 31);
@@ -114,7 +137,7 @@ namespace RequestService.UnitTests
             expectedOutcome.Add((SupportActivities.DogWalking.FriendlyNameShort(), "2021-03"), 1);
             expectedOutcome.Add((SupportActivities.Shopping.FriendlyNameShort(), "2021-03"), 0);
 
-            List<DataPoint> result = await _classUnderTest.RequestVolumeByActivity(-1, minDate, maxDate);
+            List<DataPoint> result = await _classUnderTest.RequestVolumeByActivity(groupId, minDate, maxDate);
 
             foreach (var item in expectedOutcome)
             {
@@ -126,6 +149,7 @@ namespace RequestService.UnitTests
         [Test]
         public async Task RequestVolumeByDueDateAndRecentStatus_Check()
         {
+            int groupId = -1;
             DateTime minDate = new DateTime(2021, 1, 1);
             DateTime startDate = minDate;
             DateTime maxDate = new DateTime(2022, 1, 28);
@@ -136,7 +160,7 @@ namespace RequestService.UnitTests
             expectedOutcome.Add(("Cancelled", "2021-01"), 1);
             expectedOutcome.Add(("Accepted", "2022-01"), 1);
 
-            List<DataPoint> result = await _classUnderTest.RequestVolumeByDueDateAndRecentStatus(-1, minDate, maxDate);
+            List<DataPoint> result = await _classUnderTest.RequestVolumeByDueDateAndRecentStatus(groupId, minDate, maxDate);
             foreach (var item in expectedOutcome)
             {
                 var actual = result.Where(x => x.Series == item.Key.series && x.XAxis == item.Key.xAxis).Select(x => x.Value).First();
@@ -147,6 +171,7 @@ namespace RequestService.UnitTests
         [Test]
         public async Task RecentActiveVolunteersByVolumeAcceptedRequests_Check()
         {
+            int groupId = -1;
             DateTime minDate = new DateTime(2021, 1, 1);
             DateTime startDate = minDate;
             DateTime maxDate = new DateTime(2022, 1, 28);
@@ -164,7 +189,7 @@ namespace RequestService.UnitTests
             expectedOutcome.Add("10+ accepted requests", 1);
 
 
-            List<DataPoint> result = await _classUnderTest.RecentActiveVolunteersByVolumeAcceptedRequests(-1, minDate, maxDate);
+            List<DataPoint> result = await _classUnderTest.RecentActiveVolunteersByVolumeAcceptedRequests(groupId, minDate, maxDate);
             foreach (var item in expectedOutcome)
             {
                 var actual = result.Where(x => x.XAxis == item.Key).Select(x => x.Value).First();
