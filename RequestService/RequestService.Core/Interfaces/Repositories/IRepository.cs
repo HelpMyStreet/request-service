@@ -43,8 +43,6 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<int> GetReferringGroupIDForRequestAsync(int requestID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForJobAsync(int jobID, CancellationToken cancellationToken);
         Task<List<int>> GetGroupsForRequestAsync(int requestID, CancellationToken cancellationToken);
-        Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken);
-        Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken);
         GetJobDetailsResponse GetJobDetails(int jobID);
         GetRequestDetailsResponse GetRequestDetails(int requestID);
         GetRequestSummaryResponse GetRequestSummary(int requestID);
@@ -61,7 +59,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
-        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails);
+        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups);
         Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
         List<ReportItem> GetDailyReport();

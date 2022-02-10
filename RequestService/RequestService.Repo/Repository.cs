@@ -160,7 +160,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails)
+        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups)
         {
             Person requester = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Requestor);
             Person recipient;
@@ -282,6 +282,15 @@ namespace RequestService.Repo
                             JobStatuses.New,
                             JobStatusChangeReasonCodes.UserChange
                             );
+
+                        foreach (int i in availableToGroups)
+                        {
+                            _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
+                            {
+                                GroupId = i,
+                                Job = EFcoreJob
+                            });
+                        }
                     }
 
                     await _context.SaveChangesAsync();
@@ -1078,32 +1087,6 @@ namespace RequestService.Repo
                                    }).ToListAsync(cancellationToken);
 
             return postcodeDetails;
-        }
-
-        public async Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken)
-        {
-            _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
-            {
-                GroupId = groupID,
-                JobId = jobID
-            });
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
-        {
-            _context.Job.Where(x => x.RequestId == requestID)
-                .ToList()
-                .ForEach(v =>
-                {
-                    _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
-                    {
-                        GroupId = groupID,
-                        JobId = v.Id
-                    });
-                });
-
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public List<StatusHistory> GetJobStatusHistory(int jobID)
