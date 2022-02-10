@@ -1,4 +1,5 @@
-﻿using HelpMyStreet.Contracts.ReportService.Response;
+﻿using HelpMyStreet.Contracts.ReportService;
+using HelpMyStreet.Contracts.ReportService.Response;
 using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
@@ -15,16 +16,16 @@ namespace RequestService.Core.Interfaces.Repositories
 {
     public interface IRepository
     {
+        Task<List<JobBasic>> GetActivitiesByMonth(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<JobBasic>> RequestVolumeByActivity(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+        Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(IEnumerable<int> groups, DateTime minDate, DateTime maxDate);
+
         Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days);
-      
         Task<IEnumerable<SupportActivityCount>> GetCompletedActivitiesCount(IEnumerable<int> groups);
-
         Task<IEnumerable<SupportActivityCount>> GetActivitiesCompletedLastXDaysCount(IEnumerable<int> groups, int days);
-
         Task<IEnumerable<SupportActivityCount>> GetRequestsAddedLastXDaysCount(IEnumerable<int> groups, int days);
-
         Task<int> OpenJobCount(IEnumerable<int> groups);
-
         Task<bool> DeleteRequest(int requestId, CancellationToken cancellationToken);
         Task<bool> LogRequestEvent(int requestId, int? jobId, int userId, RequestEvent requestEvent);
         Task UpdateInProgressFromAccepted(JobStatusChangeReasonCodes jobStatusChangeReasonCode);
