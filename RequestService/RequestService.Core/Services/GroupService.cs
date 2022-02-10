@@ -91,21 +91,21 @@ namespace RequestService.Core.Services
             }
         }
 
-        public async Task<GetNewRequestActionsResponse> GetNewRequestActions(GetNewRequestActionsRequest request, CancellationToken cancellationToken)
+        public async Task<GetNewRequestActionsSimplifiedResponse> GetNewRequestActionsSimplified(GetNewRequestActionsSimplifiedRequest request, CancellationToken cancellationToken)
         {
-            string path = $"api/GetNewRequestActions";
+            string path = $"api/GetNewRequestActionsSimplified";
 
             using (HttpResponseMessage response = await _httpClientWrapper.GetAsync(HttpClientConfigName.GroupService, path, request, cancellationToken).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync();
-                var jsonResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetNewRequestActionsResponse, GroupServiceErrorCode>>(content);
+                var jsonResponse = JsonConvert.DeserializeObject<ResponseWrapper<GetNewRequestActionsSimplifiedResponse, GroupServiceErrorCode>>(content);
                 if (jsonResponse.IsSuccessful)
                 {
                     return jsonResponse.Content;
                 }
             }
-            throw new Exception("Unable to get new request actions");
+            throw new Exception("Unable to get new request actions simplified");
         }
 
         public async Task<GetNewShiftActionsResponse> GetNewShiftActions(GetNewShiftActionsRequest request, CancellationToken cancellationToken)
