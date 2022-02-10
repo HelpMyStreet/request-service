@@ -32,7 +32,6 @@ namespace RequestService.Core.Interfaces.Repositories
         Task UpdateJobsToCancelledFromNewOrOpen(JobStatusChangeReasonCodes jobStatusChangeReasonCode);
         Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken);
         Task<List<int>> UpdateRequestStatusToDoneAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
-        Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken);
         List<RequestSummary> GetShiftRequestsByFilter(GetShiftRequestsByFilterRequest request, List<int> referringGroups);
         List<RequestSummary> GetRequestsByFilter(GetRequestsByFilterRequest request, List<int> referringGroups);        
         List<ShiftJob> GetOpenShiftJobsByFilter(GetOpenShiftJobsByFilterRequest request, List<int> referringGroups);
@@ -59,7 +58,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
-        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups);
+        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen);
         Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
         List<ReportItem> GetDailyReport();

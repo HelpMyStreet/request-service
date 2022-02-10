@@ -62,7 +62,8 @@ namespace RequestService.UnitTests
                 It.IsAny<Fulfillable>(),
                 It.IsAny<bool>(),                
                 It.IsAny<bool?>(),
-                It.IsAny<IEnumerable<int>>()
+                It.IsAny<IEnumerable<int>>(),
+                It.IsAny<bool>()
                 ))
                 .ReturnsAsync(() => _newRequestId);
         }

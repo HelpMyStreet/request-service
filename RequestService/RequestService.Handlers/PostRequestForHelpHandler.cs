@@ -245,8 +245,7 @@ namespace RequestService.Handlers
                             RequestID = requestId
                         }, cancellationToken);
                         break;
-                    case NewTaskAction.SetStatusToOpen:
-                        await _repository.UpdateAllJobStatusToOpenForRequestAsync(requestId, -1, cancellationToken);
+                    default:
                         break;
                 }
 
@@ -277,7 +276,15 @@ namespace RequestService.Handlers
                 throw new Exception("No new request actions returned");
             }
 
-            int requestId = await _repository.AddHelpRequestDetailsAsync(helpRequestDetail, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails, actions.RequestTaskActions[NewTaskAction.MakeAvailableToGroups]);
+            bool setStatusToOpen = actions.RequestTaskActions.TryGetValue(NewTaskAction.SetStatusToOpen, out _);
+
+            int requestId = await _repository.AddHelpRequestDetailsAsync(
+                helpRequestDetail, 
+                fulfillable, 
+                formVariant.RequestorDefinedByGroup, 
+                suppressRecipientPersonalDetails, 
+                actions.RequestTaskActions[NewTaskAction.MakeAvailableToGroups], 
+                setStatusToOpen);
 
             if (requestId == 0)
             {
