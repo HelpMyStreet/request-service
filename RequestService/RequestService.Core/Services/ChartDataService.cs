@@ -1,6 +1,7 @@
 ﻿using HelpMyStreet.Contracts.ReportService;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Extensions;
+using HelpMyStreet.Utils.Models;
 using Microsoft.Extensions.Internal;
 using RequestService.Core.Domains;
 using RequestService.Core.Interfaces.Repositories;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RequestService.Core.Services
 {
-    public class ChartDataService: IChartDataService
+    public class ChartDataService : IChartDataService
     {
         private readonly IRepository _repository;
         private readonly IGroupService _groupService;
@@ -30,7 +31,7 @@ namespace RequestService.Core.Services
             {
                 groupId
             };
-            
+
             var childGroups = await _groupService.GetChildGroups(groupId);
             groups.AddRange(childGroups.ChildGroups.Select(sm => sm.GroupId));
 
@@ -47,10 +48,10 @@ namespace RequestService.Core.Services
 
             List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);
             GroupAndReplaceValuesForKnown(
-                dataPoints, 
-                dataItems.Select(x => new DataItem() 
-                { 
-                    Date = x.DateRequested.Date, 
+                dataPoints,
+                dataItems.Select(x => new DataItem()
+                {
+                    Date = x.DateRequested.Date,
                     Series = x.SupportActivity.FriendlyNameShort()
                 }).ToList());
             return dataPoints;
@@ -73,8 +74,8 @@ namespace RequestService.Core.Services
             var groupedByUser = dataItems.GroupBy(x => x.Value)
                         .Select(s => new
                         {
-                           UserID = s.Key,
-                           Count = s.Count()
+                            UserID = s.Key,
+                            Count = s.Count()
                         });
 
             foreach (var item in dictCategories)
@@ -82,7 +83,7 @@ namespace RequestService.Core.Services
                 dataPoints.Add(new DataPoint()
                 {
                     XAxis = item.Key,
-                    Value = groupedByUser.Count(x=> x.Count >= item.Value.minValue && x.Count <= item.Value.maxValue),
+                    Value = groupedByUser.Count(x => x.Count >= item.Value.minValue && x.Count <= item.Value.maxValue),
                     Series = "Dataset 1"
                 });
             }
@@ -96,18 +97,33 @@ namespace RequestService.Core.Services
             var dataItems = await _repository.RequestVolumeByActivity(groups, minDate, maxDate);
 
             //Get distinct activities from list
-            var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
+            //var supportActivities = dataItems.Select(x => x.SupportActivity.FriendlyNameShort()).Distinct().ToList();
 
-            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, supportActivities);
+            var categories = dataItems.Select(x => x.SupportActivity.Category()).Distinct().ToList();
+
+
+            List<DataPoint> dataPoints = PopulateListWithDefaultValues(minDate, maxDate, categories);
             GroupAndReplaceValuesForKnown(
                dataPoints,
                dataItems.Select(x => new DataItem()
                {
                    Date = x.DueDate,
-                   Series = x.SupportActivity.FriendlyNameShort()
+                   Series = x.SupportActivity.Category(),
+                   SubDataItems = GetBreakDown(dataItems, x.SupportActivity.Category())
                }).ToList());
 
             return dataPoints;
+        }
+
+        private List<SubDataItem> GetBreakDown(List<JobBasic> jobs, string category)
+        {
+            return jobs.Where(x => x.SupportActivity.Category() == category)
+                .GroupBy(x => x.SupportActivity)
+                .Select(s => new SubDataItem
+                {
+                    SubCategory = s.Key.FriendlyNameShort(),
+                    Count = s.Count()
+                }).ToList();
         }
 
         public async Task<List<DataPoint>> RequestVolumeByDueDateAndRecentStatus(int groupId, DateTime minDate, DateTime maxDate)

@@ -8,5 +8,6 @@ namespace RequestService.Core.Domains
     {
         public string Series { get; set; }
         public DateTime Date { get; set; }
+        public List<SubDataItem> SubDataItems { get; set; }
     }
 }
