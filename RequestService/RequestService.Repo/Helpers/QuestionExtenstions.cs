@@ -571,8 +571,7 @@ namespace RequestService.Repo.Helpers
             {
                 SupportActivities.CheckingIn,
                 SupportActivities.CollectingPrescriptions,
-                SupportActivities.Errands,
-                SupportActivities.FaceMask,
+                SupportActivities.Errands,                
                 SupportActivities.HomeworkSupport,
                 SupportActivities.MealPreparation,
                 SupportActivities.Other,
