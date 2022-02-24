@@ -1287,6 +1287,7 @@ namespace RequestService.Repo
             return _context.ActivityQuestions
                         .Include(x => x.Question)
                         .Where(x => x.ActivityId == (int)activity && x.RequestFormVariantId == (int)requestHelpFormVariant && x.RequestFormStageId == (int)requestHelpFormStage)
+                        .OrderBy(x=> x.Order)
                         .Select(x => new HelpMyStreet.Utils.Models.Question
                         {
                             Id = x.Question.Id,

@@ -172,7 +172,7 @@ namespace RequestService.Repo.Helpers
                 AnswerContainsSensitiveData = false,
             });
           
-          entity.HasData(new Question
+            entity.HasData(new Question
             {
                 Id = (int)Questions.RecipientAge,
                 Name = "Age of the person needing help",
@@ -180,6 +180,25 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
             });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.SelectActivity,
+                Name = "Please select an activity",
+                QuestionType = (int)QuestionType.Text,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.RequiresApplicationToAccept,
+                Name = "Requires an administrator to approve volunteer's application to fulfill request",
+                QuestionType = (int)QuestionType.Radio,
+                AdditionalData = GetAdditionalData(Questions.RequiresApplicationToAccept),
+                AnswerContainsSensitiveData = false
+            });
+
         }
         private static string GetAdditionalData(Questions question)
         {
@@ -270,6 +289,21 @@ namespace RequestService.Repo.Helpers
                         {
                             Key = "false",
                             Value = "No, please make it visible to other volunteers"
+                        }
+                    };
+                    break;
+                case Questions.RequiresApplicationToAccept:
+                    additionalData = new List<AdditonalQuestionData>
+                    {
+                        new AdditonalQuestionData
+                        {
+                            Key = "Yes",
+                            Value = "Yes"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "No",
+                            Value = "No"
                         }
                     };
                     break;
@@ -447,7 +481,30 @@ namespace RequestService.Repo.Helpers
                             PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             Subtext = subText_anythingElse
                         });
+                    }
+                    else if (activity == SupportActivities.Other)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.SelectActivity,
+                            Location = "pos1",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "Please provide details of the help that you require",
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
+                        });
 
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
+
+                        string anythingElseToTellUs_placeholderText = form switch
+                        {
+                            RequestHelpFormVariant.Ruddington => "For example, let us know if you’re struggling to find help elsewhere.",
+                            _ => "For example, any special instructions for the volunteer."
+                        };
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext = subText_anythingElse });
                     }
                     else
                     {
@@ -489,6 +546,21 @@ namespace RequestService.Repo.Helpers
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.RecipientAge, Location = "details1", Order = 2, RequestFormVariantId = (int)form, Required = false,Subtext = "We use age to check which services we are able to provide. You can put an approximate age if you prefer." });
                     }
 
+                    if (form == RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Detail,
+                            QuestionId = (int)Questions.RequiresApplicationToAccept,
+                            Location = "details1",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
+                        });
+                    }
+
                     entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.SensitiveInformation, Location = "details2", Order = 3, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.", Subtext = "We will only share this information with a volunteer after they have accepted your request" });
                 }
             }
@@ -499,8 +571,7 @@ namespace RequestService.Repo.Helpers
             {
                 SupportActivities.CheckingIn,
                 SupportActivities.CollectingPrescriptions,
-                SupportActivities.Errands,
-                SupportActivities.FaceMask,
+                SupportActivities.Errands,                
                 SupportActivities.HomeworkSupport,
                 SupportActivities.MealPreparation,
                 SupportActivities.Other,
@@ -727,7 +798,8 @@ namespace RequestService.Repo.Helpers
                       SupportActivities.Other};
                     break;
                 case RequestHelpFormVariant.Default:
-                case RequestHelpFormVariant.FaceMasks:                
+                case RequestHelpFormVariant.FaceMasks:
+                case RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter:
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
                     break;
