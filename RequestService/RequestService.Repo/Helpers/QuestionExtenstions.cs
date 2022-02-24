@@ -195,7 +195,7 @@ namespace RequestService.Repo.Helpers
                 Id = (int)Questions.RequiresApplicationToAccept,
                 Name = "Requires an administrator to approve volunteer's application to fulfill request",
                 QuestionType = (int)QuestionType.Radio,
-                AdditionalData = string.Empty,
+                AdditionalData = GetAdditionalData(Questions.RequiresApplicationToAccept),
                 AnswerContainsSensitiveData = false
             });
 
@@ -557,7 +557,7 @@ namespace RequestService.Repo.Helpers
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = true,
-                            Subtext = "Does this request require an administrator to volunteer"
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
                         });
                     }
 
