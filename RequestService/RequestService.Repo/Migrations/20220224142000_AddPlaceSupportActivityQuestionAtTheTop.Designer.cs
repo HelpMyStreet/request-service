@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220224142000_AddPlaceSupportActivityQuestionAtTheTop")]
+    partial class AddPlaceSupportActivityQuestionAtTheTop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9605,6 +9607,11 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
+                            Id = 31,
+                            Name = "ArroweParkHospital_RequestSubmitter"
+                        },
+                        new
+                        {
                             Id = 32,
                             Name = "LincolnshireVolunteersRequests_RequestSubmitter"
                         });
@@ -9831,6 +9838,26 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 33,
                             Name = "SkillShare"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "BreakfastVisit"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "LunchVisit"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "MedicationCheckIn"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "WellBeingVisit"
                         });
                 });
 
