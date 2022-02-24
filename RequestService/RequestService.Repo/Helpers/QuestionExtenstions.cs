@@ -482,21 +482,30 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
-                    //else if(activity == SupportActivities.Other)
-                    //{
-                    //    entity.HasData(new ActivityQuestions
-                    //    {
-                    //        ActivityId = (int)activity,
-                    //        RequestFormStageId = (int)RequestHelpFormStage.Request,
-                    //        QuestionId = (int)Questions.SelectActivity,
-                    //        Location = "pos1",
-                    //        Order = 2,
-                    //        RequestFormVariantId = (int)form,
-                    //        Required = false,
-                    //        PlaceholderText = "Please provide details of the help that you require",
-                    //        Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
-                    //    });
-                    //}
+                    else if (activity == SupportActivities.Other)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.SelectActivity,
+                            Location = "pos1",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = false,
+                            PlaceholderText = "Please provide details of the help that you require",
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
+                        });
+
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
+
+                        string anythingElseToTellUs_placeholderText = form switch
+                        {
+                            RequestHelpFormVariant.Ruddington => "For example, let us know if you’re struggling to find help elsewhere.",
+                            _ => "For example, any special instructions for the volunteer."
+                        };
+                        entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Detail, QuestionId = (int)Questions.AnythingElseToTellUs, Location = "details2", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = anythingElseToTellUs_placeholderText, Subtext = subText_anythingElse });
+                    }
                     else
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
