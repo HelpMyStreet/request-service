@@ -492,7 +492,7 @@ namespace RequestService.Repo.Helpers
                             Location = "pos1",
                             Order = 1,
                             RequestFormVariantId = (int)form,
-                            Required = false,
+                            Required = true,
                             PlaceholderText = "Please provide details of the help that you require",
                             Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         });
