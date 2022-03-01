@@ -26,5 +26,6 @@ namespace RequestService.Repo.EntityFramework.Entities
         public int? ShiftLength { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? NotBeforeDate { get; set; }
+        public string SpecificSupportActivity { get; set; }
     }
 }
