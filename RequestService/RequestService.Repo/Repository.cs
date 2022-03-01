@@ -260,7 +260,8 @@ namespace RequestService.Repo
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
-                            Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
+                            Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer,
+                            SpecificSupportActivity = job.Questions.Where(x => x.Id == (int)Questions.SelectActivity).FirstOrDefault()?.Answer,
                         };
                         _context.Job.Add(EFcoreJob);
                         await _context.SaveChangesAsync();
@@ -831,7 +832,8 @@ namespace RequestService.Repo
                     Location = j.LocationId.HasValue ? (Location?)j.LocationId.Value : null,
                     StartDate = j.StartDate,
                     ShiftLength = j.ShiftLength,
-                    NotBeforeDate = j.NotBeforeDate
+                    NotBeforeDate = j.NotBeforeDate,
+                    SpecificSupportActivity = j.SpecificSupportActivity
                 });
             }
 

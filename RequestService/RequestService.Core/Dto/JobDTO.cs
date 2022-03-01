@@ -21,5 +21,6 @@ namespace RequestService.Core.Dto
         public Location? Location { get; set; }
         public int? ShiftLength { get; set; }
         public DateTime? StartDate { get; set; }
+        public string SpecificSupportActivity { get; set; }
     }
 }
