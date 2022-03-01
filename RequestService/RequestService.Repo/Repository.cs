@@ -953,6 +953,7 @@ namespace RequestService.Repo
                             SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
                             NotBeforeDate = job.NotBeforeDate,
                             Questions = MapToQuestions(job.JobQuestions),
+                            SpecificSupportActivity = job.SpecificSupportActivity
                         }).ToList();
                         break;
                     case RequestType.Shift:
