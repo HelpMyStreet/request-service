@@ -115,7 +115,8 @@ namespace RequestService.Handlers
                     {
                         CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.TaskAppliedForNotification },
                         JobID = request.JobID,
-                        GroupID = referringGroupId
+                        GroupID = referringGroupId,
+                        RequestID = jobDetails.RequestSummary.RequestID
                     },
                     cancellationToken);
             }
