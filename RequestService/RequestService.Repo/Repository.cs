@@ -929,7 +929,8 @@ namespace RequestService.Repo
                 RequestID = job.NewRequest.Id,
                 RequestType = (RequestType)job.NewRequest.RequestType,
                 SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
-                NotBeforeDate = job.NotBeforeDate
+                NotBeforeDate = job.NotBeforeDate,
+                SpecificSupportActivity = job.SpecificSupportActivity
             };
         }
 
