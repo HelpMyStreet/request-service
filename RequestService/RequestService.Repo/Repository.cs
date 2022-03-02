@@ -463,6 +463,36 @@ namespace RequestService.Repo
             return response;
         }
 
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAppliedForAsync(int jobID, int createdByUserID, int volunteerUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte appliedForJobStatus = (byte)JobStatuses.AppliedFor;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+
+            if (job != null)
+            {
+                if (job.JobStatusId != appliedForJobStatus)
+                {
+                    job.JobStatusId = appliedForJobStatus;
+                    job.VolunteerUserId = volunteerUserID;
+                    AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.AppliedFor, jobStatusChangeReasonCode);
+                    int result = _context.SaveChanges();
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                }
+                else
+                {
+                    if (job.VolunteerUserId == volunteerUserID)
+                    {
+                        response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    }
+                }
+            }
+            return response;
+        }
+
         public async Task<UpdateJobStatusOutcome> UpdateJobStatusDoneAsync(int jobID, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
         {
             UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
