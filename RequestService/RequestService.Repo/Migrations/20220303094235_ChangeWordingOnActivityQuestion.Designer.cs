@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220303094235_ChangeWordingOnActivityQuestion")]
+    partial class ChangeWordingOnActivityQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9304,6 +9306,11 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
+                            Id = 31,
+                            Name = "ArroweParkHospital_RequestSubmitter"
+                        },
+                        new
+                        {
                             Id = 32,
                             Name = "LincolnshireVolunteersRequests_RequestSubmitter"
                         });
@@ -9530,6 +9537,26 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 33,
                             Name = "SkillShare"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "BreakfastVisit"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "LunchVisit"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "MedicationCheckIn"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "WellBeingVisit"
                         });
                 });
 
@@ -9951,7 +9978,7 @@ namespace RequestService.Repo.Migrations
                             Id = 21,
                             AdditionalData = "[{\"Key\":\"Yes\",\"Value\":\"Yes\"},{\"Key\":\"No\",\"Value\":\"No\"}]",
                             AnswerContainsSensitiveData = false,
-                            Name = "Requires an administrator to approve volunteer's application to fulfil request",
+                            Name = "Requires an administrator to approve volunteer's application to fulfill request",
                             QuestionType = (byte)4
                         });
                 });

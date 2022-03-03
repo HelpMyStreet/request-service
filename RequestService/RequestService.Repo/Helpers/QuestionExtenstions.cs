@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SelectActivity,
-                Name = "Please select an activity",
+                Name = "Please enter an activity",
                 QuestionType = (int)QuestionType.Text,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -193,7 +193,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.RequiresApplicationToAccept,
-                Name = "Requires an administrator to approve volunteer's application to fulfill request",
+                Name = "Requires an administrator to approve volunteer's application to fulfil request",
                 QuestionType = (int)QuestionType.Radio,
                 AdditionalData = GetAdditionalData(Questions.RequiresApplicationToAccept),
                 AnswerContainsSensitiveData = false
