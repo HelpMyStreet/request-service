@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SelectActivity,
-                Name = "Please select an activity",
+                Name = "Please enter an activity",
                 QuestionType = (int)QuestionType.Text,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
