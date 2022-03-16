@@ -2183,5 +2183,14 @@ namespace RequestService.Repo
                   .Select(s => s.VolunteerUserId)
                   .ToList();
 	    }
+
+        public List<int> GetRequestsIdsForGroup(List<int> referringGroups)
+        {
+            var requests = _context.Request
+                .Select(x => new { x.Id, x.ReferringGroupId })
+                .Where(x => referringGroups.Contains(x.ReferringGroupId));
+
+            return requests.Select(x => x.Id).ToList();
+        }
     }
 }
