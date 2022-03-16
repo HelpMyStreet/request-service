@@ -29,4 +29,7 @@
 		<ProjectReference ReplaceParameters="true" Include="..\RequestService.Core\RequestService.Core.csproj">
 		</ProjectReference>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="EntityFramework\Helper\" />
+	</ItemGroup>
 </Project>

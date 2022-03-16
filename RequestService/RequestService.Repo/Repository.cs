@@ -21,6 +21,7 @@ using RequestService.Core.Domains;
 using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
 using HelpMyStreet.Utils.EqualityComparers;
+using HelpMyStreet.Contracts.ReportService;
 
 namespace RequestService.Repo
 {
@@ -857,6 +858,39 @@ namespace RequestService.Repo
 
             return response;
         }
+
+        private JobBasic MapEFJobToBasic(EntityFramework.Entities.Job job)
+        {
+            DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
+            return new JobBasic()
+            {                
+                DueDate = dueDate,
+                JobID = job.Id,
+                VolunteerUserID = job.VolunteerUserId,
+                JobStatus = (JobStatuses)job.JobStatusId,
+                SupportActivity = (HelpMyStreet.Utils.Enums.SupportActivities)job.SupportActivityId,                               
+                ReferringGroupID = job.NewRequest.ReferringGroupId,
+                DateStatusLastChanged = job.RequestJobStatus.Max(x => x.DateCreated),
+                DateRequested = job.NewRequest.DateRequested,
+                Archive = job.NewRequest.Archive.Value,
+                DueDateType = (DueDateType)job.DueDateTypeId,
+                RequestID = job.NewRequest.Id,
+                RequestType = (RequestType)job.NewRequest.RequestType,
+                SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
+                NotBeforeDate = job.NotBeforeDate,                
+            };
+        }
+
+        private List<JobBasic> GetJobBasics(List<EntityFramework.Entities.Job> jobs)
+        {
+            List<JobBasic> response = new List<JobBasic>();
+            foreach (EntityFramework.Entities.Job j in jobs)
+            {
+                response.Add(MapEFJobToBasic(j));
+            }
+            return response;
+        }
+
         private JobSummary MapEFJobToSummary(EntityFramework.Entities.Job job)
         {
             DateTime dueDate = job.NewRequest.Shift?.StartDate != null ? job.NewRequest.Shift.StartDate : job.DueDate;
@@ -2060,7 +2094,7 @@ namespace RequestService.Repo
                     (groups.Count() == 0 || groups.Contains(x.NewRequest.ReferringGroupId))
                 );
         }
-
+        
         public async Task<IEnumerable<int>> GetJobsPastDueDate(JobStatuses jobStatus, int days)
         {
             byte requestType_task = (byte)RequestType.Task;
@@ -2074,5 +2108,46 @@ namespace RequestService.Repo
                 )
                 .Select(x => x.Id);
         }
+		
+        public async Task<List<JobBasic>> GetActivitiesByMonth(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.NewRequest.DateRequested >= minDate && x.NewRequest.DateRequested <= maxDate)
+                    .ToList());
+        }
+
+        public async Task<List<JobBasic>> RequestVolumeByDueDateAndRecentStatus(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());  
+        }
+
+        public async Task<List<JobBasic>> RequestVolumeByActivity(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
+        {
+            return GetJobBasics(_context.Job
+                    .Include(i => i.RequestJobStatus)
+                    .Include(i => i.NewRequest)
+                    .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate)
+                    .ToList());
+        }
+
+        public async Task<List<int?>> RecentActiveVolunteersByVolumeAcceptedRequests(IEnumerable<int> groups, DateTime minDate, DateTime maxDate)
+        {
+            byte jobStatus_InProgress = (byte)JobStatuses.InProgress;
+            byte jobStatus_Accepted = (byte)JobStatuses.Accepted;
+            byte jobStatus_Done = (byte)JobStatuses.Done;
+
+            return _context.Job
+                  .Include(i => i.NewRequest)
+                  .Where(x => groups.Contains(x.NewRequest.ReferringGroupId) && x.DueDate >= minDate && x.DueDate <= maxDate &&
+                  (x.JobStatusId == jobStatus_InProgress || x.JobStatusId == jobStatus_Accepted || x.JobStatusId == jobStatus_Done))
+                  .Select(s => s.VolunteerUserId)
+                  .ToList();
+	    }
     }
 }
