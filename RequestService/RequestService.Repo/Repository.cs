@@ -2187,8 +2187,8 @@ namespace RequestService.Repo
         public List<int> GetRequestsIdsForGroup(List<int> referringGroups)
         {
             return _context.Request
-                .Select(x => new { x.Id, x.ReferringGroupId })
-                .Where(x => referringGroups.Contains(x.ReferringGroupId)).Select(x => x.Id).ToList();
+                .Where(x => referringGroups.Contains(x.ReferringGroupId))
+                .Select(x => x.Id).ToList();
         }
     }
 }
