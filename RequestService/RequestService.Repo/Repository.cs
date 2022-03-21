@@ -161,7 +161,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails)
+        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen)
         {
             Person requester = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Requestor);
             Person recipient;
@@ -283,6 +283,27 @@ namespace RequestService.Repo
                             JobStatuses.New,
                             JobStatusChangeReasonCodes.UserChange
                             );
+
+                        if(setStatusToOpen)
+                        {
+                            AddJobStatus(
+                            EFcoreJob.Id,
+                            helpRequestDetail.HelpRequest.CreatedByUserId,
+                            null,
+                            JobStatuses.Open,
+                            JobStatusChangeReasonCodes.AutoProgressNewToOpen
+                            );
+                        }
+
+
+                        foreach (int i in availableToGroups)
+                        {
+                            _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
+                            {
+                                GroupId = i,
+                                Job = EFcoreJob
+                            });
+                        }
                     }
 
                     await _context.SaveChangesAsync();
@@ -1114,32 +1135,6 @@ namespace RequestService.Repo
             return postcodeDetails;
         }
 
-        public async Task AddJobAvailableToGroupAsync(int jobID, int groupID, CancellationToken cancellationToken)
-        {
-            _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
-            {
-                GroupId = groupID,
-                JobId = jobID
-            });
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task AddRequestAvailableToGroupAsync(int requestID, int groupID, CancellationToken cancellationToken)
-        {
-            _context.Job.Where(x => x.RequestId == requestID)
-                .ToList()
-                .ForEach(v =>
-                {
-                    _context.JobAvailableToGroup.Add(new JobAvailableToGroup()
-                    {
-                        GroupId = groupID,
-                        JobId = v.Id
-                    });
-                });
-
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         public List<StatusHistory> GetJobStatusHistory(int jobID)
         {
             return _context.RequestJobStatus.Where(x => x.JobId == jobID)
@@ -1669,35 +1664,6 @@ namespace RequestService.Repo
 
             var results = requests.ToList();
             return results.Select(x => MapEFRequestToSummary(x)).ToList();
-        }
-
-        public async Task<bool> UpdateAllJobStatusToOpenForRequestAsync(int requestId, int createdByUserID, CancellationToken cancellationToken)
-        {
-            byte openJobStatus = (byte)JobStatuses.Open;
-            var jobs = _context.Job.Where(w => w.RequestId == requestId && w.JobStatusId != openJobStatus);
-
-            if (jobs == null)
-            {
-                //Not throwing an error as requestid might not exist or no not open jobs exist for request id
-                return false;
-            }
-
-            foreach (EntityFramework.Entities.Job job in jobs)
-            {
-                job.JobStatusId = openJobStatus;
-                job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.AutoProgressNewToOpen);
-            }
-            int result = await _context.SaveChangesAsync(cancellationToken);
-
-            if (jobs.Count() == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         public async Task<List<int>> UpdateRequestStatusToCancelledAsync(int requestId, int createdByUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)

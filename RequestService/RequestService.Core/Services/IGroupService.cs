@@ -9,7 +9,7 @@ namespace RequestService.Core.Services
     public interface IGroupService
     {
         Task<GetGroupLocationsResponse> GetGroupLocations(int groupId);
-        Task<GetNewRequestActionsResponse> GetNewRequestActions(GetNewRequestActionsRequest request, CancellationToken cancellationToken);
+        Task<GetNewRequestActionsSimplifiedResponse> GetNewRequestActionsSimplified(GetNewRequestActionsSimplifiedRequest request, CancellationToken cancellationToken);
         Task<GetUserGroupsResponse> GetUserGroups(int userId, CancellationToken cancellationToken);
         Task<GetGroupMembersResponse> GetGroupMembers(int groupID);
         Task<GetUserRolesResponse> GetUserRoles(int userId, CancellationToken cancellationToken);
