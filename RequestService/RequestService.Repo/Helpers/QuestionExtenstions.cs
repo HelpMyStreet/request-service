@@ -556,6 +556,19 @@ namespace RequestService.Repo.Helpers
                     }
                     else if (activity == SupportActivities.Accommodation)
                     {
+                        entity.HasData(new ActivityQuestions 
+                        {  
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                            QuestionId = (int)Questions.SupportRequesting, 
+                            Location = "pos3", 
+                            Order = 1, 
+                            RequestFormVariantId = (int)form, 
+                            Required = false, 
+                            PlaceholderText = "Please be aware that information in this section is visible to prospective hosts",
+                            Subtext = "We will show this information to potential hosts to help find the best match",
+                        });
+
                         entity.HasData(new ActivityQuestions
                         {
                             ActivityId = (int)activity,
@@ -573,7 +586,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.GroupSizeChildren,
-                            Location = "pos2",
+                            Location = "pos1",
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -585,7 +598,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.GroupSizePets,
-                            Location = "pos3",
+                            Location = "pos1",
                             Order = 3,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -597,7 +610,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.PreferredLocation,
-                            Location = "pos4",
+                            Location = "pos1",
                             Order = 4,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -609,7 +622,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.PreferredLanguage,
-                            Location = "pos5",
+                            Location = "pos2",
                             Order = 5,
                             RequestFormVariantId = (int)form,
                             Required = true,
