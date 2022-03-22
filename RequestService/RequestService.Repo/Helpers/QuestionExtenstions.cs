@@ -211,7 +211,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.PreferredLocation,
-                Name = "Do you have a preferred location within the UK",
+                Name = "Do you have a preferred location within the UK?",
                 QuestionType = (int)QuestionType.Radio,
                 AdditionalData = GetAdditionalData(Questions.PreferredLocation),
                 AnswerContainsSensitiveData = false
