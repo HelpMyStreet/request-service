@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeAdults,
-                Name = "How many adults need accomodation",
+                Name = "How many adults need accomodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -193,7 +193,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeChildren,
-                Name = "How many children need accomodation",
+                Name = "How many children need accomodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -202,8 +202,8 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizePets,
-                Name = "How many pets need accomodation",
-                QuestionType = (int)QuestionType.Text,
+                Name = "How many pets need accomodation?",
+                QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
             });
@@ -221,8 +221,8 @@ namespace RequestService.Repo.Helpers
             {
                 Id = (int)Questions.PreferredLanguage,
                 Name = "What languages do you speak?",
-                QuestionType = (int)QuestionType.Radio,
-                AdditionalData = GetAdditionalData(Questions.PreferredLanguage),
+                QuestionType = (int)QuestionType.Text,
+                AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
             });
         }
@@ -376,26 +376,6 @@ namespace RequestService.Repo.Helpers
                             Key = "Wales",
                             Value = "Wales"
                         },
-                    };
-                    break;
-                case Questions.PreferredLanguage:
-                    additionalData = new List<AdditonalQuestionData>
-                    {
-                        new AdditonalQuestionData
-                        {
-                            Key = "English",
-                            Value = "English"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Ukrainian",
-                            Value = "Ukrainian"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Other",
-                            Value = "Other"
-                        }
                     };
                     break;
             }
