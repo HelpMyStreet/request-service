@@ -784,6 +784,16 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.VolunteerSupport
                     };
                     break;
+                case RequestHelpFormVariant.UkraineRefugees_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Accommodation,
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.Other
+                    };
+                    break;
                 default:
                     activites = new List<SupportActivities>();
                     break;
