@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220322111841_AddUkranianRefugees_TwekQuestions")]
+    partial class AddUkranianRefugees_TwekQuestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9772,7 +9774,7 @@ namespace RequestService.Repo.Migrations
                             Id = 26,
                             AdditionalData = "[{\"Key\":\"North East (England)\",\"Value\":\"North East (England)\"},{\"Key\":\"North West (England)\",\"Value\":\"North West (England)\"},{\"Key\":\"Yorkshire and The Humber\",\"Value\":\"Yorkshire and The Humber\"},{\"Key\":\"East Midlands (England)\",\"Value\":\"East Midlands (England)\"},{\"Key\":\"West Midlands (England)\",\"Value\":\"West Midlands (England)\"},{\"Key\":\"East of England\",\"Value\":\"East of England\"},{\"Key\":\"London\",\"Value\":\"London\"},{\"Key\":\"South East (England)\",\"Value\":\"South East (England)\"},{\"Key\":\"South West (England)\",\"Value\":\"South West (England)\"},{\"Key\":\"Scotland\",\"Value\":\"Scotland\"},{\"Key\":\"Wales\",\"Value\":\"Wales\"}]",
                             AnswerContainsSensitiveData = false,
-                            Name = "Do you have a preferred location within the UK?",
+                            Name = "Do you have a preferred location within the UK",
                             QuestionType = (byte)4
                         },
                         new

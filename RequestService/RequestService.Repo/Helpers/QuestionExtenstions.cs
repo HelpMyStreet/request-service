@@ -180,6 +180,51 @@ namespace RequestService.Repo.Helpers
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = true
             });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.GroupSizeAdults,
+                Name = "How many adults need accomodation?",
+                QuestionType = (int)QuestionType.Number,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.GroupSizeChildren,
+                Name = "How many children need accomodation?",
+                QuestionType = (int)QuestionType.Number,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.GroupSizePets,
+                Name = "How many pets need accomodation?",
+                QuestionType = (int)QuestionType.Number,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.PreferredLocation,
+                Name = "Do you have a preferred location within the UK?",
+                QuestionType = (int)QuestionType.Radio,
+                AdditionalData = GetAdditionalData(Questions.PreferredLocation),
+                AnswerContainsSensitiveData = false
+            });
+
+            entity.HasData(new Question
+            {
+                Id = (int)Questions.PreferredLanguage,
+                Name = "What languages do you speak?",
+                QuestionType = (int)QuestionType.Text,
+                AdditionalData = string.Empty,
+                AnswerContainsSensitiveData = false
+            });
         }
         private static string GetAdditionalData(Questions question)
         {
@@ -271,6 +316,66 @@ namespace RequestService.Repo.Helpers
                             Key = "false",
                             Value = "No, please make it visible to other volunteers"
                         }
+                    };
+                    break;
+                case Questions.PreferredLocation:
+                    additionalData = new List<AdditonalQuestionData>
+                    {
+                        new AdditonalQuestionData
+                        {
+                            Key = "North East (England)",
+                            Value = "North East (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "North West (England)",
+                            Value = "North West (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "Yorkshire and The Humber",
+                            Value = "Yorkshire and The Humber"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "East Midlands (England)",
+                            Value = "East Midlands (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "West Midlands (England)",
+                            Value = "West Midlands (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "East of England",
+                            Value = "East of England"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "London",
+                            Value = "London"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "South East (England)",
+                            Value = "South East (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "South West (England)",
+                            Value = "South West (England)"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "Scotland",
+                            Value = "Scotland"
+                        },
+                        new AdditonalQuestionData
+                        {
+                            Key = "Wales",
+                            Value = "Wales"
+                        },
                     };
                     break;
             }
@@ -448,6 +553,68 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
 
+                    }
+                    else if (activity == SupportActivities.Accommodation)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizeAdults,
+                            Location = "pos1",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizeChildren,
+                            Location = "pos2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizePets,
+                            Location = "pos3",
+                            Order = 3,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.PreferredLocation,
+                            Location = "pos4",
+                            Order = 4,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.PreferredLanguage,
+                            Location = "pos5",
+                            Order = 5,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
                     }
                     else
                     {
@@ -782,6 +949,16 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.DigitalSupport,
                         SupportActivities.Other,
                         SupportActivities.VolunteerSupport
+                    };
+                    break;
+                case RequestHelpFormVariant.UkraineRefugees_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.Accommodation,
+                        SupportActivities.Shopping,
+                        SupportActivities.PhoneCalls_Friendly,
+                        SupportActivities.CheckingIn,
+                        SupportActivities.Other
                     };
                     break;
                 default:
