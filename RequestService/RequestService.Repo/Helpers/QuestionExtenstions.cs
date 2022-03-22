@@ -574,6 +574,68 @@ namespace RequestService.Repo.Helpers
                         });
 
                     }
+                    else if (activity == SupportActivities.Accommodation)
+                    {
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizeAdults,
+                            Location = "pos1",
+                            Order = 1,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizeChildren,
+                            Location = "pos2",
+                            Order = 2,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.GroupSizePets,
+                            Location = "pos3",
+                            Order = 3,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.PreferredLocation,
+                            Location = "pos4",
+                            Order = 4,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+
+                        entity.HasData(new ActivityQuestions
+                        {
+                            ActivityId = (int)activity,
+                            RequestFormStageId = (int)RequestHelpFormStage.Request,
+                            QuestionId = (int)Questions.PreferredLanguage,
+                            Location = "pos5",
+                            Order = 5,
+                            RequestFormVariantId = (int)form,
+                            Required = true,
+                            PlaceholderText = string.Empty
+                        });
+                    }
                     else
                     {
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 1, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
