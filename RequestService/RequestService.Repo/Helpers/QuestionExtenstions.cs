@@ -321,61 +321,18 @@ namespace RequestService.Repo.Helpers
                 case Questions.PreferredLocation:
                     additionalData = new List<AdditonalQuestionData>
                     {
-                        new AdditonalQuestionData
-                        {
-                            Key = "North East (England)",
-                            Value = "North East (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "North West (England)",
-                            Value = "North West (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Yorkshire and The Humber",
-                            Value = "Yorkshire and The Humber"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "East Midlands (England)",
-                            Value = "East Midlands (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "West Midlands (England)",
-                            Value = "West Midlands (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "East of England",
-                            Value = "East of England"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "London",
-                            Value = "London"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "South East (England)",
-                            Value = "South East (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "South West (England)",
-                            Value = "South West (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Scotland",
-                            Value = "Scotland"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Wales",
-                            Value = "Wales"
-                        },
+                        new AdditonalQuestionData { Key = "England, North East (inc. Newcastle, Sunderland, Gateshead)", Value = "England, North East (inc. Newcastle, Sunderland, Gateshead)"},
+                        new AdditonalQuestionData { Key = "England, North West (inc. Liverpool, Manchester, Bolton)", Value = "England, North West (inc. Liverpool, Manchester, Bolton)"},
+                        new AdditonalQuestionData { Key = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)", Value = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)"},
+                        new AdditonalQuestionData { Key = "England, East Midlands (inc. Leicester, Nottingham, Derby)", Value = "England, East Midlands (inc. Leicester, Nottingham, Derby)"},
+                        new AdditonalQuestionData { Key = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)", Value = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)"},
+                        new AdditonalQuestionData { Key = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)", Value = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)"},
+                        new AdditonalQuestionData { Key = "England, London", Value = "England, London"},
+                        new AdditonalQuestionData { Key = "England, South East (inc. Southampton, Portsmouth, Brighton)", Value = "England, South East (inc. Southampton, Portsmouth, Brighton)"},
+                        new AdditonalQuestionData { Key = "England, South West (inc. Bristol, Plymouth, Bournemouth)", Value = "England, South West (inc. Bristol, Plymouth, Bournemouth)"},
+                        new AdditonalQuestionData { Key = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)", Value = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)"},
+                        new AdditonalQuestionData { Key = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)", Value = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)"},
+                        new AdditonalQuestionData { Key = "Wales (inc. Cardiff, Swansea, Newport)", Value = "Wales (inc. Cardiff, Swansea, Newport)"}
                     };
                     break;
             }
