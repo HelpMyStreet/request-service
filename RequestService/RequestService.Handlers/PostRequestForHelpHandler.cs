@@ -282,6 +282,7 @@ namespace RequestService.Handlers
                 helpRequestDetail, 
                 fulfillable, 
                 formVariant.RequestorDefinedByGroup, 
+                formVariant.RequestHelpFormVariant,
                 suppressRecipientPersonalDetails, 
                 actions.RequestTaskActions[NewTaskAction.MakeAvailableToGroups], 
                 setStatusToOpen);

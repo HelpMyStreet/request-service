@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220323112904_ChangeKeyForPreferredLocations")]
+    partial class ChangeKeyForPreferredLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9815,7 +9817,7 @@ namespace RequestService.Repo.Migrations
                             Id = 22,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many adults need accommodation?",
+                            Name = "How many adults need accomodation?",
                             QuestionType = (byte)1
                         },
                         new
@@ -9823,7 +9825,7 @@ namespace RequestService.Repo.Migrations
                             Id = 23,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many children need accommodation?",
+                            Name = "How many children need accomodation?",
                             QuestionType = (byte)1
                         },
                         new
@@ -9831,7 +9833,7 @@ namespace RequestService.Repo.Migrations
                             Id = 24,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many pets need accommodation?",
+                            Name = "How many pets need accomodation?",
                             QuestionType = (byte)1
                         },
                         new

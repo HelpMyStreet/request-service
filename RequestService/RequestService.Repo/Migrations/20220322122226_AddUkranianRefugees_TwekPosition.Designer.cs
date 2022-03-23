@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220322122226_AddUkranianRefugees_TwekPosition")]
+    partial class AddUkranianRefugees_TwekPosition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8362,17 +8364,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 34,
-                            QuestionId = 19,
-                            RequestFormVariantId = 33,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 34,
                             QuestionId = 14,
                             RequestFormVariantId = 33,
                             Location = "details2",
@@ -8409,17 +8400,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 1,
-                            QuestionId = 19,
-                            RequestFormVariantId = 33,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 33,
                             Location = "details2",
@@ -8451,17 +8431,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 19,
-                            RequestFormVariantId = 33,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -8501,17 +8470,6 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 10,
-                            QuestionId = 19,
-                            RequestFormVariantId = 33,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
-                        },
-                        new
-                        {
-                            ActivityId = 10,
                             QuestionId = 14,
                             RequestFormVariantId = 33,
                             Location = "details2",
@@ -8543,17 +8501,6 @@ namespace RequestService.Repo.Migrations
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 19,
-                            RequestFormVariantId = 33,
-                            Location = "details1",
-                            Order = 1,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "If yes, volunteer(s) who accept this request will be asked to contact the requester to get the information they need to complete the request."
                         },
                         new
                         {
@@ -9815,7 +9762,7 @@ namespace RequestService.Repo.Migrations
                             Id = 22,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many adults need accommodation?",
+                            Name = "How many adults need accomodation?",
                             QuestionType = (byte)1
                         },
                         new
@@ -9823,7 +9770,7 @@ namespace RequestService.Repo.Migrations
                             Id = 23,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many children need accommodation?",
+                            Name = "How many children need accomodation?",
                             QuestionType = (byte)1
                         },
                         new
@@ -9831,13 +9778,13 @@ namespace RequestService.Repo.Migrations
                             Id = 24,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "How many pets need accommodation?",
+                            Name = "How many pets need accomodation?",
                             QuestionType = (byte)1
                         },
                         new
                         {
                             Id = 26,
-                            AdditionalData = "[{\"Key\":\"DH1 1AB\",\"Value\":\"England, North East (inc. Newcastle, Sunderland, Gateshead)\"},{\"Key\":\"M1 1AD\",\"Value\":\"England, North West (inc. Liverpool, Manchester, Bolton)\"},{\"Key\":\"YO1 0ET\",\"Value\":\"England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)\"},{\"Key\":\"NG1 6DQ\",\"Value\":\"England, East Midlands (inc. Leicester, Nottingham, Derby)\"},{\"Key\":\"B1 1QU\",\"Value\":\"England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)\"},{\"Key\":\"CB8 0AA\",\"Value\":\"England, East of England (inc. Luton, Norwich, Southend-on-Sea)\"},{\"Key\":\"SW1A 1AA\",\"Value\":\"England, London\"},{\"Key\":\"RH10 0AG\",\"Value\":\"England, South East (inc. Southampton, Portsmouth, Brighton)\"},{\"Key\":\"BA1 0AA\",\"Value\":\"England, South West (inc. Bristol, Plymouth, Bournemouth)\"},{\"Key\":\"BT1 1AA\",\"Value\":\"Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)\"},{\"Key\":\"PH1 1AA\",\"Value\":\"Scotland (inc. Glasgow, Edinburgh, Aberdeen)\"},{\"Key\":\"SY23 1AB\",\"Value\":\"Wales (inc. Cardiff, Swansea, Newport)\"}]",
+                            AdditionalData = "[{\"Key\":\"North East (England)\",\"Value\":\"North East (England)\"},{\"Key\":\"North West (England)\",\"Value\":\"North West (England)\"},{\"Key\":\"Yorkshire and The Humber\",\"Value\":\"Yorkshire and The Humber\"},{\"Key\":\"East Midlands (England)\",\"Value\":\"East Midlands (England)\"},{\"Key\":\"West Midlands (England)\",\"Value\":\"West Midlands (England)\"},{\"Key\":\"East of England\",\"Value\":\"East of England\"},{\"Key\":\"London\",\"Value\":\"London\"},{\"Key\":\"South East (England)\",\"Value\":\"South East (England)\"},{\"Key\":\"South West (England)\",\"Value\":\"South West (England)\"},{\"Key\":\"Scotland\",\"Value\":\"Scotland\"},{\"Key\":\"Wales\",\"Value\":\"Wales\"}]",
                             AnswerContainsSensitiveData = false,
                             Name = "Do you have a preferred location within the UK?",
                             QuestionType = (byte)4

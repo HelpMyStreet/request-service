@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeAdults,
-                Name = "How many adults need accomodation?",
+                Name = "How many adults need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -193,7 +193,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeChildren,
-                Name = "How many children need accomodation?",
+                Name = "How many children need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -202,7 +202,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizePets,
-                Name = "How many pets need accomodation?",
+                Name = "How many pets need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -321,61 +321,18 @@ namespace RequestService.Repo.Helpers
                 case Questions.PreferredLocation:
                     additionalData = new List<AdditonalQuestionData>
                     {
-                        new AdditonalQuestionData
-                        {
-                            Key = "North East (England)",
-                            Value = "North East (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "North West (England)",
-                            Value = "North West (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Yorkshire and The Humber",
-                            Value = "Yorkshire and The Humber"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "East Midlands (England)",
-                            Value = "East Midlands (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "West Midlands (England)",
-                            Value = "West Midlands (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "East of England",
-                            Value = "East of England"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "London",
-                            Value = "London"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "South East (England)",
-                            Value = "South East (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "South West (England)",
-                            Value = "South West (England)"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Scotland",
-                            Value = "Scotland"
-                        },
-                        new AdditonalQuestionData
-                        {
-                            Key = "Wales",
-                            Value = "Wales"
-                        },
+                        new AdditonalQuestionData { Key = "DH1 1AB", Value = "England, North East (inc. Newcastle, Sunderland, Gateshead)"},
+                        new AdditonalQuestionData { Key = "M1 1AD", Value = "England, North West (inc. Liverpool, Manchester, Bolton)"},
+                        new AdditonalQuestionData { Key = "YO1 0ET", Value = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)"},
+                        new AdditonalQuestionData { Key = "NG1 6DQ", Value = "England, East Midlands (inc. Leicester, Nottingham, Derby)"},
+                        new AdditonalQuestionData { Key = "B1 1QU", Value = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)"},
+                        new AdditonalQuestionData { Key = "CB8 0AA", Value = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)"},
+                        new AdditonalQuestionData { Key = "SW1A 1AA", Value = "England, London"},
+                        new AdditonalQuestionData { Key = "RH10 0AG", Value = "England, South East (inc. Southampton, Portsmouth, Brighton)"},
+                        new AdditonalQuestionData { Key = "BA1 0AA", Value = "England, South West (inc. Bristol, Plymouth, Bournemouth)"},
+                        new AdditonalQuestionData { Key = "BT1 1AA", Value = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)"},
+                        new AdditonalQuestionData { Key = "PH1 1AA", Value = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)"},
+                        new AdditonalQuestionData { Key = "SY23 1AB", Value = "Wales (inc. Cardiff, Swansea, Newport)"}
                     };
                     break;
             }
@@ -556,6 +513,19 @@ namespace RequestService.Repo.Helpers
                     }
                     else if (activity == SupportActivities.Accommodation)
                     {
+                        entity.HasData(new ActivityQuestions 
+                        {  
+                            ActivityId = (int)activity, 
+                            RequestFormStageId = (int)RequestHelpFormStage.Request, 
+                            QuestionId = (int)Questions.SupportRequesting, 
+                            Location = "pos3", 
+                            Order = 1, 
+                            RequestFormVariantId = (int)form, 
+                            Required = false, 
+                            PlaceholderText = "Please be aware that information in this section is visible to prospective hosts",
+                            Subtext = "We will show this information to potential hosts to help find the best match",
+                        });
+
                         entity.HasData(new ActivityQuestions
                         {
                             ActivityId = (int)activity,
@@ -573,7 +543,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.GroupSizeChildren,
-                            Location = "pos2",
+                            Location = "pos1",
                             Order = 2,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -585,7 +555,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.GroupSizePets,
-                            Location = "pos3",
+                            Location = "pos1",
                             Order = 3,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -597,7 +567,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.PreferredLocation,
-                            Location = "pos4",
+                            Location = "pos1",
                             Order = 4,
                             RequestFormVariantId = (int)form,
                             Required = true,
@@ -609,7 +579,7 @@ namespace RequestService.Repo.Helpers
                             ActivityId = (int)activity,
                             RequestFormStageId = (int)RequestHelpFormStage.Request,
                             QuestionId = (int)Questions.PreferredLanguage,
-                            Location = "pos5",
+                            Location = "pos2",
                             Order = 5,
                             RequestFormVariantId = (int)form,
                             Required = true,
