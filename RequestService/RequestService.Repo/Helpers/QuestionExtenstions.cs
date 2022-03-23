@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeAdults,
-                Name = "How many adults need accomodation?",
+                Name = "How many adults need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -193,7 +193,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizeChildren,
-                Name = "How many children need accomodation?",
+                Name = "How many children need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -202,7 +202,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.GroupSizePets,
-                Name = "How many pets need accomodation?",
+                Name = "How many pets need accommodation?",
                 QuestionType = (int)QuestionType.Number,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
