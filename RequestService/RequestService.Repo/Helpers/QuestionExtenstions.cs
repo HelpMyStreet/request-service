@@ -321,6 +321,7 @@ namespace RequestService.Repo.Helpers
                 case Questions.PreferredLocation:
                     additionalData = new List<AdditonalQuestionData>
                     {
+                        new AdditonalQuestionData { Key = "BB1 1AE", Value = "No preference"},
                         new AdditonalQuestionData { Key = "DH1 1AB", Value = "England, North East (inc. Newcastle, Sunderland, Gateshead)"},
                         new AdditonalQuestionData { Key = "M1 1AD", Value = "England, North West (inc. Liverpool, Manchester, Bolton)"},
                         new AdditonalQuestionData { Key = "YO1 0ET", Value = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)"},
