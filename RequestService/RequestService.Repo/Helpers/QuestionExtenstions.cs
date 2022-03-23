@@ -321,18 +321,18 @@ namespace RequestService.Repo.Helpers
                 case Questions.PreferredLocation:
                     additionalData = new List<AdditonalQuestionData>
                     {
-                        new AdditonalQuestionData { Key = "England, North East (inc. Newcastle, Sunderland, Gateshead)", Value = "England, North East (inc. Newcastle, Sunderland, Gateshead)"},
-                        new AdditonalQuestionData { Key = "England, North West (inc. Liverpool, Manchester, Bolton)", Value = "England, North West (inc. Liverpool, Manchester, Bolton)"},
-                        new AdditonalQuestionData { Key = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)", Value = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)"},
-                        new AdditonalQuestionData { Key = "England, East Midlands (inc. Leicester, Nottingham, Derby)", Value = "England, East Midlands (inc. Leicester, Nottingham, Derby)"},
-                        new AdditonalQuestionData { Key = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)", Value = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)"},
-                        new AdditonalQuestionData { Key = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)", Value = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)"},
-                        new AdditonalQuestionData { Key = "England, London", Value = "England, London"},
-                        new AdditonalQuestionData { Key = "England, South East (inc. Southampton, Portsmouth, Brighton)", Value = "England, South East (inc. Southampton, Portsmouth, Brighton)"},
-                        new AdditonalQuestionData { Key = "England, South West (inc. Bristol, Plymouth, Bournemouth)", Value = "England, South West (inc. Bristol, Plymouth, Bournemouth)"},
-                        new AdditonalQuestionData { Key = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)", Value = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)"},
-                        new AdditonalQuestionData { Key = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)", Value = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)"},
-                        new AdditonalQuestionData { Key = "Wales (inc. Cardiff, Swansea, Newport)", Value = "Wales (inc. Cardiff, Swansea, Newport)"}
+                        new AdditonalQuestionData { Key = "DH1 1AB", Value = "England, North East (inc. Newcastle, Sunderland, Gateshead)"},
+                        new AdditonalQuestionData { Key = "M1 1AD", Value = "England, North West (inc. Liverpool, Manchester, Bolton)"},
+                        new AdditonalQuestionData { Key = "YO1 0ET", Value = "England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)"},
+                        new AdditonalQuestionData { Key = "NG1 6DQ", Value = "England, East Midlands (inc. Leicester, Nottingham, Derby)"},
+                        new AdditonalQuestionData { Key = "B1 1QU", Value = "England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)"},
+                        new AdditonalQuestionData { Key = "CB8 0AA", Value = "England, East of England (inc. Luton, Norwich, Southend-on-Sea)"},
+                        new AdditonalQuestionData { Key = "SW1A 1AA", Value = "England, London"},
+                        new AdditonalQuestionData { Key = "RH10 0AG", Value = "England, South East (inc. Southampton, Portsmouth, Brighton)"},
+                        new AdditonalQuestionData { Key = "BA1 0AA", Value = "England, South West (inc. Bristol, Plymouth, Bournemouth)"},
+                        new AdditonalQuestionData { Key = "BT1 1AA", Value = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)"},
+                        new AdditonalQuestionData { Key = "PH1 1AA", Value = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)"},
+                        new AdditonalQuestionData { Key = "SY23 1AB", Value = "Wales (inc. Cardiff, Swansea, Newport)"}
                     };
                     break;
             }
