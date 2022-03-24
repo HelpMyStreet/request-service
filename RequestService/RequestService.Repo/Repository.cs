@@ -277,7 +277,7 @@ namespace RequestService.Repo
 
                             if (questionChildren != null)
                             {
-                                var children = Convert.ToInt32(questionAdults.Answer);
+                                var children = Convert.ToInt32(questionChildren.Answer);
                                 if (children > 0)
                                 {
                                     if(!string.IsNullOrEmpty(reference))
@@ -290,7 +290,7 @@ namespace RequestService.Repo
 
                             if (questionPets != null)
                             {
-                                var pets = Convert.ToInt32(questionAdults.Answer);
+                                var pets = Convert.ToInt32(questionPets.Answer);
                                 if (pets > 0)
                                 {
                                     if (!string.IsNullOrEmpty(reference))
