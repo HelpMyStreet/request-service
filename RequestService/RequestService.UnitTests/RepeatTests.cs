@@ -60,7 +60,8 @@ namespace RequestService.UnitTests
             _repository.Setup(x => x.AddHelpRequestDetailsAsync(
                 It.IsAny<HelpRequestDetail>(),
                 It.IsAny<Fulfillable>(),
-                It.IsAny<bool>(),                
+                It.IsAny<bool>(),
+                It.IsAny<RequestHelpFormVariant>(),
                 It.IsAny<bool?>(),
                 It.IsAny<IEnumerable<int>>(),
                 It.IsAny<bool>()

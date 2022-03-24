@@ -161,7 +161,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen)
+        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, RequestHelpFormVariant requestHelpFormVariant, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen)
         {
             Person requester = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Requestor);
             Person recipient;
@@ -251,6 +251,58 @@ namespace RequestService.Repo
 
                     foreach (HelpMyStreet.Utils.Models.Job job in helpRequestDetail.NewJobsRequest.Jobs)
                     {
+                        String reference = null;
+                        if(requestHelpFormVariant == RequestHelpFormVariant.VitalsForVeterans)
+                        {
+                            var question = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault();
+                            if(question!=null)
+                            {
+                                reference = $"Age UK Ref {  question.Answer}";
+                            }
+                        }
+                        else if (requestHelpFormVariant == RequestHelpFormVariant.UkraineRefugees_RequestSubmitter)
+                        {
+                            var questionAdults = job.Questions.Where(x => x.Id == (int)Questions.GroupSizeAdults).FirstOrDefault();
+                            var questionChildren = job.Questions.Where(x => x.Id == (int)Questions.GroupSizeChildren).FirstOrDefault();
+                            var questionPets = job.Questions.Where(x => x.Id == (int)Questions.GroupSizePets).FirstOrDefault();
+
+                            if(questionAdults!=null)
+                            {
+                                var adults = Convert.ToInt32(questionAdults.Answer);
+                                if(adults>0)
+                                {
+                                    reference = adults == 1 ? "1 Adult" : $"{adults} Adults";
+                                }
+                            }
+
+                            if (questionChildren != null)
+                            {
+                                var children = Convert.ToInt32(questionChildren.Answer);
+                                if (children > 0)
+                                {
+                                    if(!string.IsNullOrEmpty(reference))
+                                    {
+                                        reference += " + ";
+                                    }
+                                    reference = children == 1 ? $"{reference}1 Child" : $"{reference}{children} Children";
+                                }
+                            }
+
+                            if (questionPets != null)
+                            {
+                                var pets = Convert.ToInt32(questionPets.Answer);
+                                if (pets > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(reference))
+                                    {
+                                        reference += " + ";
+                                    }
+                                    reference = pets == 1 ? $"{reference}1 Pet" : $"{reference}{pets} Pets";
+                                }
+                            }
+
+                        }
+
                         EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
                         {
                             NewRequest = newRequest,
@@ -260,7 +312,8 @@ namespace RequestService.Repo
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
-                            Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
+                            Reference = reference,
+                            //Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
                         await _context.SaveChangesAsync();
