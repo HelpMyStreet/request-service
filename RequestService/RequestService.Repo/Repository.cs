@@ -161,7 +161,7 @@ namespace RequestService.Repo
             }
         }
 
-        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen)
+        public async Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, RequestHelpFormVariant requestHelpFormVariant, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen)
         {
             Person requester = GetPersonFromPersonalDetails(helpRequestDetail.HelpRequest.Requestor);
             Person recipient;
@@ -251,6 +251,58 @@ namespace RequestService.Repo
 
                     foreach (HelpMyStreet.Utils.Models.Job job in helpRequestDetail.NewJobsRequest.Jobs)
                     {
+                        String reference = null;
+                        if(requestHelpFormVariant == RequestHelpFormVariant.VitalsForVeterans)
+                        {
+                            var question = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault();
+                            if(question!=null)
+                            {
+                                reference = $"Age UK Ref {  question.Answer}";
+                            }
+                        }
+                        else if (requestHelpFormVariant == RequestHelpFormVariant.UkraineRefugees_RequestSubmitter)
+                        {
+                            var questionAdults = job.Questions.Where(x => x.Id == (int)Questions.GroupSizeAdults).FirstOrDefault();
+                            var questionChildren = job.Questions.Where(x => x.Id == (int)Questions.GroupSizeChildren).FirstOrDefault();
+                            var questionPets = job.Questions.Where(x => x.Id == (int)Questions.GroupSizePets).FirstOrDefault();
+
+                            if(questionAdults!=null)
+                            {
+                                var adults = Convert.ToInt32(questionAdults.Answer);
+                                if(adults>0)
+                                {
+                                    reference = adults == 1 ? "1 Adult" : $"{adults} Adults";
+                                }
+                            }
+
+                            if (questionChildren != null)
+                            {
+                                var children = Convert.ToInt32(questionChildren.Answer);
+                                if (children > 0)
+                                {
+                                    if(!string.IsNullOrEmpty(reference))
+                                    {
+                                        reference += " + ";
+                                    }
+                                    reference = children == 1 ? $"{reference}1 Child" : $"{reference}{children} Children";
+                                }
+                            }
+
+                            if (questionPets != null)
+                            {
+                                var pets = Convert.ToInt32(questionPets.Answer);
+                                if (pets > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(reference))
+                                    {
+                                        reference += " + ";
+                                    }
+                                    reference = pets == 1 ? $"{reference}1 Pet" : $"{reference}{pets} Pets";
+                                }
+                            }
+
+                        }
+
                         EntityFramework.Entities.Job EFcoreJob = new EntityFramework.Entities.Job()
                         {
                             NewRequest = newRequest,
@@ -260,7 +312,8 @@ namespace RequestService.Repo
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
-                            Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
+                            Reference = reference,
+                            //Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
                         await _context.SaveChangesAsync();
@@ -277,7 +330,7 @@ namespace RequestService.Repo
                         }
 
                         AddJobStatus(
-                            EFcoreJob.Id,
+                            EFcoreJob,
                             helpRequestDetail.HelpRequest.CreatedByUserId,
                             null,
                             JobStatuses.New,
@@ -287,7 +340,7 @@ namespace RequestService.Repo
                         if(setStatusToOpen)
                         {
                             AddJobStatus(
-                            EFcoreJob.Id,
+                            EFcoreJob,
                             helpRequestDetail.HelpRequest.CreatedByUserId,
                             null,
                             JobStatuses.Open,
@@ -368,7 +421,7 @@ namespace RequestService.Repo
                             };
                             _context.Job.Add(EFcoreJob);
                             AddJobStatus(
-                                EFcoreJob.Id, 
+                                EFcoreJob, 
                                 postNewShiftsRequest.CreatedByUserId, 
                                 null, 
                                 JobStatuses.New, 
@@ -388,13 +441,14 @@ namespace RequestService.Repo
             throw new Exception("Unable to save shift request");
         }
 
-        private void AddJobStatus(int jobID, int? createdByUserID, int? volunteerUserID, JobStatuses jobStatus, JobStatusChangeReasonCodes jobStatusChangeReasonCode)
+        private void AddJobStatus(EntityFramework.Entities.Job job, int? createdByUserID, int? volunteerUserID, JobStatuses jobStatus, JobStatusChangeReasonCodes jobStatusChangeReasonCode)
         {
+            job.JobStatusId = (byte)jobStatus;
             _context.RequestJobStatus.Add(new RequestJobStatus()
             {
+                Job = job,
                 CreatedByUserId = createdByUserID,
                 VolunteerUserId = volunteerUserID,
-                JobId = jobID,
                 JobStatusId = (byte) jobStatus,
                 JobStatusChangeReasonCodeId = (byte)jobStatusChangeReasonCode
             });
@@ -411,7 +465,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = openJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.UserChange);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Open, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -438,7 +492,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = cancelledJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -465,7 +519,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
-                    AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.InProgress, jobStatusChangeReasonCode);
+                    AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.InProgress, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -493,7 +547,7 @@ namespace RequestService.Repo
                 if (job.JobStatusId != doneJobStatus)
                 {
                     job.JobStatusId = doneJobStatus;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.Done, jobStatusChangeReasonCode);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Done, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -522,7 +576,7 @@ namespace RequestService.Repo
                 if (job.JobStatusId != newJobStatus)
                 {
                     job.JobStatusId = newJobStatus;
-                    AddJobStatus(jobID, createdByUserID, null, JobStatuses.New, JobStatusChangeReasonCodes.UserChange);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.New, JobStatusChangeReasonCodes.UserChange);
                     int result = await _context.SaveChangesAsync(cancellationToken);
                     if (result == 2)
                     {
@@ -555,7 +609,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = acceptedJobStatus;
                         job.VolunteerUserId = volunteerUserID; ;
-                        AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
+                        AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         int result = await _context.SaveChangesAsync(cancellationToken);
                         if (result == 2)
                         {
@@ -1438,7 +1492,7 @@ namespace RequestService.Repo
                     {
                         job.JobStatusId = (byte)JobStatuses.Accepted;
                         job.VolunteerUserId = volunteerUserID;
-                        AddJobStatus(job.Id, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
+                        AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.Accepted, JobStatusChangeReasonCodes.UserChange);
                         _context.SaveChanges();
 
                         count = GetVolunteerCountForGivenRequestIDAndSupportActivity(requestID, activity, volunteerUserID);
@@ -1684,7 +1738,7 @@ namespace RequestService.Repo
             {
                 job.JobStatusId = cancelledJobStatus;
                 job.VolunteerUserId = null;
-                AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
+                AddJobStatus(job, createdByUserID, null, JobStatuses.Cancelled, jobStatusChangeReasonCode);
                 result.Add(job.Id);
             }
             await _context.SaveChangesAsync(cancellationToken);
@@ -1720,14 +1774,14 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = byteCancelledJobStatus;
                     job.VolunteerUserId = null;
-                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.UserChange);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Cancelled, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 
                 if (job.JobStatusId == (byte)JobStatuses.Accepted || job.JobStatusId == (byte)JobStatuses.InProgress)
                 {
                     job.JobStatusId = byteDoneJobStatus;
-                    AddJobStatus(job.Id, createdByUserID, null, JobStatuses.Done, JobStatusChangeReasonCodes.UserChange);
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Done, JobStatusChangeReasonCodes.UserChange);
                     result.Add(job.Id);
                 }
 

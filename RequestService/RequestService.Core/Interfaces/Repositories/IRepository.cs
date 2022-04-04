@@ -60,7 +60,7 @@ namespace RequestService.Core.Interfaces.Repositories
         Task<UpdateJobStatusOutcome> UpdateJobStatusNewAsync(int jobID, int createdByUserID, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobQuestion(int jobID, int questionId, string answer, CancellationToken cancellationToken);
         Task<UpdateJobOutcome> UpdateJobDueDateAsync(int jobID, int authorisedByUserID, DateTime dueDate, CancellationToken cancellationToken);
-        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen);
+        Task<int> AddHelpRequestDetailsAsync(HelpRequestDetail helpRequestDetail, Fulfillable fulfillable, bool requestorDefinedByGroup, RequestHelpFormVariant requestHelpFormVariant, bool? suppressRecipientPersonalDetails, IEnumerable<int> availableToGroups, bool setStatusToOpen);
         Task<int> GetRequestIDFromGuid(Guid guid);
         Task<int> NewShiftsRequestAsync(PostNewShiftsRequest PostNewShiftsRequest, Fulfillable fulfillable, RequestPersonalDetails requestorPersonalDetails );
         List<ReportItem> GetDailyReport();
