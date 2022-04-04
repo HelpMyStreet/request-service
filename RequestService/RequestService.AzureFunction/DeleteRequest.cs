@@ -48,3 +48,4 @@ namespace RequestService.AzureFunction
         }
     }
 }
+
