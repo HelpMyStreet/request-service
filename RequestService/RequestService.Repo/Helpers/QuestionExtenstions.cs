@@ -184,7 +184,7 @@ namespace RequestService.Repo.Helpers
             entity.HasData(new Question
             {
                 Id = (int)Questions.SelectActivity,
-                Name = "Please enter an activity",
+                Name = "Create a request title",
                 QuestionType = (int)QuestionType.Text,
                 AdditionalData = string.Empty,
                 AnswerContainsSensitiveData = false
@@ -493,8 +493,8 @@ namespace RequestService.Repo.Helpers
                             Order = 1,
                             RequestFormVariantId = (int)form,
                             Required = false,
-                            PlaceholderText = "Please provide details of the help that you require",
-                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
+                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
                         });
 
                         entity.HasData(new ActivityQuestions { ActivityId = (int)activity, RequestFormStageId = (int)RequestHelpFormStage.Request, QuestionId = (int)Questions.SupportRequesting, Location = "pos1", Order = 2, RequestFormVariantId = (int)form, Required = false, PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you" });
