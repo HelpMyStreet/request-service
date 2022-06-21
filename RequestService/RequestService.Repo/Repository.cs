@@ -549,7 +549,7 @@ namespace RequestService.Repo
                 {
                     job.JobStatusId = appliedForJobStatus;
                     job.VolunteerUserId = volunteerUserID;
-                    AddJobStatus(jobID, createdByUserID, volunteerUserID, JobStatuses.AppliedFor, jobStatusChangeReasonCode);
+                    AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.AppliedFor, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {

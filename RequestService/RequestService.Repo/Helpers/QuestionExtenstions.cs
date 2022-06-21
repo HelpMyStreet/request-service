@@ -351,7 +351,7 @@ namespace RequestService.Repo.Helpers
                         new AdditonalQuestionData { Key = "BA1 0AA", Value = "England, South West (inc. Bristol, Plymouth, Bournemouth)"},
                         new AdditonalQuestionData { Key = "BT1 1AA", Value = "Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)"},
                         new AdditonalQuestionData { Key = "PH1 1AA", Value = "Scotland (inc. Glasgow, Edinburgh, Aberdeen)"},
-                        new AdditonalQuestionData { Key = "SY23 1AB", Value = "Wales (inc. Cardiff, Swansea, Newport)"
+                        new AdditonalQuestionData { Key = "SY23 1AB", Value = "Wales (inc. Cardiff, Swansea, Newport)" }
                     };
                     break;
                 case Questions.RequiresApplicationToAccept:
@@ -367,7 +367,7 @@ namespace RequestService.Repo.Helpers
                             Key = "No",
                             Value = "No"
                         }
-                    }
+                    };
                     break;
             }
 
