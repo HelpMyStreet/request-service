@@ -11,14 +11,10 @@ using HelpMyStreet.Contracts.CommunicationService.Request;
 using Microsoft.Extensions.Options;
 using RequestService.Core.Config;
 using HelpMyStreet.Contracts.RequestService.Response;
-using RequestService.Core.Dto;
-using Newtonsoft.Json;
 using System;
 using HelpMyStreet.Utils.Models;
-using RequestService.Core.Exceptions;
 using HelpMyStreet.Utils.Extensions;
 using RequestService.Handlers.BusinessLogic;
-using System.Text;
 using HelpMyStreet.Contracts.GroupService.Request;
 using HelpMyStreet.Contracts.GroupService.Response;
 
@@ -28,26 +24,20 @@ namespace RequestService.Handlers
     {
         private readonly IRepository _repository;
         private readonly ICommunicationService _communicationService;
-        private readonly IUserService _userService;
         private readonly IAddressService _addressService;
-        private readonly IGroupService _groupService;
-        private readonly IOptionsSnapshot<ApplicationConfig> _applicationConfig;
+        private readonly IGroupService _groupService;        
         private readonly IMultiJobs _multiJobs;
         public PostRequestForHelpHandler(
             IRepository repository,
-            IUserService userService,
             IAddressService addressService,
             ICommunicationService communicationService,
-            IGroupService groupService,
-            IOptionsSnapshot<ApplicationConfig> applicationConfig,
+            IGroupService groupService,            
             IMultiJobs multiJobs)
         {
-            _repository = repository;
-            _userService = userService;
+            _repository = repository;            
             _addressService = addressService;
             _communicationService = communicationService;
             _groupService = groupService;
-            _applicationConfig = applicationConfig;
             _multiJobs = multiJobs;
         }
 
@@ -210,7 +200,7 @@ namespace RequestService.Handlers
             return suppressRecipientPersonalDetails;
         }
 
-        private async Task ProcessRequestActions(GetNewRequestActionsResponse actions, int requestId, CancellationToken cancellationToken)
+        private async Task ProcessRequestActions(GetNewRequestActionsSimplifiedResponse actions, int requestId, CancellationToken cancellationToken)
         {
             foreach (NewTaskAction newTaskAction in actions.RequestTaskActions.Keys)
             {
@@ -228,12 +218,6 @@ namespace RequestService.Handlers
                                 RequestID = requestId,
                             }, cancellationToken);
                             await _repository.UpdateCommunicationSentAsync(requestId, commsSent, cancellationToken);
-                        }
-                        break;
-                    case NewTaskAction.MakeAvailableToGroups:
-                        foreach (int i in actionAppliesToIds)
-                        {
-                            await _repository.AddRequestAvailableToGroupAsync(requestId, i, cancellationToken);
                         }
                         break;
                     case NewTaskAction.NotifyGroupAdmins:
@@ -261,8 +245,7 @@ namespace RequestService.Handlers
                             RequestID = requestId
                         }, cancellationToken);
                         break;
-                    case NewTaskAction.SetStatusToOpen:
-                        await _repository.UpdateAllJobStatusToOpenForRequestAsync(requestId, -1, cancellationToken);
+                    default:
                         break;
                 }
 
@@ -275,18 +258,34 @@ namespace RequestService.Handlers
             bool suppressRecipientPersonalDetails,
             CancellationToken cancellationToken)
         {
-            var actions = _groupService.GetNewRequestActions(new GetNewRequestActionsRequest()
+            var actions = await _groupService.GetNewRequestActionsSimplified(new GetNewRequestActionsSimplifiedRequest()
             {
-                HelpRequest = helpRequestDetail.HelpRequest,
-                NewJobsRequest = helpRequestDetail.NewJobsRequest
-            }, cancellationToken).Result;
+                GroupId = helpRequestDetail.HelpRequest.ReferringGroupId,
+                Source = helpRequestDetail.HelpRequest.Source,
+                SupportActivity = new SupportActivityRequest()
+                {
+                    SupportActivities = new List<SupportActivities>()
+                    {
+                        helpRequestDetail.NewJobsRequest.Jobs.First().SupportActivity
+                    }
+                }
+            }, cancellationToken);
 
-            if (actions == null)
+            if (actions == null || actions.RequestTaskActions.Count() == 0)
             {
                 throw new Exception("No new request actions returned");
             }
 
-            int requestId = await _repository.AddHelpRequestDetailsAsync(helpRequestDetail, fulfillable, formVariant.RequestorDefinedByGroup, suppressRecipientPersonalDetails);
+            bool setStatusToOpen = actions.RequestTaskActions.TryGetValue(NewTaskAction.SetStatusToOpen, out _);
+
+            int requestId = await _repository.AddHelpRequestDetailsAsync(
+                helpRequestDetail, 
+                fulfillable, 
+                formVariant.RequestorDefinedByGroup, 
+                formVariant.RequestHelpFormVariant,
+                suppressRecipientPersonalDetails, 
+                actions.RequestTaskActions[NewTaskAction.MakeAvailableToGroups], 
+                setStatusToOpen);
 
             if (requestId == 0)
             {

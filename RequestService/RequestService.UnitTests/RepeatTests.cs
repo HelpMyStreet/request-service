@@ -1,22 +1,17 @@
-using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Contracts.GroupService.Request;
 using HelpMyStreet.Contracts.GroupService.Response;
 using HelpMyStreet.Contracts.RequestService.Request;
 using HelpMyStreet.Contracts.RequestService.Response;
-using HelpMyStreet.Contracts.UserService.Response;
 using HelpMyStreet.Utils.Enums;
 using HelpMyStreet.Utils.Models;
-using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using RequestService.Core.Config;
 using RequestService.Core.Interfaces.Repositories;
 using RequestService.Core.Services;
 using RequestService.Handlers;
 using RequestService.Handlers.BusinessLogic;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,11 +20,9 @@ namespace RequestService.UnitTests
     public class RepeatTests
     {
         private Mock<IRepository> _repository;
-        private Mock<IUserService> _userService;
         private Mock<IAddressService> _adddressService;
         private Mock<ICommunicationService> _communicationService;
         private Mock<IGroupService> _groupService;
-        private Mock<IOptionsSnapshot<ApplicationConfig>> _applicationConfig;
         private Mock<IMultiJobs> _multiJobs;
         private PostRequestForHelpHandler _classUnderTest;
 
@@ -37,7 +30,7 @@ namespace RequestService.UnitTests
         private int _newRequestId;
         private bool _validPostcode;
         private GetRequestHelpFormVariantResponse _formVariantResponse;
-        private GetNewRequestActionsResponse _getNewRequestActionsResponse;
+        private GetNewRequestActionsSimplifiedResponse _getNewRequestActionsSimplifiedResponse;
         private GetGroupMemberResponse _getGroupMemberResponse;
         private GetUserRolesResponse _getUserRolesResponse;
         private GetGroupResponse _getGroupResponse;
@@ -46,20 +39,15 @@ namespace RequestService.UnitTests
         public void Setup()
         {
             SetupRepository();
-            SetupUserService();
             SetupAddressService();
             SetupCommunicationService();
-            SetupApplicationConfig();
-
             SetupGroupService();
             SetupMultiObjects();
             _classUnderTest = new PostRequestForHelpHandler(
-                _repository.Object,
-                _userService.Object,
+                _repository.Object,                
                 _adddressService.Object,
                 _communicationService.Object,
                 _groupService.Object,
-                _applicationConfig.Object,
                 _multiJobs.Object
                 );
         }
@@ -73,33 +61,25 @@ namespace RequestService.UnitTests
                 It.IsAny<HelpRequestDetail>(),
                 It.IsAny<Fulfillable>(),
                 It.IsAny<bool>(),
-                It.IsAny<bool?>()))
+                It.IsAny<RequestHelpFormVariant>(),
+                It.IsAny<bool?>(),
+                It.IsAny<IEnumerable<int>>(),
+                It.IsAny<bool>()
+                ))
                 .ReturnsAsync(() => _newRequestId);
         }
-        private void SetupUserService()
-        {
-            _userService = new Mock<IUserService>();
-        }
+
         private void SetupAddressService()
         {
             _adddressService = new Mock<IAddressService>();
             _adddressService.Setup(x => x.IsValidPostcode(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => _validPostcode);
         }
+
         private void SetupCommunicationService()
         {
             _communicationService = new Mock<ICommunicationService>();
         }
-        private void SetupApplicationConfig()
-        {
-            _applicationConfig = new Mock<IOptionsSnapshot<ApplicationConfig>>();
-            _applicationConfig.SetupGet(x => x.Value).Returns(new ApplicationConfig
-            {
-                ManualReferName = "test",
-                ManualReferEmail = "manual@test.com",
-                EmailBaseUrl = "helpmystreettest",
-                FaceMaskChunkSize = 10
-            });
-        }
+
         private void SetupGroupService()
         {
             _groupService = new Mock<IGroupService>();
@@ -107,8 +87,8 @@ namespace RequestService.UnitTests
             _groupService.Setup(x => x.GetRequestHelpFormVariant(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => _formVariantResponse);
 
-            _groupService.Setup(x => x.GetNewRequestActions(It.IsAny<GetNewRequestActionsRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => _getNewRequestActionsResponse);
+            _groupService.Setup(x => x.GetNewRequestActionsSimplified(It.IsAny<GetNewRequestActionsSimplifiedRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => _getNewRequestActionsSimplifiedResponse);
 
             _groupService.Setup(x => x.GetGroupMember(It.IsAny<GetGroupMemberRequest>()))
                 .ReturnsAsync(() => _getGroupMemberResponse);
@@ -131,9 +111,15 @@ namespace RequestService.UnitTests
             _requestId = -1;
             _newRequestId = 1;
             Guid guid = Guid.NewGuid();
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
-            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse = new GetNewRequestActionsSimplifiedResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
+            _getNewRequestActionsSimplifiedResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsSimplifiedResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+
+            _formVariantResponse = new GetRequestHelpFormVariantResponse()
+            {
+                TargetGroups = TargetGroups.GenericGroup
+            };
+
             var request = new PostRequestForHelpRequest()
             {
                 HelpRequestDetails = new List<HelpRequestDetail>()
@@ -204,9 +190,11 @@ namespace RequestService.UnitTests
             }
 
             Guid guid = Guid.NewGuid();
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
-            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse = new GetNewRequestActionsSimplifiedResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
+            _getNewRequestActionsSimplifiedResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsSimplifiedResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse.RequestTaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
+
             var request = new PostRequestForHelpRequest()
             {
                 HelpRequestDetails = new List<HelpRequestDetail>()
@@ -326,9 +314,10 @@ namespace RequestService.UnitTests
                 }
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
-            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse = new GetNewRequestActionsSimplifiedResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
+            _getNewRequestActionsSimplifiedResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsSimplifiedResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse.RequestTaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
 
             var response = await _classUnderTest.Handle(request, new CancellationToken());
             _adddressService.Verify(x => x.IsValidPostcode(postCode, It.IsAny<CancellationToken>()), Times.Exactly(1));
@@ -410,9 +399,10 @@ namespace RequestService.UnitTests
                 }
             };
             
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
-            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse = new GetNewRequestActionsSimplifiedResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
+            _getNewRequestActionsSimplifiedResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsSimplifiedResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse.RequestTaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
 
             _getGroupMemberResponse = new GetGroupMemberResponse()
             {
@@ -508,9 +498,10 @@ namespace RequestService.UnitTests
                 SuppressRecipientPersonalDetails = true
             };
 
-            _getNewRequestActionsResponse = new GetNewRequestActionsResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
-            _getNewRequestActionsResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
-            _getNewRequestActionsResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse = new GetNewRequestActionsSimplifiedResponse() { Actions = new Dictionary<Guid, TaskAction>(), RequestTaskActions = new Dictionary<NewTaskAction, List<int>>() };
+            _getNewRequestActionsSimplifiedResponse.Actions.Add(guid, new TaskAction() { TaskActions = new Dictionary<NewTaskAction, List<int>>() });
+            _getNewRequestActionsSimplifiedResponse.Actions[guid].TaskActions.Add(NewTaskAction.AssignToVolunteer, new List<int>() { 1 });
+            _getNewRequestActionsSimplifiedResponse.RequestTaskActions.Add(NewTaskAction.MakeAvailableToGroups, new List<int>() { 1 });
 
             _newRequestId = 1;
 
