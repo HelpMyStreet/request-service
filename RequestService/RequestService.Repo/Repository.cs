@@ -308,7 +308,7 @@ namespace RequestService.Repo
                             NewRequest = newRequest,
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
-                            DueDate = job.StartDate.Value,
+                            DueDate = job.DueDateType == DueDateType.OpenUntil ? job.EndDate.Value : job.StartDate.Value,
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
