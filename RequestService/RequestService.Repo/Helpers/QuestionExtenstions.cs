@@ -505,7 +505,7 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
-                    else if (activity == SupportActivities.VolunteerSupport || activity == SupportActivities.EmergencySupport)
+                    else if (activity.MultiVolunteerQuestion())
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -544,7 +544,7 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
-                    else if (activity == SupportActivities.Other)
+                    else if (activity.ShowSelectActivityQuestion())
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -936,9 +936,13 @@ namespace RequestService.Repo.Helpers
                     break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:
-                case RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter:
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                case RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    { SupportActivities.AdvertisingRoles,
+                      SupportActivities.Other};
                     break;
                 case RequestHelpFormVariant.ApexBankStaff_RequestSubmitter:
                     activites = new List<SupportActivities>()
