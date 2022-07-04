@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220614151240_ChangeTextForOtherActivity")]
+    partial class ChangeTextForOtherActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9082,31 +9084,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 21,
                             Name = "RequiresApplicationToAccept"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "GroupSizeAdults"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "GroupSizeChildren"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "GroupSizePets"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Name = "PreferredLanguage"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "PreferredLocation"
                         });
                 });
 
@@ -9329,13 +9306,13 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            Id = 32,
-                            Name = "LincolnshireVolunteersRequests_RequestSubmitter"
+                            Id = 31,
+                            Name = "ArroweParkHospital_RequestSubmitter"
                         },
                         new
                         {
-                            Id = 33,
-                            Name = "UkraineRefugees_RequestSubmitter"
+                            Id = 32,
+                            Name = "LincolnshireVolunteersRequests_RequestSubmitter"
                         });
                 });
 
@@ -9564,7 +9541,22 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             Id = 34,
-                            Name = "Accommodation"
+                            Name = "BreakfastVisit"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "LunchVisit"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "MedicationCheckIn"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "WellBeingVisit"
                         });
                 });
 
@@ -9988,46 +9980,6 @@ namespace RequestService.Repo.Migrations
                             AnswerContainsSensitiveData = false,
                             Name = "Requires an administrator to approve volunteer's application to fulfil request",
                             QuestionType = (byte)4
-                        },
-                        new
-                        {
-                            Id = 22,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many adults need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 23,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many children need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 24,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many pets need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 26,
-                            AdditionalData = "[{\"Key\":\"BB1 1AE\",\"Value\":\"No preference\"},{\"Key\":\"DH1 1AB\",\"Value\":\"England, North East (inc. Newcastle, Sunderland, Gateshead)\"},{\"Key\":\"M1 1AD\",\"Value\":\"England, North West (inc. Liverpool, Manchester, Bolton)\"},{\"Key\":\"YO1 0ET\",\"Value\":\"England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)\"},{\"Key\":\"NG1 6DQ\",\"Value\":\"England, East Midlands (inc. Leicester, Nottingham, Derby)\"},{\"Key\":\"B1 1QU\",\"Value\":\"England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)\"},{\"Key\":\"CB8 0AA\",\"Value\":\"England, East of England (inc. Luton, Norwich, Southend-on-Sea)\"},{\"Key\":\"SW1A 1AA\",\"Value\":\"England, London\"},{\"Key\":\"RH10 0AG\",\"Value\":\"England, South East (inc. Southampton, Portsmouth, Brighton)\"},{\"Key\":\"BA1 0AA\",\"Value\":\"England, South West (inc. Bristol, Plymouth, Bournemouth)\"},{\"Key\":\"BT1 1AA\",\"Value\":\"Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)\"},{\"Key\":\"PH1 1AA\",\"Value\":\"Scotland (inc. Glasgow, Edinburgh, Aberdeen)\"},{\"Key\":\"SY23 1AB\",\"Value\":\"Wales (inc. Cardiff, Swansea, Newport)\"}]",
-                            AnswerContainsSensitiveData = false,
-                            Name = "Do you have a preferred location within the UK?",
-                            QuestionType = (byte)4
-                        },
-                        new
-                        {
-                            Id = 25,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "What languages do you speak?",
-                            QuestionType = (byte)2
                         });
                 });
 

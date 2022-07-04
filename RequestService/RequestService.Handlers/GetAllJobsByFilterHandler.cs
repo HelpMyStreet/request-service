@@ -173,6 +173,7 @@ namespace RequestService.Handlers
             .ToList()
             .ForEach(job => jobSummaries.Add(new JobSummary()
             {
+                SpecificSupportActivity = job.SpecificSupportActivity,
                 DateRequested = job.DateRequested,
                 VolunteerUserID = job.VolunteerUserID,
                 DateStatusLastChanged = job.DateStatusLastChanged,

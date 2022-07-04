@@ -308,12 +308,12 @@ namespace RequestService.Repo
                             NewRequest = newRequest,
                             IsHealthCritical = job.HealthCritical,
                             SupportActivityId = (byte)job.SupportActivity,
-                            DueDate = job.StartDate.Value,
+                            DueDate = job.DueDateType == DueDateType.OpenUntil ? job.EndDate.Value : job.StartDate.Value,
                             DueDateTypeId = (byte)job.DueDateType,
                             JobStatusId = (byte)JobStatuses.New,
                             NotBeforeDate = job.NotBeforeDate,
+                            SpecificSupportActivity = job.Questions.Where(x => x.Id == (int)Questions.SelectActivity).FirstOrDefault()?.Answer,
                             Reference = reference,
-                            //Reference = job.Questions.Where(x => x.Id == (int)Questions.AgeUKReference).FirstOrDefault()?.Answer
                         };
                         _context.Job.Add(EFcoreJob);
                         await _context.SaveChangesAsync();
@@ -520,6 +520,36 @@ namespace RequestService.Repo
                     job.JobStatusId = inProgressJobStatus;
                     job.VolunteerUserId = volunteerUserID;
                     AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.InProgress, jobStatusChangeReasonCode);
+                    int result = _context.SaveChanges();
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                }
+                else
+                {
+                    if (job.VolunteerUserId == volunteerUserID)
+                    {
+                        response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusAppliedForAsync(int jobID, int createdByUserID, int volunteerUserID, JobStatusChangeReasonCodes jobStatusChangeReasonCode, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte appliedForJobStatus = (byte)JobStatuses.AppliedFor;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+
+            if (job != null)
+            {
+                if (job.JobStatusId != appliedForJobStatus)
+                {
+                    job.JobStatusId = appliedForJobStatus;
+                    job.VolunteerUserId = volunteerUserID;
+                    AddJobStatus(job, createdByUserID, volunteerUserID, JobStatuses.AppliedFor, jobStatusChangeReasonCode);
                     int result = _context.SaveChanges();
                     if (result == 2)
                     {
@@ -906,7 +936,8 @@ namespace RequestService.Repo
                     Location = j.LocationId.HasValue ? (Location?)j.LocationId.Value : null,
                     StartDate = j.StartDate,
                     ShiftLength = j.ShiftLength,
-                    NotBeforeDate = j.NotBeforeDate
+                    NotBeforeDate = j.NotBeforeDate,
+                    SpecificSupportActivity = j.SpecificSupportActivity
                 });
             }
 
@@ -972,7 +1003,8 @@ namespace RequestService.Repo
                 RequestID = job.NewRequest.Id,
                 RequestType = (RequestType)job.NewRequest.RequestType,
                 SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
-                NotBeforeDate = job.NotBeforeDate
+                NotBeforeDate = job.NotBeforeDate,
+                SpecificSupportActivity = job.SpecificSupportActivity
             };
         }
 
@@ -1026,6 +1058,7 @@ namespace RequestService.Repo
                             SuppressRecipientPersonalDetail = job.NewRequest.SuppressRecipientPersonalDetail,
                             NotBeforeDate = job.NotBeforeDate,
                             Questions = MapToQuestions(job.JobQuestions),
+                            SpecificSupportActivity = job.SpecificSupportActivity
                         }).ToList();
                         break;
                     case RequestType.Shift:
@@ -1336,6 +1369,7 @@ namespace RequestService.Repo
             return _context.ActivityQuestions
                         .Include(x => x.Question)
                         .Where(x => x.ActivityId == (int)activity && x.RequestFormVariantId == (int)requestHelpFormVariant && x.RequestFormStageId == (int)requestHelpFormStage)
+                        .OrderBy(x=> x.Order)
                         .Select(x => new HelpMyStreet.Utils.Models.Question
                         {
                             Id = x.Question.Id,
