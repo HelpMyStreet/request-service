@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220705102318_AddNHSVRDemo")]
+    partial class AddNHSVRDemo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -9001,6 +9003,11 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 5,
                             Name = "ASAP"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "OpenUntil"
                         });
                 });
 
@@ -9044,6 +9051,11 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 50,
                             Name = "EveryFourWeeks"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Name = "Ongoing"
                         });
                 });
 
@@ -9802,6 +9814,11 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 34,
                             Name = "Accommodation"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "AdvertisingRoles"
                         },
                         new
                         {
