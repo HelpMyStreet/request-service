@@ -1,5 +1,6 @@
 using HelpMyStreet.Contracts.CommunicationService.Request;
 using HelpMyStreet.Contracts.RequestService.Request;
+using HelpMyStreet.Contracts.RequestService.Response;
 using HelpMyStreet.Utils.Enums;
 using Moq;
 using NUnit.Framework;
@@ -21,6 +22,7 @@ namespace RequestService.UnitTests
         private UpdateJobStatusOutcome _updateJobStatusOutcome;
         private bool _hasPermission = true;
         private bool _isSameAsProposed = false;
+        private GetJobDetailsResponse _jobDetails;
 
         [SetUp]
         public void Setup()
@@ -59,6 +61,9 @@ namespace RequestService.UnitTests
                It.IsAny<int>(),
                It.IsAny<JobStatuses>())).Returns(() => _isSameAsProposed);
 
+            _repository.Setup(x => x.GetJobDetails(
+                It.IsAny<int>())).Returns(() => _jobDetails);
+
         }
 
         [Test]
@@ -71,6 +76,14 @@ namespace RequestService.UnitTests
                 JobID = 1
             };
             _isSameAsProposed = false;
+            _jobDetails = new GetJobDetailsResponse()
+            {
+                JobSummary = new HelpMyStreet.Utils.Models.JobSummary()
+                {
+                    JobStatus = JobStatuses.InProgress
+                }
+            };
+
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
             _repository.Verify(x => x.JobHasStatus(It.IsAny<int>(), It.IsAny<JobStatuses>()), Times.Exactly(2));
             _repository.Verify(x => x.UpdateJobStatusOpenAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -89,6 +102,14 @@ namespace RequestService.UnitTests
                 JobID = 1
             };
             _isSameAsProposed = false;
+
+            _jobDetails = new GetJobDetailsResponse()
+            {
+                JobSummary = new HelpMyStreet.Utils.Models.JobSummary()
+                {
+                    JobStatus = JobStatuses.InProgress
+                }
+            };
             var response = await _classUnderTest.Handle(_request, CancellationToken.None);
             _repository.Verify(x => x.JobHasStatus(It.IsAny<int>(), It.IsAny<JobStatuses>()), Times.Exactly(2));
             _repository.Verify(x => x.UpdateJobStatusOpenAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
