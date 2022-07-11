@@ -50,8 +50,8 @@ namespace RequestService.Handlers
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
                 return response;
             }
-            
-            var jobDetails = _repository.GetJobDetails(request.JobID);
+
+            GetJobDetailsResponse jobDetails = _repository.GetJobDetails(request.JobID);
             var volunteerGroups = await _groupService.GetUserGroups(request.VolunteerUserID, cancellationToken);
             var jobGroups = await _repository.GetGroupsForJobAsync(request.JobID, cancellationToken);
             int referringGroupId = await _repository.GetReferringGroupIDForJobAsync(request.JobID, cancellationToken);
@@ -105,6 +105,29 @@ namespace RequestService.Handlers
                 return response;
             }
 
+            bool emailSent = false;
+
+            if (jobDetails.JobSummary.JobStatus == JobStatuses.AppliedFor)
+            {
+                response.Outcome = await _repository.UpdateJobStatusToApprovedAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                if(response.Outcome!= UpdateJobStatusOutcome.Success)
+                {
+                    return response;
+                }
+
+                emailSent = await _communicationService.RequestCommunication(
+                        new RequestCommunicationRequest()
+                        {
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                            JobID = request.JobID,
+                            AdditionalParameters = new Dictionary<string, string>()
+                            {
+                                { "FieldUpdated","Status" }
+                            }
+                        },
+                        cancellationToken);
+            }
+
             var result = await _repository.UpdateJobStatusInProgressAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, JobStatusChangeReasonCodes.UserChange, cancellationToken);
             response.Outcome = result;
 
@@ -118,17 +141,20 @@ namespace RequestService.Handlers
                     AuthorisedByUserID = ADMIN_USERID
                 }, cancellationToken);
 
-                await _communicationService.RequestCommunication(
-                    new RequestCommunicationRequest()
-                    {
-                        CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                        JobID = request.JobID,
-                        AdditionalParameters = new Dictionary<string, string>()
+                if (!emailSent)
+                {
+                    await _communicationService.RequestCommunication(
+                        new RequestCommunicationRequest()
                         {
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                            JobID = request.JobID,
+                            AdditionalParameters = new Dictionary<string, string>()
+                            {
                         { "FieldUpdated","Status" }
-                        }
-                    },
-                    cancellationToken);
+                            }
+                        },
+                        cancellationToken);
+                }
             }
                        
             return response;

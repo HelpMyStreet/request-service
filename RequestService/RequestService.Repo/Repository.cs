@@ -2244,5 +2244,63 @@ namespace RequestService.Repo
                 .Where(x => referringGroups.Contains(x.ReferringGroupId))
                 .Select(x => x.Id).ToList();
         }
+
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusToApprovedAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte approvedJobStatus = (byte)JobStatuses.Approved;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+            if (job != null)
+            {
+                if (job.JobStatusId != approvedJobStatus)
+                {
+                    job.JobStatusId = approvedJobStatus;
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Approved,JobStatusChangeReasonCodes.UserChange);
+                    int result = _context.SaveChanges();
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                    else
+                    {
+                        response = UpdateJobStatusOutcome.BadRequest;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                }
+            }
+            return response;
+        }
+
+        public async Task<UpdateJobStatusOutcome> UpdateJobStatusToRejectedAsync(int jobID, int createdByUserID, CancellationToken cancellationToken)
+        {
+            UpdateJobStatusOutcome response = UpdateJobStatusOutcome.BadRequest;
+            byte rejectedJobStatus = (byte)JobStatuses.Rejected;
+            var job = _context.Job.Where(w => w.Id == jobID).FirstOrDefault();
+            if (job != null)
+            {
+                if (job.JobStatusId != rejectedJobStatus)
+                {
+                    job.JobStatusId = rejectedJobStatus;
+                    AddJobStatus(job, createdByUserID, null, JobStatuses.Rejected, JobStatusChangeReasonCodes.UserChange);
+                    int result = _context.SaveChanges();
+                    if (result == 2)
+                    {
+                        response = UpdateJobStatusOutcome.Success;
+                    }
+                    else
+                    {
+                        response = UpdateJobStatusOutcome.BadRequest;
+                    }
+                }
+                else
+                {
+                    response = UpdateJobStatusOutcome.AlreadyInThisStatus;
+                }
+            }
+            return response;
+        }
     }
 }
