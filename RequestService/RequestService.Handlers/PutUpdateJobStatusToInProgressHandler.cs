@@ -105,8 +105,6 @@ namespace RequestService.Handlers
                 return response;
             }
 
-            bool emailSent = false;
-
             if (jobDetails.JobSummary.JobStatus == JobStatuses.AppliedFor)
             {
                 response.Outcome = await _repository.UpdateJobStatusToApprovedAsync(request.JobID, request.CreatedByUserID, cancellationToken);
@@ -115,15 +113,12 @@ namespace RequestService.Handlers
                     return response;
                 }
 
-                emailSent = await _communicationService.RequestCommunication(
+                await _communicationService.RequestCommunication(
                         new RequestCommunicationRequest()
                         {
-                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.RequestToHelpApproved },
                             JobID = request.JobID,
-                            AdditionalParameters = new Dictionary<string, string>()
-                            {
-                                { "FieldUpdated","Status" }
-                            }
+                            RecipientUserID = request.VolunteerUserID
                         },
                         cancellationToken);
             }
@@ -140,21 +135,19 @@ namespace RequestService.Handlers
                     GroupID = referringGroupId,
                     AuthorisedByUserID = ADMIN_USERID
                 }, cancellationToken);
-
-                if (!emailSent)
-                {
-                    await _communicationService.RequestCommunication(
-                        new RequestCommunicationRequest()
+                
+                await _communicationService.RequestCommunication(
+                    new RequestCommunicationRequest()
+                    {
+                        CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                        JobID = request.JobID,
+                        AdditionalParameters = new Dictionary<string, string>()
                         {
-                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                            JobID = request.JobID,
-                            AdditionalParameters = new Dictionary<string, string>()
-                            {
-                        { "FieldUpdated","Status" }
-                            }
-                        },
-                        cancellationToken);
-                }
+                    { "FieldUpdated","Status" }
+                        }
+                    },
+                    cancellationToken);
+             
             }
                        
             return response;

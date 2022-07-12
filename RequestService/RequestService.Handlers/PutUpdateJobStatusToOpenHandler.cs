@@ -40,53 +40,44 @@ namespace RequestService.Handlers
 
                 bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, !newToOpen, cancellationToken);
                 GetJobDetailsResponse jobDetails = _repository.GetJobDetails(request.JobID);
-
-                bool emailSent = false;
-
+                
                 if (hasPermission)
                 {
                     if (jobDetails.JobSummary.JobStatus == JobStatuses.AppliedFor)
                     {
+                        int volunteerUserId = jobDetails.JobSummary.VolunteerUserID.Value;
                         response.Outcome = await _repository.UpdateJobStatusToRejectedAsync(request.JobID, request.CreatedByUserID, cancellationToken);
                         if (response.Outcome != UpdateJobStatusOutcome.Success)
                         {
                             return response;
                         }
 
-                        emailSent = await _communicationService.RequestCommunication(
+                        await _communicationService.RequestCommunication(
                         new RequestCommunicationRequest()
                         {
-                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.RequestToHelpDeclined },
                             JobID = request.JobID,
-                            AdditionalParameters = new Dictionary<string, string>()
-                            {
-                                { "FieldUpdated","Status" }
-                            }
+                            RecipientUserID = volunteerUserId
                         },
                         cancellationToken);
-
-
                     }
 
                     var result = await _repository.UpdateJobStatusOpenAsync(request.JobID, request.CreatedByUserID, cancellationToken);
                     response.Outcome = result;
 
                     if (result == UpdateJobStatusOutcome.Success)
-                    {
-                        if (!emailSent)
+                    {                        
+                        await _communicationService.RequestCommunication(
+                        new RequestCommunicationRequest()
                         {
-                            await _communicationService.RequestCommunication(
-                            new RequestCommunicationRequest()
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
+                            JobID = request.JobID,
+                            AdditionalParameters = new Dictionary<string, string>()
                             {
-                                CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.SendTaskStateChangeUpdate },
-                                JobID = request.JobID,
-                                AdditionalParameters = new Dictionary<string, string>()
-                                {
-                                { "FieldUpdated","Status" }
-                                }
-                            },
-                            cancellationToken);
-                        }
+                            { "FieldUpdated","Status" }
+                            }
+                        },
+                        cancellationToken);
 
                         if (newToOpen)
                         {
