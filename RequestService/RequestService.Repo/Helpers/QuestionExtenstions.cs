@@ -382,7 +382,7 @@ namespace RequestService.Repo.Helpers
             {
                 foreach (var activity in GetSupportActivitiesForRequestFormVariant(form))
                 {
-                    if (activity == SupportActivities.VaccineSupport || activity == SupportActivities.BankStaffVaccinator)
+                    if (activity == SupportActivities.VaccineSupport || activity == SupportActivities.BankStaffVaccinator || activity == SupportActivities.NHSSteward)
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -1011,6 +1011,18 @@ namespace RequestService.Repo.Helpers
                         SupportActivities.DigitalSupport,
                         SupportActivities.Other,
                         SupportActivities.VolunteerSupport
+                    };
+                    break;
+
+                case RequestHelpFormVariant.NHSVRDemo_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    {
+                        SupportActivities.NHSTransport,
+                        SupportActivities.NHSSteward,
+                        SupportActivities.NHSCheckInAndChat,
+                        SupportActivities.NHSCheckInAndChatPlus,
+                        SupportActivities.EmergencySupport,                        
+                        SupportActivities.Other                        
                     };
                     break;
                 default:
