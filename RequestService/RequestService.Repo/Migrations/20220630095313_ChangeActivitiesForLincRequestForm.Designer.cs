@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220630095313_ChangeActivitiesForLincRequestForm")]
+    partial class ChangeActivitiesForLincRequestForm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8349,21 +8351,10 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             ActivityId = 35,
-                            QuestionId = 17,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 35,
                             QuestionId = 1,
                             RequestFormVariantId = 32,
                             Location = "pos1",
-                            Order = 2,
+                            Order = 1,
                             PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
                             RequestFormStageId = 1,
                             Required = false
@@ -8375,22 +8366,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 32,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 35,
-                            QuestionId = 20,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
-                            RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
                         },
                         new
                         {
@@ -8466,331 +8445,6 @@ namespace RequestService.Repo.Migrations
                             ActivityId = 11,
                             QuestionId = 14,
                             RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 1,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 10,
-                            RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 21,
-                            RequestFormVariantId = 32,
-                            Location = "details1",
-                            Order = 2,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
-                        },
-                        new
-                        {
-                            ActivityId = 7,
-                            QuestionId = 14,
-                            RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 1,
-                            QuestionId = 12,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "For example, Hovis wholemeal bread, 2 pints semi-skimmed milk, 6 large eggs.",
-                            RequestFormStageId = 1,
-                            Required = true,
-                            Subtext = "Make sure to include the size, brand, and any other important details"
-                        },
-                        new
-                        {
-                            ActivityId = 1,
-                            QuestionId = 10,
-                            RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 1,
-                            QuestionId = 21,
-                            RequestFormVariantId = 32,
-                            Location = "details1",
-                            Order = 2,
-                            RequestFormStageId = 2,
-                            Required = true,
-                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
-                        },
-                        new
-                        {
-                            ActivityId = 1,
-                            QuestionId = 14,
-                            RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 17,
-                            RequestFormVariantId = 34,
-                            Location = "pos3",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 16,
-                            RequestFormVariantId = 34,
-                            Location = "pos2",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 17,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 20,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
-                            RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
                             Location = "details2",
                             Order = 3,
                             PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
@@ -8997,16 +8651,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 7,
                             Name = "AppliedFor"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Approved"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Rejected"
                         });
                 });
 
@@ -9427,11 +9071,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 33,
                             Name = "UkraineRefugees_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Name = "NHSVRDemo_RequestSubmitter"
                         });
                 });
 
@@ -9666,26 +9305,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 35,
                             Name = "AdvertisingRoles"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Name = "NHSSteward"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Name = "NHSTransport"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Name = "NHSCheckInAndChat"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Name = "NHSCheckInAndChatPlus"
                         });
                 });
 

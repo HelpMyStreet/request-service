@@ -39,14 +39,34 @@ namespace RequestService.Handlers
                 bool newToOpen = _repository.JobHasStatus(request.JobID, JobStatuses.New);
 
                 bool hasPermission = await _jobService.HasPermissionToChangeStatusAsync(request.JobID, request.CreatedByUserID, !newToOpen, cancellationToken);
-
+                GetJobDetailsResponse jobDetails = _repository.GetJobDetails(request.JobID);
+                
                 if (hasPermission)
                 {
+                    if (jobDetails.JobSummary.JobStatus == JobStatuses.AppliedFor)
+                    {
+                        int volunteerUserId = jobDetails.JobSummary.VolunteerUserID.Value;
+                        response.Outcome = await _repository.UpdateJobStatusToRejectedAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                        if (response.Outcome != UpdateJobStatusOutcome.Success)
+                        {
+                            return response;
+                        }
+
+                        await _communicationService.RequestCommunication(
+                        new RequestCommunicationRequest()
+                        {
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.RequestToHelpDeclined },
+                            JobID = request.JobID,
+                            RecipientUserID = volunteerUserId
+                        },
+                        cancellationToken);
+                    }
+
                     var result = await _repository.UpdateJobStatusOpenAsync(request.JobID, request.CreatedByUserID, cancellationToken);
                     response.Outcome = result;
 
                     if (result == UpdateJobStatusOutcome.Success)
-                    {
+                    {                        
                         await _communicationService.RequestCommunication(
                         new RequestCommunicationRequest()
                         {
@@ -54,7 +74,7 @@ namespace RequestService.Handlers
                             JobID = request.JobID,
                             AdditionalParameters = new Dictionary<string, string>()
                             {
-                                { "FieldUpdated","Status" }
+                            { "FieldUpdated","Status" }
                             }
                         },
                         cancellationToken);

@@ -50,8 +50,8 @@ namespace RequestService.Handlers
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
                 return response;
             }
-            
-            var jobDetails = _repository.GetJobDetails(request.JobID);
+
+            GetJobDetailsResponse jobDetails = _repository.GetJobDetails(request.JobID);
             var volunteerGroups = await _groupService.GetUserGroups(request.VolunteerUserID, cancellationToken);
             var jobGroups = await _repository.GetGroupsForJobAsync(request.JobID, cancellationToken);
             int referringGroupId = await _repository.GetReferringGroupIDForJobAsync(request.JobID, cancellationToken);
@@ -105,6 +105,24 @@ namespace RequestService.Handlers
                 return response;
             }
 
+            if (jobDetails.JobSummary.JobStatus == JobStatuses.AppliedFor)
+            {
+                response.Outcome = await _repository.UpdateJobStatusToApprovedAsync(request.JobID, request.CreatedByUserID, cancellationToken);
+                if(response.Outcome!= UpdateJobStatusOutcome.Success)
+                {
+                    return response;
+                }
+
+                await _communicationService.RequestCommunication(
+                        new RequestCommunicationRequest()
+                        {
+                            CommunicationJob = new CommunicationJob() { CommunicationJobType = CommunicationJobTypes.RequestToHelpApproved },
+                            JobID = request.JobID,
+                            RecipientUserID = request.VolunteerUserID
+                        },
+                        cancellationToken);
+            }
+
             var result = await _repository.UpdateJobStatusInProgressAsync(request.JobID, request.CreatedByUserID, request.VolunteerUserID, JobStatusChangeReasonCodes.UserChange, cancellationToken);
             response.Outcome = result;
 
@@ -117,7 +135,7 @@ namespace RequestService.Handlers
                     GroupID = referringGroupId,
                     AuthorisedByUserID = ADMIN_USERID
                 }, cancellationToken);
-
+                
                 await _communicationService.RequestCommunication(
                     new RequestCommunicationRequest()
                     {
@@ -125,10 +143,11 @@ namespace RequestService.Handlers
                         JobID = request.JobID,
                         AdditionalParameters = new Dictionary<string, string>()
                         {
-                        { "FieldUpdated","Status" }
+                    { "FieldUpdated","Status" }
                         }
                     },
                     cancellationToken);
+             
             }
                        
             return response;

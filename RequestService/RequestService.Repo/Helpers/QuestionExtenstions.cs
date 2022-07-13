@@ -505,7 +505,7 @@ namespace RequestService.Repo.Helpers
                             Subtext = subText_anythingElse
                         });
                     }
-                    else if (activity == SupportActivities.VolunteerSupport || activity == SupportActivities.EmergencySupport)
+                    else if (activity.MultiVolunteerQuestion())
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -543,8 +543,24 @@ namespace RequestService.Repo.Helpers
                             PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
                             Subtext = subText_anythingElse
                         });
+
+                        if (activity.ShowSelectActivityQuestion())
+                        {
+                            entity.HasData(new ActivityQuestions
+                            {
+                                ActivityId = (int)activity,
+                                RequestFormStageId = (int)RequestHelpFormStage.Request,
+                                QuestionId = (int)Questions.SelectActivity,
+                                Location = "pos1",
+                                Order = 1,
+                                RequestFormVariantId = (int)form,
+                                Required = false,
+                                PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                                Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            });
+                        }
                     }
-                    else if (activity == SupportActivities.Other)
+                    else if (activity.ShowSelectActivityQuestion())
                     {
                         entity.HasData(new ActivityQuestions
                         {
@@ -936,9 +952,13 @@ namespace RequestService.Repo.Helpers
                     break;
                 case RequestHelpFormVariant.Default:
                 case RequestHelpFormVariant.FaceMasks:
-                case RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter:
                 case RequestHelpFormVariant.DIY:
                     activites = genericSupportActivities; 
+                    break;
+                case RequestHelpFormVariant.LincolnshireVolunteersRequests_RequestSubmitter:
+                    activites = new List<SupportActivities>()
+                    { SupportActivities.AdvertisingRoles,
+                      SupportActivities.Other};
                     break;
                 case RequestHelpFormVariant.ApexBankStaff_RequestSubmitter:
                     activites = new List<SupportActivities>()
