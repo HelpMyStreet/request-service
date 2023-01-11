@@ -44,8 +44,7 @@ namespace RequestService.Handlers
                 return response;
             }
 
-            if (_repository.JobIsInProgressWithSameVolunteerUserId(request.JobID, request.VolunteerUserID) || 
-                (_repository.VolunteerHasAlreadyJobForThisRequestWithThisStatus(request.JobID, request.VolunteerUserID, JobStatuses.AppliedFor)))
+            if (_repository.VolunteerHasAlreadyJobForThisRequestWithThisStatus(request.JobID, request.VolunteerUserID, JobStatuses.AppliedFor))
             {
                 response.Outcome = UpdateJobStatusOutcome.AlreadyInThisStatus;
                 return response;
