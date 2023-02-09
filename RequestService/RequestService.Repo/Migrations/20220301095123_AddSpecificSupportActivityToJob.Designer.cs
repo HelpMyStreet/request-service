@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RequestService.Repo;
 
 namespace RequestService.Repo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220301095123_AddSpecificSupportActivityToJob")]
+    partial class AddSpecificSupportActivityToJob
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -461,10 +463,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 1,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -778,10 +780,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 2,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -1194,10 +1196,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 3,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -1622,10 +1624,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 5,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -1910,10 +1912,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 7,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -2202,10 +2204,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 8,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -2499,10 +2501,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 9,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -2707,10 +2709,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 10,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -2950,10 +2952,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 11,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -3234,10 +3236,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 12,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -3469,10 +3471,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 13,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -3806,10 +3808,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 14,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -3971,10 +3973,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 15,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -4215,10 +4217,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 16,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -4686,10 +4688,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 19,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -5215,10 +5217,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 20,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -5575,10 +5577,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 21,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -6060,10 +6062,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 22,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -6700,10 +6702,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 23,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -6893,10 +6895,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 25,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -6984,10 +6986,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 26,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -7733,10 +7735,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 28,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -8002,10 +8004,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 29,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -8260,10 +8262,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 30,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -8348,53 +8350,30 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            ActivityId = 35,
-                            QuestionId = 17,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 35,
+                            ActivityId = 10,
                             QuestionId = 1,
                             RequestFormVariantId = 32,
                             Location = "pos1",
-                            Order = 2,
+                            Order = 1,
                             PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
                             RequestFormStageId = 1,
                             Required = false
                         },
                         new
                         {
-                            ActivityId = 35,
+                            ActivityId = 10,
                             QuestionId = 10,
                             RequestFormVariantId = 32,
                             Location = "details2",
                             Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
                             RequestFormStageId = 2,
                             Required = false,
                             Subtext = "This information will be visible to volunteers deciding whether to accept the request"
                         },
                         new
                         {
-                            ActivityId = 35,
-                            QuestionId = 20,
-                            RequestFormVariantId = 32,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
-                            RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
-                        },
-                        new
-                        {
-                            ActivityId = 35,
+                            ActivityId = 10,
                             QuestionId = 21,
                             RequestFormVariantId = 32,
                             Location = "details1",
@@ -8405,7 +8384,191 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            ActivityId = 35,
+                            ActivityId = 10,
+                            QuestionId = 14,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 3,
+                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
+                        },
+                        new
+                        {
+                            ActivityId = 2,
+                            QuestionId = 13,
+                            RequestFormVariantId = 32,
+                            Location = "pos1",
+                            Order = 1,
+                            PlaceholderText = "Please give the name and address of the pharmacy, e.g. Boots Pharmacy, Victoria Centre, Nottingham.",
+                            RequestFormStageId = 1,
+                            Required = true
+                        },
+                        new
+                        {
+                            ActivityId = 2,
+                            QuestionId = 10,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 2,
+                            PlaceholderText = "For example, let us know if the prescription needs to be paid for or if it won’t be ready straight away. You should also let us know if there are any mobility or communication needs, or special instructions for the volunteer. Please don’t include any personal or sensitive information in this box.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
+                        },
+                        new
+                        {
+                            ActivityId = 2,
+                            QuestionId = 21,
+                            RequestFormVariantId = 32,
+                            Location = "details1",
+                            Order = 2,
+                            RequestFormStageId = 2,
+                            Required = true,
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
+                        },
+                        new
+                        {
+                            ActivityId = 2,
+                            QuestionId = 14,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 3,
+                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
+                        },
+                        new
+                        {
+                            ActivityId = 3,
+                            QuestionId = 1,
+                            RequestFormVariantId = 32,
+                            Location = "pos1",
+                            Order = 1,
+                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
+                            RequestFormStageId = 1,
+                            Required = false
+                        },
+                        new
+                        {
+                            ActivityId = 3,
+                            QuestionId = 10,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 2,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
+                        },
+                        new
+                        {
+                            ActivityId = 3,
+                            QuestionId = 21,
+                            RequestFormVariantId = 32,
+                            Location = "details1",
+                            Order = 2,
+                            RequestFormStageId = 2,
+                            Required = true,
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
+                        },
+                        new
+                        {
+                            ActivityId = 3,
+                            QuestionId = 14,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 3,
+                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
+                        },
+                        new
+                        {
+                            ActivityId = 9,
+                            QuestionId = 1,
+                            RequestFormVariantId = 32,
+                            Location = "pos1",
+                            Order = 1,
+                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
+                            RequestFormStageId = 1,
+                            Required = false
+                        },
+                        new
+                        {
+                            ActivityId = 9,
+                            QuestionId = 10,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 2,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
+                        },
+                        new
+                        {
+                            ActivityId = 9,
+                            QuestionId = 21,
+                            RequestFormVariantId = 32,
+                            Location = "details1",
+                            Order = 2,
+                            RequestFormStageId = 2,
+                            Required = true,
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
+                        },
+                        new
+                        {
+                            ActivityId = 9,
+                            QuestionId = 14,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 3,
+                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
+                        },
+                        new
+                        {
+                            ActivityId = 6,
+                            QuestionId = 1,
+                            RequestFormVariantId = 32,
+                            Location = "pos1",
+                            Order = 1,
+                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
+                            RequestFormStageId = 1,
+                            Required = false
+                        },
+                        new
+                        {
+                            ActivityId = 6,
+                            QuestionId = 10,
+                            RequestFormVariantId = 32,
+                            Location = "details2",
+                            Order = 2,
+                            PlaceholderText = "For example, any special instructions for the volunteer.",
+                            RequestFormStageId = 2,
+                            Required = false,
+                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
+                        },
+                        new
+                        {
+                            ActivityId = 6,
+                            QuestionId = 21,
+                            RequestFormVariantId = 32,
+                            Location = "details1",
+                            Order = 2,
+                            RequestFormStageId = 2,
+                            Required = true,
+                            Subtext = "Does this request require an administrator to approve before the volunteer can accept?"
+                        },
+                        new
+                        {
+                            ActivityId = 6,
                             QuestionId = 14,
                             RequestFormVariantId = 32,
                             Location = "details2",
@@ -8422,10 +8585,10 @@ namespace RequestService.Repo.Migrations
                             RequestFormVariantId = 32,
                             Location = "pos1",
                             Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
+                            PlaceholderText = "Please provide details of the help that you require",
                             RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
+                            Required = true,
+                            Subtext = "Provide details of the activity that you need help with. If you need help with more than activity you will need to submit a new request for each."
                         },
                         new
                         {
@@ -8559,238 +8722,6 @@ namespace RequestService.Repo.Migrations
                             ActivityId = 1,
                             QuestionId = 14,
                             RequestFormVariantId = 32,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 37,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 17,
-                            RequestFormVariantId = 34,
-                            Location = "pos3",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 16,
-                            RequestFormVariantId = 34,
-                            Location = "pos2",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 36,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 38,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 39,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 17,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "",
-                            RequestFormStageId = 1,
-                            Required = true
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer such as, what time they need to arrive or if there is any specific they need to bring with them.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 25,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 3,
-                            PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "We will only share this information with a volunteer after they have accepted your request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 20,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 1,
-                            PlaceholderText = "Request title, e.g. ‘Charity shop volunteer’ or ‘Community kitchen volunteer’",
-                            RequestFormStageId = 1,
-                            Required = false,
-                            Subtext = "Please enter a short title to let volunteers know what type of help is needed."
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 1,
-                            RequestFormVariantId = 34,
-                            Location = "pos1",
-                            Order = 2,
-                            PlaceholderText = "Please don’t include any sensitive details that aren’t needed in order for us to help you",
-                            RequestFormStageId = 1,
-                            Required = false
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 10,
-                            RequestFormVariantId = 34,
-                            Location = "details2",
-                            Order = 2,
-                            PlaceholderText = "For example, any special instructions for the volunteer.",
-                            RequestFormStageId = 2,
-                            Required = false,
-                            Subtext = "This information will be visible to volunteers deciding whether to accept the request"
-                        },
-                        new
-                        {
-                            ActivityId = 11,
-                            QuestionId = 14,
-                            RequestFormVariantId = 34,
                             Location = "details2",
                             Order = 3,
                             PlaceholderText = "For example, a door entry code, or contact details for a friend / relative / caregiver.",
@@ -8840,11 +8771,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 5,
                             Name = "ASAP"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "OpenUntil"
                         });
                 });
 
@@ -8888,11 +8814,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 50,
                             Name = "EveryFourWeeks"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            Name = "Ongoing"
                         });
                 });
 
@@ -8997,16 +8918,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 7,
                             Name = "AppliedFor"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Approved"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Rejected"
                         });
                 });
 
@@ -9173,31 +9084,6 @@ namespace RequestService.Repo.Migrations
                         {
                             Id = 21,
                             Name = "RequiresApplicationToAccept"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "GroupSizeAdults"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "GroupSizeChildren"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "GroupSizePets"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Name = "PreferredLanguage"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "PreferredLocation"
                         });
                 });
 
@@ -9420,18 +9306,13 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
+                            Id = 31,
+                            Name = "ArroweParkHospital_RequestSubmitter"
+                        },
+                        new
+                        {
                             Id = 32,
                             Name = "LincolnshireVolunteersRequests_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Name = "UkraineRefugees_RequestSubmitter"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Name = "NHSVRDemo_RequestSubmitter"
                         });
                 });
 
@@ -9660,32 +9541,22 @@ namespace RequestService.Repo.Migrations
                         new
                         {
                             Id = 34,
-                            Name = "Accommodation"
+                            Name = "BreakfastVisit"
                         },
                         new
                         {
                             Id = 35,
-                            Name = "AdvertisingRoles"
+                            Name = "LunchVisit"
                         },
                         new
                         {
                             Id = 36,
-                            Name = "NHSSteward"
+                            Name = "MedicationCheckIn"
                         },
                         new
                         {
                             Id = 37,
-                            Name = "NHSTransport"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Name = "NHSCheckInAndChat"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Name = "NHSCheckInAndChatPlus"
+                            Name = "WellBeingVisit"
                         });
                 });
 
@@ -10096,50 +9967,10 @@ namespace RequestService.Repo.Migrations
                         },
                         new
                         {
-                            Id = 22,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many adults need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 23,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many children need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 24,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "How many pets need accommodation?",
-                            QuestionType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 26,
-                            AdditionalData = "[{\"Key\":\"BB1 1AE\",\"Value\":\"No preference\"},{\"Key\":\"DH1 1AB\",\"Value\":\"England, North East (inc. Newcastle, Sunderland, Gateshead)\"},{\"Key\":\"M1 1AD\",\"Value\":\"England, North West (inc. Liverpool, Manchester, Bolton)\"},{\"Key\":\"YO1 0ET\",\"Value\":\"England, Yorkshire and The Humber (inc. Sheffield, Leeds, Bradford)\"},{\"Key\":\"NG1 6DQ\",\"Value\":\"England, East Midlands (inc. Leicester, Nottingham, Derby)\"},{\"Key\":\"B1 1QU\",\"Value\":\"England, West Midlands (inc. Birmingham, Coventry, Stoke-on-Trent)\"},{\"Key\":\"CB8 0AA\",\"Value\":\"England, East of England (inc. Luton, Norwich, Southend-on-Sea)\"},{\"Key\":\"SW1A 1AA\",\"Value\":\"England, London\"},{\"Key\":\"RH10 0AG\",\"Value\":\"England, South East (inc. Southampton, Portsmouth, Brighton)\"},{\"Key\":\"BA1 0AA\",\"Value\":\"England, South West (inc. Bristol, Plymouth, Bournemouth)\"},{\"Key\":\"BT1 1AA\",\"Value\":\"Northern Ireland (inc. Belfast, Londonderry, Newtownabbey)\"},{\"Key\":\"PH1 1AA\",\"Value\":\"Scotland (inc. Glasgow, Edinburgh, Aberdeen)\"},{\"Key\":\"SY23 1AB\",\"Value\":\"Wales (inc. Cardiff, Swansea, Newport)\"}]",
-                            AnswerContainsSensitiveData = false,
-                            Name = "Do you have a preferred location within the UK?",
-                            QuestionType = (byte)4
-                        },
-                        new
-                        {
-                            Id = 25,
-                            AdditionalData = "",
-                            AnswerContainsSensitiveData = false,
-                            Name = "What languages do you speak?",
-                            QuestionType = (byte)2
-                        },
-                        new
-                        {
                             Id = 20,
                             AdditionalData = "",
                             AnswerContainsSensitiveData = false,
-                            Name = "Create a request title",
+                            Name = "Please select an activity",
                             QuestionType = (byte)2
                         },
                         new
@@ -10147,7 +9978,7 @@ namespace RequestService.Repo.Migrations
                             Id = 21,
                             AdditionalData = "[{\"Key\":\"Yes\",\"Value\":\"Yes\"},{\"Key\":\"No\",\"Value\":\"No\"}]",
                             AnswerContainsSensitiveData = false,
-                            Name = "Requires an administrator to approve volunteer's application to fulfil request",
+                            Name = "Requires an administrator to approve volunteer's application to fulfill request",
                             QuestionType = (byte)4
                         });
                 });
